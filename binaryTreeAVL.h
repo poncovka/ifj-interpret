@@ -17,8 +17,7 @@
 typedef enum{
    DEFAULT,
    FUNCIONS,
-   VARIABLES,
-   CONSTANTS,
+   VAR_CONST,
 }ETreeDataType;
 
 typedef struct TBTreeNode{
@@ -33,11 +32,22 @@ typedef struct{
    TNode root;                // koren stromu
    TNode lastAdded;           // ukazatel na posledni pridanou polozku(nekdy se to muze hodit)
    int   nodeCount;           // pocet uzlu
-   ETreeDataType type;        // typ stromu(mozna se to hodi u vladani nebo u mazani dat)
-                              // podle toho poznam jak data smazat
+   ETreeDataType type;        // podle typu stromu poznam jak TNode->data smazat
 } TBTree;
-//--------------------------------------------------------------------------------
 
+typedef struct{
+   TBTree *variables; // tabulka symbolu POZOR!! musime uvazovat rekurzy, bude zde pole!!!
+   TBTree *constants;   // tabulka konstant
+   // seznam instrukci
+   char   *name;        // jmeno fce(identifikator)
+   int    lounchCnt;    // pocet spusteni funkce
+}TableFunctions;
+//--------------------------------------------------------------------------------
+/*
+ *    inicializace stromu
+ *    @param   strom
+ *    @param   typ stromu
+ */
 void BTreeInit(TBTree*, ETreeDataType);
 //--------------------------------------------------------------------------------
 
@@ -47,6 +57,7 @@ void BTreeInit(TBTree*, ETreeDataType);
  *    konevce - data pridava uzivatel
  *    @param   ukazatel na strom
  *    @param   ukazatel na retezec
+ *    @param   ukazatel na data(jedno jaka)
  *    @return  INS_OK         pri uspesnem volozeni,
  *             INS_NODE_EXIST      pri nevlozeni(polozka se stejnym klicem jiz ve stromu existuje),
  *             INS_MALLOC     pri nepovedene alokaci
@@ -72,13 +83,5 @@ void BTreeDelete(TBTree*);
  *    @return  pozice uzlu, pokud uzel nebyl nalezen vraci NULL
  */
 TNode BTreeSearch(TBTree*, char*);
-
-//--------------------------------------------------------------------------------
-/*
- *    smaze strom ale taky maze i data, jak smazat data si uzivatel definuje sam
- *    v tele teto funcke. u mazani dat rozhoduje typ stromu(ETreeDataType type;)
- *    @param   ukazatel na strom
- */
-void BTreeDeleteWithData(TBTree *T);
 
 #endif // BINARYTREEAVL_H_INCLUDED

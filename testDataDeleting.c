@@ -15,98 +15,95 @@
 #include <stdlib.h>
 #include "binaryTreeAVL.h"
 
-typedef struct{
-   TBTree *variables;
-   TBTree *constants;
-   char   *name;
-   int    lounchCnt;
-}TableFunctions;
-
 void avlPrint(TNode, int);
-void avlPrintOrder(TNode);
+void avlPrintOrder(TBTree*);
 
 int main()
 {
    int cnt = 1;
 
       TBTree varTabFunc1, varTabFunc2, varTabFunc3;
-      BTreeInit(&varTabFunc1,VARIABLES);
-      BTreeInit(&varTabFunc2,VARIABLES);
-      BTreeInit(&varTabFunc3,VARIABLES);
+      BTreeInit(&varTabFunc1,DEFAULT);
+      BTreeInit(&varTabFunc2,DEFAULT);
+      BTreeInit(&varTabFunc3,DEFAULT);
 
       printf("\n\nPromene func%d\n\n", cnt++);
       BTreeInsert(&varTabFunc1, "var1_func1", NULL);
       BTreeInsert(&varTabFunc1, "var2_func1", NULL);
       BTreeInsert(&varTabFunc1, "var3_func1", NULL);
-      avlPrint(varTabFunc1.root, 0);
+      avlPrintOrder(&varTabFunc1);
 
       printf("\n\nPromene func%d\n\n", cnt++);
       BTreeInsert(&varTabFunc2, "var1_func2", NULL);
       BTreeInsert(&varTabFunc2, "var2_func2", NULL);
       BTreeInsert(&varTabFunc2, "var3_func2", NULL);
-      avlPrint(varTabFunc2.root, 0);
+      avlPrintOrder(&varTabFunc2);
 
       printf("\n\nPromene func%d\n\n", cnt++);
       BTreeInsert(&varTabFunc3, "var1_func3", NULL);
       BTreeInsert(&varTabFunc3, "var2_func3", NULL);
       BTreeInsert(&varTabFunc3, "var3_func3", NULL);
-      avlPrint(varTabFunc3.root, 0);
+      avlPrintOrder(&varTabFunc3);
 
-   TableFunctions func1 = {&varTabFunc1, NULL, "func1", 0};
+   TableFunctions func1 = {&varTabFunc1, NULL, "func1", 0}; // {tabulka promenych, tabulka konstant, klic, pocet spusteni}
    TableFunctions func2 = {&varTabFunc2, NULL, "func2", 0};
    TableFunctions func3 = {&varTabFunc3, NULL, "func3", 0};
 
-   TBTree funcTab;
-   BTreeInit(&funcTab, FUNCIONS);
+   TBTree funcTab;                  // tabulka funkci
+   BTreeInit(&funcTab, FUNCIONS);   // inicalizujeme ji jako tabulku funcki
 
    printf("\n\n--------------\n\n");
 
 
-   BTreeInsert(&funcTab, "func1", &func1);
-      printf("\n\nnaposledy pridana funkce: %s\n\n\tobsahuje tyto promene: \n\n", funcTab.lastAdded->key);
-      // data ukazuji na void, ale ja vim ze tyto data jsou typu TableFunctions, prot musim pretypovat
-      avlPrint(((TableFunctions *)funcTab.lastAdded->data)->variables->root,5);
+   BTreeInsert(&funcTab, "func1", &func1);   // do dat uylu pridam funkci
+      printf("\n\nnaposledy pridana funkce: %s\n\n      obsahuje tyto promene: \n\n", funcTab.lastAdded->key);
+      // data ukazuji na void, ale ja vim ze tyto data jsou typu ukazatel na TableFunctions, prot musim pretypovat
+      //           (                func1                    )
+      avlPrintOrder(((TableFunctions *)funcTab.lastAdded->data)->variables);
 
    BTreeInsert(&funcTab, "func2", &func2);
-      printf("\n\nnaposledy pridana funkce: %s\n\n\tobsahuje tyto promene: \n\n", funcTab.lastAdded->key);
-      avlPrint(((TableFunctions *)funcTab.lastAdded->data)->variables->root,5);
+      printf("\n\nnaposledy pridana funkce: %s\n\n      obsahuje tyto promene: \n\n", funcTab.lastAdded->key);
+      //           (                func2                    )
+      avlPrintOrder(((TableFunctions *)funcTab.lastAdded->data)->variables);
 
    BTreeInsert(&funcTab, "func3", &func3);
-      printf("\n\nnaposledy pridana funkce: %s\n\n\tobsahuje tyto promene: \n\n", funcTab.lastAdded->key);
-      avlPrint(((TableFunctions *)funcTab.lastAdded->data)->variables->root,5);
+      printf("\n\nnaposledy pridana funkce: %s\n\n      obsahuje tyto promene: \n\n", funcTab.lastAdded->key);
+      //           (                func3                    )
+      avlPrintOrder(((TableFunctions *)funcTab.lastAdded->data)->variables);
 
 
-   printf("\n\ntabulka funci obsahuje tyto funkce:\n");
-   avlPrint(funcTab.root,0);
+   printf("\n\ntabulka funci obsahuje tyto funkce + promene:\n");
+   avlPrintOrder(&funcTab);
 
-      BTreeDeleteWithData(&varTabFunc1);
-      BTreeDeleteWithData(&varTabFunc2);
-      BTreeDeleteWithData(&varTabFunc3);
+      //BTreeDelete(&varTabFunc1);
+      //BTreeDelete(&varTabFunc2);
+      //BTreeDelete(&varTabFunc3);
 
-   BTreeDeleteWithData(&funcTab);
+   BTreeDelete(&funcTab);  // funkce by mela smazat i vsechny podstromy
    return 0;
 }
+//             uzel     typ stromu       oddelovac
+void printNode(TNode n, ETreeDataType t, char *delim){
+   if(n != NULL){
+      printNode(n->left, t, delim);
 
-void printSPace(int countOfSpace){
-   for(int i = 0; i < countOfSpace-1; i++)
-         printf("   ");
-}
-void avlPrint(TNode T, int countOfSpace){
-   if(T != NULL){
-      avlPrint(T->right, ++countOfSpace);
+      printf("%s%s\n", delim, n->key);
+      switch(t){
+         case FUNCIONS:{
+            printf("     variables:\n");
+            printNode( ((TableFunctions *)n->data)->variables->root, ((TableFunctions *)n->data)->variables->type /*VAR_CONST*/, "      " );
+         }break;
+         case VAR_CONST:{
+            fprintf(stderr, "\nTisk promene nebo konstanty neni implenetovan!");
+         }break;
+         case DEFAULT:
+         default : break;
+      }
 
-      printSPace(countOfSpace);
-      printf("%s \n", T->key);
-
-      avlPrint(T->left, countOfSpace);
+      printNode(n->right, t, delim);
    }
 }
 
-
-void avlPrintOrder(TNode T){
-   if(T != NULL){
-      avlPrintOrder(T->left);
-      printf("%s\n", T->key);
-      avlPrintOrder(T->right);
-   }
+void avlPrintOrder(TBTree *T){
+   printNode(T->root, T->type, "   ");
 }

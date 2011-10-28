@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "binaryTreeAVL.h"
 
@@ -14,8 +15,7 @@
  * vyhleda misto kde polozka patri a vlozi ji
  * @param   uzel
  * @param   klic podle ktereho hledat
- * @param   ukazatel na data(jenom pocitam s tim ze nakonec ty data budu vlkadat ja;)
- *          ted je vklada uzivatel
+ * @param   ukazatel na data(jedno jaka)
  * @return  vraci ukazatel na uzel(muze totiz nekdy dojit k tomu ze je treba strom vyvazit
  *          proto se musi zasadne volat jako (TNode)root=insert(root, "key", NULL)
  * navic funkce nastavuje urcite pomocne promene(position-pozice posledniho vkladaneho prvku, returnValue-makra INS_XXX)
@@ -26,7 +26,7 @@ TNode insert(TNode, char*, void*);
  * maze uzly stromu, pomocna funkce pro BTreeDelet
  * @param uzel stromu
  */
-void deleteNode(TNode);
+void deleteNode(TNode, ETreeDataType);
 
 /*
  * hleda uzel, pomocna promena BTreeSearch
@@ -77,10 +77,29 @@ void BTreeInit(TBTree *T, ETreeDataType type){
 }
 //----------------------------------------------------------------------
 
-void deleteNode(TNode n){
+void deleteNode(TNode n, ETreeDataType type){
    if(n != NULL){
-      deleteNode(n->left);
-      deleteNode(n->right);
+      deleteNode(n->left,  type);
+      deleteNode(n->right, type);
+
+      // tady uz muzu smazat polozku
+      switch(type){
+         // predpis jak smazat data pokud jsou typu TableFunctions*
+         case FUNCIONS:{
+            //             (    ukazatel na strom    )->koren stromu
+            TBTree *temp = ((TableFunctions *)n->data)->variables;
+            deleteNode( temp->root, temp->type); // type by mel byt VAR_CONST
+            // smazat konstanty
+            // smazat seznam instrukci
+         }break;
+         // predpis jak smazat data poku jsou typu xxx
+         case VAR_CONST:{
+            fprintf(stderr, "\nMazani konstanty neni implementovano!");
+         }break;
+         // nic nedelam
+         case DEFAULT:
+         default: break;
+      }
       free(n);
    }
 }
@@ -88,7 +107,7 @@ void deleteNode(TNode n){
 void BTreeDelete(TBTree *T){
    if(T == NULL)
       return;
-   deleteNode(T->root);
+   deleteNode(T->root, T->type);
    BTreeInit(T, T->type);
 }
 
@@ -278,27 +297,3 @@ int height(TNode T){
       return T->height;
 }
 
-//----------------------------------------------------------------------
-//----------------------------------------------------------------------
-
-void deleteNodeWithData(TNode n, ETreeDataType t){
-   if(n != NULL){
-      deleteNodeWithData(n->left, t);
-      deleteNodeWithData(n->right, t);
-
-      switch(t){
-         case FUNCIONS:
-         case VARIABLES:
-         case CONSTANTS:
-         case DEFAULT:
-         default: free(n);
-      }
-   }
-}
-
-void BTreeDeleteWithData(TBTree *T){
-   if(T == NULL)
-      return;
-   deleteNodeWithData(T->root, T->type);
-   BTreeInit(T, T->type);
-}
