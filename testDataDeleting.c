@@ -53,12 +53,23 @@ int main()
    BTreeInit(&funcTab); funcTab.type = FUNCIONS;
 
    printf("\n\n--------------\n\n");
-   BTreeInsert(&funcTab, "func1"); funcTab.lastAdded->data = &func1;
-   printf("V koreni tabulky funkci je:\t");
-   avlPrint(funcTab.root,0);
 
-   TableFunctions temp = (void *)funcTab.root->data;
-   //avlPrint(funcTab.root->(struct TableFunctions)data->variables->root,0);
+
+   BTreeInsert(&funcTab, "func1"); funcTab.lastAdded->data = &func1;
+      printf("\n\nnaposledy pridana funkce: %s\n\n\tobsahuje tyto promene: \n\n", funcTab.lastAdded->key);
+      avlPrint(((TableFunctions *)funcTab.lastAdded->data)->variables->root,5);
+
+   BTreeInsert(&funcTab, "func2"); funcTab.lastAdded->data = &func2;
+      printf("\n\nnaposledy pridana funkce: %s\n\n\tobsahuje tyto promene: \n\n", funcTab.lastAdded->key);
+      avlPrint(((TableFunctions *)funcTab.lastAdded->data)->variables->root,5);
+
+   BTreeInsert(&funcTab, "func3"); funcTab.lastAdded->data = &func3;
+      printf("\n\nnaposledy pridana funkce: %s\n\n\tobsahuje tyto promene: \n\n", funcTab.lastAdded->key);
+      avlPrint(((TableFunctions *)funcTab.lastAdded->data)->variables->root,5);
+
+
+   printf("\n\ntabulka funci obsahuje tyto funkce:\n");
+   avlPrint(funcTab.root,0);
 
       BTreeDeleteWithData(&varTabFunc1);
       BTreeDeleteWithData(&varTabFunc2);
