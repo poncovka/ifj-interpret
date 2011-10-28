@@ -4,6 +4,13 @@
  * @projekt       IFJ11
  * @date
  */
+
+ /* 28.10.2011 TableFunctions je obsah jedne polozky v tabulce funkci, nejdriv sem vytvoril 3 stromy jako tabulku promenych
+               potom sem zacal pridavat funkce do tabulky funci a jako data jsem dal jeden ze stromu promenych
+               dale muzete videt jak se k takovym datum dostanu pokud vim jaky datovy typ predstavuji( v nasem pripade je to
+               TableFunctions )
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "binaryTreeAVL.h"
@@ -57,6 +64,7 @@ int main()
 
    BTreeInsert(&funcTab, "func1"); funcTab.lastAdded->data = &func1;
       printf("\n\nnaposledy pridana funkce: %s\n\n\tobsahuje tyto promene: \n\n", funcTab.lastAdded->key);
+      // data ukazuji na void, ale ja vim ze tyto data jsou typu TableFunctions, prot musim pretypovat
       avlPrint(((TableFunctions *)funcTab.lastAdded->data)->variables->root,5);
 
    BTreeInsert(&funcTab, "func2"); funcTab.lastAdded->data = &func2;
