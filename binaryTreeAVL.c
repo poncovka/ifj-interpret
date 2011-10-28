@@ -67,13 +67,13 @@ int max(int L, int R){
 
 //----------------------------------------------------------------------
 
-void BTreeInit(TBTree *T){
+void BTreeInit(TBTree *T, ETreeDataType type){
    if(T == NULL)
       return;
    T->root = NULL;
    T->lastAdded = NULL;
    T->nodeCount = 0;
-   T->type = DEFAULT;
+   T->type = type;
 }
 //----------------------------------------------------------------------
 
@@ -89,7 +89,7 @@ void BTreeDelete(TBTree *T){
    if(T == NULL)
       return;
    deleteNode(T->root);
-   BTreeInit(T);
+   BTreeInit(T, T->type);
 }
 
 //----------------------------------------------------------------------
@@ -121,14 +121,14 @@ TNode position = NULL;
 // pomocna promena ktera pomuze funkci BTreeInsert urcit navratovy kod funkce Insert
 int   returnValue = INS_OK;
 
-int BTreeInsert(TBTree *T, char *key){
+int BTreeInsert(TBTree *T, char *key, void *data){
    if(T == NULL)
       return INS_TREE_NULL;
    if(key == NULL)
       return INS_KEY_NULL;
 
    returnValue = INS_OK;
-   T->root = insert(T->root, key, NULL);
+   T->root = insert(T->root, key, data);
 
    if(returnValue != INS_OK)  // insert meni returnValue proto jej kontroluju
       return returnValue;
@@ -300,5 +300,5 @@ void BTreeDeleteWithData(TBTree *T){
    if(T == NULL)
       return;
    deleteNodeWithData(T->root, T->type);
-   BTreeInit(T);
+   BTreeInit(T, T->type);
 }

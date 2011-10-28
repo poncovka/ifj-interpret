@@ -30,26 +30,26 @@ int main()
    int cnt = 1;
 
       TBTree varTabFunc1, varTabFunc2, varTabFunc3;
-      BTreeInit(&varTabFunc1); varTabFunc1.type = VARIABLES;
-      BTreeInit(&varTabFunc2); varTabFunc2.type = VARIABLES;
-      BTreeInit(&varTabFunc3); varTabFunc3.type = VARIABLES;
+      BTreeInit(&varTabFunc1,VARIABLES);
+      BTreeInit(&varTabFunc2,VARIABLES);
+      BTreeInit(&varTabFunc3,VARIABLES);
 
       printf("\n\nPromene func%d\n\n", cnt++);
-      BTreeInsert(&varTabFunc1, "var1_func1");
-      BTreeInsert(&varTabFunc1, "var2_func1");
-      BTreeInsert(&varTabFunc1, "var3_func1");
+      BTreeInsert(&varTabFunc1, "var1_func1", NULL);
+      BTreeInsert(&varTabFunc1, "var2_func1", NULL);
+      BTreeInsert(&varTabFunc1, "var3_func1", NULL);
       avlPrint(varTabFunc1.root, 0);
 
       printf("\n\nPromene func%d\n\n", cnt++);
-      BTreeInsert(&varTabFunc2, "var1_func2");
-      BTreeInsert(&varTabFunc2, "var2_func2");
-      BTreeInsert(&varTabFunc2, "var3_func2");
+      BTreeInsert(&varTabFunc2, "var1_func2", NULL);
+      BTreeInsert(&varTabFunc2, "var2_func2", NULL);
+      BTreeInsert(&varTabFunc2, "var3_func2", NULL);
       avlPrint(varTabFunc2.root, 0);
 
       printf("\n\nPromene func%d\n\n", cnt++);
-      BTreeInsert(&varTabFunc3, "var1_func3");
-      BTreeInsert(&varTabFunc3, "var2_func3");
-      BTreeInsert(&varTabFunc3, "var3_func3");
+      BTreeInsert(&varTabFunc3, "var1_func3", NULL);
+      BTreeInsert(&varTabFunc3, "var2_func3", NULL);
+      BTreeInsert(&varTabFunc3, "var3_func3", NULL);
       avlPrint(varTabFunc3.root, 0);
 
    TableFunctions func1 = {&varTabFunc1, NULL, "func1", 0};
@@ -57,21 +57,21 @@ int main()
    TableFunctions func3 = {&varTabFunc3, NULL, "func3", 0};
 
    TBTree funcTab;
-   BTreeInit(&funcTab); funcTab.type = FUNCIONS;
+   BTreeInit(&funcTab, FUNCIONS);
 
    printf("\n\n--------------\n\n");
 
 
-   BTreeInsert(&funcTab, "func1"); funcTab.lastAdded->data = &func1;
+   BTreeInsert(&funcTab, "func1", &func1);
       printf("\n\nnaposledy pridana funkce: %s\n\n\tobsahuje tyto promene: \n\n", funcTab.lastAdded->key);
       // data ukazuji na void, ale ja vim ze tyto data jsou typu TableFunctions, prot musim pretypovat
       avlPrint(((TableFunctions *)funcTab.lastAdded->data)->variables->root,5);
 
-   BTreeInsert(&funcTab, "func2"); funcTab.lastAdded->data = &func2;
+   BTreeInsert(&funcTab, "func2", &func2);
       printf("\n\nnaposledy pridana funkce: %s\n\n\tobsahuje tyto promene: \n\n", funcTab.lastAdded->key);
       avlPrint(((TableFunctions *)funcTab.lastAdded->data)->variables->root,5);
 
-   BTreeInsert(&funcTab, "func3"); funcTab.lastAdded->data = &func3;
+   BTreeInsert(&funcTab, "func3", &func3);
       printf("\n\nnaposledy pridana funkce: %s\n\n\tobsahuje tyto promene: \n\n", funcTab.lastAdded->key);
       avlPrint(((TableFunctions *)funcTab.lastAdded->data)->variables->root,5);
 

@@ -38,7 +38,7 @@ typedef struct{
 } TBTree;
 //--------------------------------------------------------------------------------
 
-void BTreeInit(TBTree*);
+void BTreeInit(TBTree*, ETreeDataType);
 //--------------------------------------------------------------------------------
 
 
@@ -54,7 +54,7 @@ void BTreeInit(TBTree*);
  *             INS_KEY_NULL  misto klice NULL
  *             T->lastAdded se ulozi pozice posledni PRIDANE polozky
  */
-int BTreeInsert(TBTree*, char*);
+int BTreeInsert(TBTree*, char*, void*);
 //--------------------------------------------------------------------------------
 
 /*

@@ -21,37 +21,23 @@ void avlPrintOrder(TNode);
 int main()
 {
    TBTree strom;
-   BTreeInit(&strom);
+   BTreeInit(&strom, DEFAULT);
 
-   BTreeInsert(&strom, "a"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "b"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "c"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "d"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "e"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "f"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "g"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "h"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "i"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "j"); printf("naposled pridano: %s\n", strom.lastAdded->key);
+   BTreeInsert(&strom, "a", NULL); printf("naposled pridano: %s\n", strom.lastAdded->key);
+   BTreeInsert(&strom, "b", NULL); printf("naposled pridano: %s\n", strom.lastAdded->key);
+   BTreeInsert(&strom, "c", NULL); printf("naposled pridano: %s\n", strom.lastAdded->key);
+   BTreeInsert(&strom, "d", NULL); printf("naposled pridano: %s\n", strom.lastAdded->key);
+   BTreeInsert(&strom, "e", NULL); printf("naposled pridano: %s\n", strom.lastAdded->key);
+   BTreeInsert(&strom, "f", NULL); printf("naposled pridano: %s\n", strom.lastAdded->key);
+   BTreeInsert(&strom, "g", NULL); printf("naposled pridano: %s\n", strom.lastAdded->key);
+   BTreeInsert(&strom, "h", NULL); printf("naposled pridano: %s\n", strom.lastAdded->key);
+   BTreeInsert(&strom, "i", NULL); printf("naposled pridano: %s\n", strom.lastAdded->key);
+   BTreeInsert(&strom, "j", NULL); printf("naposled pridano: %s\n", strom.lastAdded->key);
 
-   if(BTreeInsert(&strom, "a") == INS_NODE_EXIST)
+   if(BTreeInsert(&strom, "a", NULL) == INS_NODE_EXIST)
       printf("\nPrvek s timto klicem \"a\"jiz existuje!\n\n");
    printf("naposled pridano: %s\n", strom.lastAdded->key);
-/*
-   BTreeInsert(&strom, "aa"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "ab"); printf("naposled pridano: %s\n", strom.lastAdded->key);
 
-   BTreeInsert(&strom, "aaa"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "aab"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "abb"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "abc"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-
-   BTreeInsert(&strom, "ee"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "gg"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "jj"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "dd"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-   BTreeInsert(&strom, "aac"); printf("naposled pridano: %s\n", strom.lastAdded->key);
-*/
    avlPrint(strom.root, 0);
    printf("\n\nroot: \t%s\npocet uzlu: \t%d \nnaposled pridany: \t%s\nnejdelsi vetev: \t%d\n", strom.root->key, strom.nodeCount, strom.lastAdded->key, strom.root->height);
    printf("velikost v B: %d\n", strom.nodeCount*sizeof(struct TBTreeNode));
