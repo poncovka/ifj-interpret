@@ -26,7 +26,7 @@ TNode insert(TNode, char*, void*);
  * maze uzly stromu, pomocna funkce pro BTreeDelet
  * @param uzel stromu
  */
-void deleteNode(TNode, ETreeDataType);
+void deleteNode(TNode, EBTreeDataType);
 
 /*
  * hleda uzel, pomocna promena BTreeSearch
@@ -67,7 +67,7 @@ int max(int L, int R){
 
 //----------------------------------------------------------------------
 
-void BTreeInit(TBTree *T, ETreeDataType type){
+void BTreeInit(TBTree *T, EBTreeDataType type){
    if(T == NULL)
       return;
    T->root = NULL;
@@ -77,18 +77,22 @@ void BTreeInit(TBTree *T, ETreeDataType type){
 }
 //----------------------------------------------------------------------
 
-void deleteNode(TNode n, ETreeDataType type){
+void deleteNode(TNode n, EBTreeDataType type){
    if(n != NULL){
       deleteNode(n->left,  type);
       deleteNode(n->right, type);
 
       // tady uz muzu smazat polozku
       switch(type){
-         // predpis jak smazat data pokud jsou typu TableFunctions*
+         // predpis jak smazat data u funkce pokud jsou typu TFunctionData*
          case FUNCIONS:{
-            //             (    ukazatel na strom    )->koren stromu
-            TBTree *temp = ((TableFunctions *)n->data)->variables;
-            deleteNode( temp->root, temp->type); // type by mel byt VAR_CONST
+            // musim vyprazdnit cele pole stromu u variables
+            for(int i=0; i <= ((TFunctionData *)n->data)->lounchCnt; i++){
+               //             (    ukazatel na strom   )->strom[pozice]
+               TBTree *temp = ((TFunctionData *)n->data)->variables[ i ];
+               deleteNode( temp->root, temp->type); // type by mel byt VAR_CONST
+               //free(temp);  // data u funkce sem asi taky alokoval proto je mazu
+            }
             // smazat konstanty
             // smazat seznam instrukci
          }break;

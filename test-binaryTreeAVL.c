@@ -8,13 +8,6 @@
 #include <stdlib.h>
 #include "binaryTreeAVL.h"
 
-typedef struct{
-   TBTree *variables;
-   TBTree *constants;
-   char   *name;
-   int    lounchCnt;
-}TableFunctions;
-
 void avlPrint(TNode, int);
 void avlPrintOrder(TNode);
 
