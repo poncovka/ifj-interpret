@@ -4,7 +4,7 @@
  * Projekt: IFJ - KMP algoritmus
  * Popis:   Vyhledávání podøetìzce v øetìzci.
 
-            Spou¹tìt s testy pøíkazem: ./kmp <"kmp-testData",
+            Spou¹tìt s testy pøíkazem: ./kmp <"kmp-test.txt",
             nebo zadávat lze zadávat pøes terminál ve tvaru: vzor text oèekávanýIndex.
 
             Tisk pomocných výpisù lze povolit zmìnou makra TISK.
