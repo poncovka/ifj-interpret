@@ -10,15 +10,21 @@
 #include <stdbool.h>
 #include <string.h>
 
+/* skopiruju retezec do pomocneho pole nebo naopak */
+void copyArray(char *dest, char *src, int strLen)
+{
+    for(int x=0;x<strLen;x++)
+    {
+      dest[x]=src[x];
+    }
+}
+
 void mergeSort(char *str)
 {
     int copied=0;   /* pomocna promenna, uchovava pocet prvku ktere jiz byli skopirovany do ciloveho pole */
     int strLen=strlen(str);    /* zjistim si delku retezce */
     char arr[2*strLen];      /* pomocne pole o dva krat velikosti retezce bez \0 */
-    for(int x=0;x<strLen;x++)
-    {
-      arr[x]=str[x];    /* skopiruju retezec bez \0 do leve casti pomocneho pole */
-    }
+    copyArray(arr,str,strLen);  /* skopiruju retezec bez \0 do leve casti pomocneho pole */
 
     int i,j,k,l,step,extra;
     bool endLeft,endRight,endMiddle,sourceLeft,sorted;
@@ -123,8 +129,5 @@ void mergeSort(char *str)
       }
     } while(sorted==false);     /* dokud neni posloupnost v levem poli serazena */
 
-    for(int x=0;x<strLen;x++)
-    {
-      str[x]=arr[x];    /* presunuti jiz serazene posloupnosti znaku zpatky na adresu puvodniho retezce */
-    }
+    copyArray(str,arr,strLen);  /* skopiruju jiz serazenou posloupnost znaku z pomocneho pole na adresu puvodniho retezce */
 }
