@@ -38,7 +38,7 @@ typedef struct{
 //--------
 
 typedef struct{
-   TBTree *variables[8];   // tabulka symbolu POZOR!! musime uvazovat rekurzy, bude zde pole!!!
+   TBTree *variables;   // tabulka promenych
    TBTree *constants;   // tabulka konstant
    // seznam instrukci
    char   *name;        // jmeno fce(identifikator)
@@ -61,8 +61,9 @@ typedef union{
 
 typedef struct{
    char     *name;
-   EVarType  type;
-   UVarValue value;
+   EVarType  type[];
+   UVarValue value[];
+   int index;
 }TVarData;
 
 //--------------------------------------------------------------------------------
