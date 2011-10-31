@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "binaryTreeAVL.h"
+#include "binaryTree.h"
 
 void avlPrint(TNode, int);
 void avlPrintOrder(TBTree*);
@@ -42,6 +42,7 @@ int main()
    printf("*i %c, *j %c, text[5] %c, text[15] %c\n", *i, *j,text[5], text[15]);
    printf("i %d, j %d, &text[5] %d, &text[15] %d\n", i, j,&text[5], &text[15]);
    */
+
    int cnt = 1;
 
       TBTree varTabFunc1, varTabFunc2, varTabFunc3;
@@ -67,7 +68,7 @@ int main()
       BTreeInsert(&varTabFunc3, "var3_func3", NULL);
       avlPrintOrder(&varTabFunc3);
 
-   TFunctionData func1 = {&varTabFunc1, NULL, "func1", 0}; // {tabulka promenych[0], tabulka konstant, klic, pocet spusteni}
+   TFunctionData func1 = {&varTabFunc1, NULL, "func1", 0};
    TFunctionData func2 = {&varTabFunc2, NULL, "func2", 0};
    TFunctionData func3 = {&varTabFunc3, NULL, "func3", 0};
 

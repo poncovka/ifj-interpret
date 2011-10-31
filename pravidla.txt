@@ -1,0 +1,20 @@
+PROGRAM -> function DEF_FUNC
+DEF_FUNC -> main ( ) STAT end ;
+DEF_FUNC -> idFunc ( PARAMS ) STAT end PROGRAM
+PARAMS -> eps
+PARAMS -> VAR NEXT_PARAMS
+VAR -> id
+VAR -> value
+NEXT_PARAMS -> eps
+NEXT_PARAMS -> , VAR NEXT_PARAMS
+STAT -> DEF_VAR STAT_LIST
+DEF_VAR -> local id ; DEF_VAR_NEXT
+DEF_VAR_NEXT -> eps
+DEF_VAR_NEXT -> DEF_VAR
+STAT_LIST -> eps
+STAT_LIST -> id =   EXP ; STAT_LIST
+EXP -> idFunc ( PARAMS )
+EXP -> expression
+STAT_LIST -> if     expression then STAT_LIST else STAT_LIST end ; STAT_LIST
+STAT_LIST -> while  expression then STAT_LIST end ; STAT_LIST
+STAT_LIST -> return expression ;
