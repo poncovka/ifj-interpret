@@ -5,15 +5,16 @@
  * @date
  */
 
- /* 28.10.2011 TFunctionData je obsah jedne polozky v tabulce funkci, nejdriv sem vytvoril 3 stromy jako tabulku promenych
+ /* 28.10.2011 TFunction je obsah jedne polozky v tabulce funkci, nejdriv sem vytvoril 3 stromy jako tabulku promenych
                potom sem zacal pridavat funkce do tabulky funci a jako data jsem dal jeden ze stromu promenych
                dale muzete videt jak se k takovym datum dostanu pokud vim jaky datovy typ predstavuji( v nasem pripade je to
-               TFunctionData )
+               TFunction )
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "binaryTree.h"
+#include "table.h"
 
 void avlPrint(TNode, int);
 void avlPrintOrder(TBTree*);
@@ -68,9 +69,9 @@ int main()
       BTreeInsert(&varTabFunc3, "var3_func3", NULL);
       avlPrintOrder(&varTabFunc3);
 
-   TFunctionData func1 = {&varTabFunc1, NULL, "func1", 0};
-   TFunctionData func2 = {&varTabFunc2, NULL, "func2", 0};
-   TFunctionData func3 = {&varTabFunc3, NULL, "func3", 0};
+   TFunction func1 = {&varTabFunc1, NULL, "func1", 0};
+   TFunction func2 = {&varTabFunc2, NULL, "func2", 0};
+   TFunction func3 = {&varTabFunc3, NULL, "func3", 0};
 
    TBTree funcTab;                  // tabulka funkci
    BTreeInit(&funcTab, FUNCIONS);   // inicalizujeme ji jako tabulku funcki
@@ -80,19 +81,19 @@ int main()
 
    BTreeInsert(&funcTab, "func1", &func1);   // do dat uzlu pridam funkci
       printf("\n\nnaposledy pridana funkce: %s\n\n      obsahuje tyto promene: \n\n", funcTab.lastAdded->key);
-      // data ukazuji na void, ale ja vim ze tyto data jsou typu ukazatel na TFunctionData, prot musim pretypovat
+      // data ukazuji na void, ale ja vim ze tyto data jsou typu ukazatel na TFunction, prot musim pretypovat
       //           (                func1                    )
-      avlPrintOrder(((TFunctionData *)funcTab.lastAdded->data)->variables);
+      avlPrintOrder(((TFunction *)funcTab.lastAdded->data)->variables);
 
    BTreeInsert(&funcTab, "func2", &func2);
       printf("\n\nnaposledy pridana funkce: %s\n\n      obsahuje tyto promene: \n\n", funcTab.lastAdded->key);
       //           (                func2                    )
-      avlPrintOrder(((TFunctionData *)funcTab.lastAdded->data)->variables);
+      avlPrintOrder(((TFunction *)funcTab.lastAdded->data)->variables);
 
    BTreeInsert(&funcTab, "func3", &func3);
       printf("\n\nnaposledy pridana funkce: %s\n\n      obsahuje tyto promene: \n\n", funcTab.lastAdded->key);
       //           (                func3                    )
-      avlPrintOrder(((TFunctionData *)funcTab.lastAdded->data)->variables);
+      avlPrintOrder(((TFunction *)funcTab.lastAdded->data)->variables);
 
 
    printf("\n\ntabulka funkci obsahuje tyto funkce + promene:\n");
@@ -119,7 +120,7 @@ void printNode(TNode n, EBTreeDataType t, char *delim){
       printf("%s%s\n", delim, n->key);
       switch(t){
          case FUNCIONS:{
-               TBTree *temp   = ((TFunctionData *)n->data)->variables;
+               TBTree *temp   = ((TFunction *)n->data)->variables;
                printf("     variables:\n");
                printNode( temp->root, temp->type /*VAR_CONST*/, "      " );
          }break;

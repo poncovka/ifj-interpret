@@ -16,7 +16,7 @@
 
 typedef enum{
    DEFAULT,       // data budou void repektive zadna, nijak se nemazou
-   FUNCIONS,      // data se pretypuji na TFunctionData*
+   FUNCIONS,      // data se pretypuji na TFunction*
    VAR_CONST,     // tady jeste nevim 28.10.2011 jak bude vypadat polozka pro symbol|identifikator
 }EBTreeDataType;
 
@@ -35,38 +35,6 @@ typedef struct{
    EBTreeDataType type;       // podle typu stromu poznam jak TNode->data smazat
 } TBTree;
 
-//--------
-
-typedef struct{
-   TBTree *variables;      // tabulka promenych
-   TBTree *constants;      // tabulka konstant -- predelat na seznam!!!
-   // seznam instrukci
-   char   *name;           // jmeno fce(identifikator)
-   int    cnt;             // pocet spusteni funkce
-}TFunctionData;
-
-typedef enum{
-   L_NUMBER,
-   L_STRING,
-
-   T_BOOL,
-   T_NUMBER,
-}EVarType;
-
-//--------
-
-typedef union{
-   int     b;
-   double  d;
-   char*   s;
-}UVarValue;
-
-typedef struct{
-   char      *name;
-   EVarType  type[1];
-   UVarValue value[1];
-   int index;
-}TVarData;
 
 //--------------------------------------------------------------------------------
 /*

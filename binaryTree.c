@@ -28,7 +28,7 @@ TNode insert(TNode, char*, void*);
  * @param uzel stromu
  * @param jak mazat data
  */
-void deleteNode(TNode, EBTreeDataType);
+void deleteNode(TNode);
 
 /*
  * hleda uzel, pomocna promena BTreeSearch
@@ -79,29 +79,10 @@ void BTreeInit(TBTree *T, EBTreeDataType type){
 }
 //----------------------------------------------------------------------
 
-void deleteNode(TNode n, EBTreeDataType type){
+void deleteNode(TNode n){
    if(n != NULL){
-      deleteNode(n->left,  type);
-      deleteNode(n->right, type);
-
-      // tady uz muzu smazat polozku
-      switch(type){
-         // predpis jak smazat data u funkce pokud jsou typu TFunctionData*
-         case FUNCIONS:{
-            TBTree *temp = ((TFunctionData *)n->data)->variables;
-            deleteNode( temp->root, temp->type); // type by mel byt VAR_CONST
-            //free(temp);  // data u funkce sem asi taky alokoval proto je mazu
-            // smazat konstanty
-            // smazat seznam instrukci
-         }break;
-         // predpis jak smazat data poku jsou typu xxx
-         case VAR_CONST:{
-            fprintf(stderr, "\nMazani konstanty neni implementovano!");
-         }break;
-         // nic nedelam
-         case DEFAULT:
-         default: break;
-      }
+      deleteNode(n->left);
+      deleteNode(n->right);
       free(n);
    }
 }
@@ -109,7 +90,7 @@ void deleteNode(TNode n, EBTreeDataType type){
 void BTreeDelete(TBTree *T){
    if(T == NULL)
       return;
-   deleteNode(T->root, T->type);
+   deleteNode(T->root);
    BTreeInit(T, T->type);
 }
 
@@ -184,7 +165,7 @@ TNode insert(TNode T, char *key, void *data){
          T->left = insert(T->left, key, data);
 
          // kontrola zda neni nejaka vetev vic nez o jedna
-			if( height( T->left ) - height( T->right ) == 2 ){
+			/*if( height( T->left ) - height( T->right ) == 2 ){
          // jeden podstrom musi byt vetsi a tedy budem rotovat
             // pokud je klic mensi nez klic leveho podstromu
 				if( strcmp(key, T->left->key) < 0)
@@ -193,14 +174,14 @@ TNode insert(TNode T, char *key, void *data){
 				else
                // jsme v evo a rotujeme dvakrat
 					T = doubleRotationLeft( T );
-			}
+			}*/
       }
       else if (cmpResult > 0){
          // je-li klic vetsi nez jaky je v uzlu, bez do praveho podstromu
          T->right = insert(T->right, key, data);
 
          // kontrola zda neni nejaka vetev vic nez o jedna
-         if( height( T->right ) - height( T->left ) == 2 ){
+         /*if( height( T->right ) - height( T->left ) == 2 ){
          // jeden podstrom musi byt vetsi a tedy budem rotovat
 				if( strcmp(key, T->right->key) > 0)
             // pokud je klic mensi nez klic praveho podstromu
@@ -209,7 +190,7 @@ TNode insert(TNode T, char *key, void *data){
 				else
                //jsme vpravo a rotujeme dvakrat
 					T = doubleRotationRight( T );
-			}
+			}*/
       }
       else{
          // oba klice jsou stejne, uloz chybu a ukonci se
