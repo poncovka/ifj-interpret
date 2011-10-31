@@ -24,7 +24,9 @@ TNode insert(TNode, char*, void*);
 
 /*
  * maze uzly stromu, pomocna funkce pro BTreeDelet
+ * smaze i data pode predpisu ktery je v tele funkce
  * @param uzel stromu
+ * @param jak mazat data
  */
 void deleteNode(TNode, EBTreeDataType);
 
@@ -86,13 +88,9 @@ void deleteNode(TNode n, EBTreeDataType type){
       switch(type){
          // predpis jak smazat data u funkce pokud jsou typu TFunctionData*
          case FUNCIONS:{
-            // musim vyprazdnit cele pole stromu u variables
-            for(int i=0; i <= ((TFunctionData *)n->data)->lounchCnt; i++){
-               //             (    ukazatel na strom   )->strom[pozice]
-               TBTree *temp = ((TFunctionData *)n->data)->variables[ i ];
-               deleteNode( temp->root, temp->type); // type by mel byt VAR_CONST
-               //free(temp);  // data u funkce sem asi taky alokoval proto je mazu
-            }
+            TBTree *temp = ((TFunctionData *)n->data)->variables;
+            deleteNode( temp->root, temp->type); // type by mel byt VAR_CONST
+            //free(temp);  // data u funkce sem asi taky alokoval proto je mazu
             // smazat konstanty
             // smazat seznam instrukci
          }break;

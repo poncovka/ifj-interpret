@@ -13,6 +13,8 @@ void avlPrintOrder(TNode);
 
 int main()
 {
+
+
    TBTree strom;
    BTreeInit(&strom, DEFAULT);
 
