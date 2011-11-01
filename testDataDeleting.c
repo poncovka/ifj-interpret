@@ -23,6 +23,8 @@ void tablePrintOrder(TTable);
 
 int main()
 {
+   // priprava testovacich dat
+
    char *f1 = "func1";
    char *f2 = "func2";
    char *f3 = "func3";
@@ -51,6 +53,9 @@ int main()
    string var2func3; var2func3.str = v2f3;
    string var3func3; var3func3.str = v3f3;
 
+   //-----------
+   // tady to zacina :)
+
    TTable table;
    tableInit(&table);
 
@@ -70,6 +75,7 @@ int main()
       fuctionInsertVar(table.lastAddedFunc, &var3func3);
 
    tablePrintOrder(table);
+   // aaaa smazat ... ete nenyyyyyyy
 }
 
 
@@ -86,7 +92,7 @@ void printNode(TNode n, EBTreeDataType t, char *delim){
       switch(t){
          case FUNCIONS:{
                TBTree *temp   = &(((TFunction *)n->data)->variables);
-               printf("     variables:\n");
+               //printf("     variables:\n");
                printNode( temp->root, temp->type /*VAR*/, "      " );
          }break;
          case VAR:{
