@@ -1,14 +1,8 @@
 /*
- * @description   test binarnoho vyheldavaciho stromu
+ * @description   test tabulkz funkci
  * @author        Marek Salat - xsalat00
  * @projekt       IFJ11
  * @date
- */
-
- /* 28.10.2011 TFunction je obsah jedne polozky v tabulce funkci, nejdriv sem vytvoril 3 stromy jako tabulku promenych
-               potom sem zacal pridavat funkce do tabulky funci a jako data jsem dal jeden ze stromu promenych
-               dale muzete videt jak se k takovym datum dostanu pokud vim jaky datovy typ predstavuji( v nasem pripade je to
-               TFunction )
  */
 
 #include <stdio.h>
@@ -77,40 +71,4 @@ int main()
    tablePrintOrder(table);
 
    tableClear(&table);
-}
-
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-
-
-//             uzel     typ stromu       oddelovac
-void printNode(TNode n, EBTreeDataType t, char *delim){
-   if(n != NULL){
-      printNode(n->left, t, delim);
-
-      printf("%s%s\n", delim, n->key);
-      switch(t){
-         case FUNCIONS:{
-               TBTree *temp   = &(((TFunction *)n->data)->variables);
-               //printf("     variables:\n");
-               printNode( temp->root, temp->type /*VAR*/, "      " );
-         }break;
-         case VAR:{
-            //fprintf(stderr, "\nTisk promene nebo konstanty neni implenetovan!");
-         }break;
-         case DEFAULT:
-         default : break;
-      }
-
-      printNode(n->right, t, delim);
-   }
-}
-
-void printTreeNodeOrder(TBTree *T){
-   printNode(T->root, T->type, "   ");
-}
-
-void tablePrintOrder(TTable table){
-   printTreeNodeOrder(&(table.functions)) ;
 }

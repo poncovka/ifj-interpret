@@ -103,4 +103,16 @@ void  tableClear(TTable*);
  */
 int varRealloc(TVar);
 
+//----------------
+/*
+ * FUNKCE PRO DEBUG
+ */
+
+/*
+ * tiskne tabulku :)
+ */
+void tablePrintOrder(TTable);
+void printTreeNodeOrder(TBTree*);
+void printNode(TNode n, EBTreeDataType t, char *delim);
+
 #endif // TABLE_H_INCLUDED

@@ -2,6 +2,7 @@
 #include "binaryTree.h"
 #include "str.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 #define VAR_ALLOC_SIZE 8
 
@@ -22,7 +23,7 @@ TVar *getLastAddedVar(TFunction F){
 
 /*
  * @todo    dodelat inicializaci fce
- *          copirovat string to reteyce
+ *          copirovat string to retezce
  */
 int tableInsertFunction (TTable *T, string *s){
 
@@ -82,7 +83,11 @@ TVar *functionSearchVar  (TFunction F, string s){
 
 //----------------------------------------------------------------------
 
-
+/*
+ * pomocna fce pro tableClear, maza podle urceneho kontextu
+ * @param   uzel strom
+ * @param   typ stromu(urcuje predpis mazani dat)
+ */
 void clearNode(TNode n, EBTreeDataType type){
    if(n != NULL){
       clearNode(n->left,  type);
@@ -117,4 +122,39 @@ void clearNode(TNode n, EBTreeDataType type){
 void  tableClear(TTable *T){
    clearNode(T->functions.root, T->functions.type);
    tableInit(T);
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+
+
+//             uzel     typ stromu       oddelovac
+void printNode(TNode n, EBTreeDataType t, char *delim){
+   if(n != NULL){
+      printNode(n->left, t, delim);
+
+      printf("%s%s\n", delim, n->key);
+      switch(t){
+         case FUNCIONS:{
+               TBTree *temp   = &(((TFunction *)n->data)->variables);
+               //printf("     variables:\n");
+               printNode( temp->root, temp->type /*VAR*/, "      " );
+         }break;
+         case VAR:{
+            //fprintf(stderr, "\nTisk promene nebo konstanty neni implenetovan!");
+         }break;
+         case DEFAULT:
+         default : break;
+      }
+
+      printNode(n->right, t, delim);
+   }
+}
+
+void printTreeNodeOrder(TBTree *T){
+   printNode(T->root, T->type, "   ");
+}
+
+void tablePrintOrder(TTable table){
+   printTreeNodeOrder(&(table.functions)) ;
 }
