@@ -15,96 +15,61 @@
 #include <stdlib.h>
 #include "binaryTree.h"
 #include "table.h"
+#include "str.h"
 
-void avlPrint(TNode, int);
-void avlPrintOrder(TBTree*);
+void printTreeNode(TNode, int);
+void printTreeNodeOrder(TBTree*);
+void tablePrintOrder(TTable);
 
 int main()
 {
-   /*
-   char *text = malloc(sizeof(char)*10);
-   text[5] = 'X';
-   char *i = &text[5];
-   printf("*i %c, text[5] %c\n", *i, text[5]);
-   printf("i %d, &text[5] %d\n", i, &text[5]);
+   char *f1 = "func1";
+   char *f2 = "func2";
+   char *f3 = "func3";
+   string func1; func1.str = f1;
+   string func2; func2.str = f2;
+   string func3; func3.str = f3;
 
-   printf("\nrealloc na 20\n\n");
-   text = realloc(text, 10+10);
-   text[15] = 'Y';
+   char *v1f1 = "var1func1";
+   char *v2f1 = "var2func1";
+   char *v3f1 = "var3func1";
+   string var1func1; var1func1.str = v1f1;
+   string var2func1; var2func1.str = v2f1;
+   string var3func1; var3func1.str = v3f1;
 
-   char *j = &text[15];
+   char *v1f2 = "var1func2";
+   char *v2f2 = "var2func2";
+   char *v3f2 = "var3func2";
+   string var1func2; var1func2.str = v1f2;
+   string var2func2; var2func2.str = v2f2;
+   string var3func2; var3func2.str = v3f2;
 
-   printf("*i %c, *j %c, text[5] %c, text[15] %c\n", *i, *j,text[5], text[15]);
-   printf("i %d, j %d, &text[5] %d, &text[15] %d\n", i, j,&text[5], &text[15]);
+   char *v1f3 = "var1func3";
+   char *v2f3 = "var2func3";
+   char *v3f3 = "var3func3";
+   string var1func3; var1func3.str = v1f3;
+   string var2func3; var2func3.str = v2f3;
+   string var3func3; var3func3.str = v3f3;
 
-   printf("\nrealloc na 10+10+30*1024*1024\n\n");
-   text = realloc(text, 10+10+30*1024*1024);
+   TTable table;
+   tableInit(&table);
 
-   printf("*i %c, *j %c, text[5] %c, text[15] %c\n", *i, *j,text[5], text[15]);
-   printf("i %d, j %d, &text[5] %d, &text[15] %d\n", i, j,&text[5], &text[15]);
-   */
+   tableInsertFunction(&table, &func1);
+      fuctionInsertVar(table.lastAddedFunc, &var1func1);
+      fuctionInsertVar(table.lastAddedFunc, &var2func1);
+      fuctionInsertVar(table.lastAddedFunc, &var3func1);
 
-   int cnt = 1;
+   tableInsertFunction(&table, &func2);
+      fuctionInsertVar(table.lastAddedFunc, &var1func2);
+      fuctionInsertVar(table.lastAddedFunc, &var2func2);
+      fuctionInsertVar(table.lastAddedFunc, &var3func2);
 
-      TBTree varTabFunc1, varTabFunc2, varTabFunc3;
-      BTreeInit(&varTabFunc1,DEFAULT);
-      BTreeInit(&varTabFunc2,DEFAULT);
-      BTreeInit(&varTabFunc3,DEFAULT);
+   tableInsertFunction(&table, &func3);
+      fuctionInsertVar(table.lastAddedFunc, &var1func3);
+      fuctionInsertVar(table.lastAddedFunc, &var2func3);
+      fuctionInsertVar(table.lastAddedFunc, &var3func3);
 
-      printf("\n\nPromene func%d\n\n", cnt++);
-      BTreeInsert(&varTabFunc1, "var1_func1", NULL);
-      BTreeInsert(&varTabFunc1, "var2_func1", NULL);
-      BTreeInsert(&varTabFunc1, "var3_func1", NULL);
-      avlPrintOrder(&varTabFunc1);
-
-      printf("\n\nPromene func%d\n\n", cnt++);
-      BTreeInsert(&varTabFunc2, "var1_func2", NULL);
-      BTreeInsert(&varTabFunc2, "var2_func2", NULL);
-      BTreeInsert(&varTabFunc2, "var3_func2", NULL);
-      avlPrintOrder(&varTabFunc2);
-
-      printf("\n\nPromene func%d\n\n", cnt++);
-      BTreeInsert(&varTabFunc3, "var1_func3", NULL);
-      BTreeInsert(&varTabFunc3, "var2_func3", NULL);
-      BTreeInsert(&varTabFunc3, "var3_func3", NULL);
-      avlPrintOrder(&varTabFunc3);
-
-   TFunction func1 = {&varTabFunc1, NULL, "func1", 0};
-   TFunction func2 = {&varTabFunc2, NULL, "func2", 0};
-   TFunction func3 = {&varTabFunc3, NULL, "func3", 0};
-
-   TBTree funcTab;                  // tabulka funkci
-   BTreeInit(&funcTab, FUNCIONS);   // inicalizujeme ji jako tabulku funcki
-
-   printf("\n\n--------------\n\n");
-
-
-   BTreeInsert(&funcTab, "func1", &func1);   // do dat uzlu pridam funkci
-      printf("\n\nnaposledy pridana funkce: %s\n\n      obsahuje tyto promene: \n\n", funcTab.lastAdded->key);
-      // data ukazuji na void, ale ja vim ze tyto data jsou typu ukazatel na TFunction, prot musim pretypovat
-      //           (                func1                    )
-      avlPrintOrder(((TFunction *)funcTab.lastAdded->data)->variables);
-
-   BTreeInsert(&funcTab, "func2", &func2);
-      printf("\n\nnaposledy pridana funkce: %s\n\n      obsahuje tyto promene: \n\n", funcTab.lastAdded->key);
-      //           (                func2                    )
-      avlPrintOrder(((TFunction *)funcTab.lastAdded->data)->variables);
-
-   BTreeInsert(&funcTab, "func3", &func3);
-      printf("\n\nnaposledy pridana funkce: %s\n\n      obsahuje tyto promene: \n\n", funcTab.lastAdded->key);
-      //           (                func3                    )
-      avlPrintOrder(((TFunction *)funcTab.lastAdded->data)->variables);
-
-
-   printf("\n\ntabulka funkci obsahuje tyto funkce + promene:\n");
-   avlPrintOrder(&funcTab);
-
-      //BTreeDelete(&varTabFunc1);
-      //BTreeDelete(&varTabFunc2);
-      //BTreeDelete(&varTabFunc3);
-
-   BTreeDelete(&funcTab);  // smaze vsechny polozky stromu i jejich data to znamena ze i podstromy
-   return 0;
+   tablePrintOrder(table);
 }
 
 
@@ -120,12 +85,12 @@ void printNode(TNode n, EBTreeDataType t, char *delim){
       printf("%s%s\n", delim, n->key);
       switch(t){
          case FUNCIONS:{
-               TBTree *temp   = ((TFunction *)n->data)->variables;
+               TBTree *temp   = &(((TFunction *)n->data)->variables);
                printf("     variables:\n");
-               printNode( temp->root, temp->type /*VAR_CONST*/, "      " );
+               printNode( temp->root, temp->type /*VAR*/, "      " );
          }break;
-         case VAR_CONST:{
-            fprintf(stderr, "\nTisk promene nebo konstanty neni implenetovan!");
+         case VAR:{
+            //fprintf(stderr, "\nTisk promene nebo konstanty neni implenetovan!");
          }break;
          case DEFAULT:
          default : break;
@@ -135,6 +100,10 @@ void printNode(TNode n, EBTreeDataType t, char *delim){
    }
 }
 
-void avlPrintOrder(TBTree *T){
+void printTreeNodeOrder(TBTree *T){
    printNode(T->root, T->type, "   ");
+}
+
+void tablePrintOrder(TTable table){
+   printTreeNodeOrder(&(table.functions)) ;
 }

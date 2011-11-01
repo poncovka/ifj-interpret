@@ -5,12 +5,17 @@
 #include "str.h"
 
 typedef struct{
-   TBTree *variables;      // tabulka promenych
-   TBTree *constants;      // tabulka konstant -- predelat na seznam!!!
+   TBTree variables;      // tabulka promenych
+   TBTree constants;      // tabulka konstant -- predelat na seznam!!!
    // seznam instrukci
-   char   *name;           // jmeno fce(identifikator)
+   char   *name;           // jmeno fce(identifikator)void tableInit(TTable*);
    int    cnt;             // pocet spusteni funkce
 }TFunction;
+
+typedef struct{
+   TBTree functions;
+   TFunction *lastAddedFunc;
+}TTable;
 
 typedef enum{
    T_CONST_NUM,
@@ -34,40 +39,37 @@ typedef struct{
 
 typedef struct{
    char      *name;
-   TVarData  *var[8];   // budem alokovat jenom jednou a ne 2x :) a pujdem po 8
+   TVarData  **var;   // budem alokovat jenom jednou a ne 2x :) a pujdem po 8
    int        alloc;
 }TVar;
 
-/*
- * vrati naposled vlozenou funckni
- * @param   tabulka(strom) funkci!
- * @return  funce
- */
 
-TFunction getLastAddedFunction(TBTree);
+void tableInit(TTable*);
 
 /*
+ * NENI IMPLEMENTOVANO !!!
  * naposled vllzena promena do tabulky symbolu ve funkci
  * @param   funkce
  * @return  data promene(struct TVar)
  */
-TVar getLastAddedVar(TFunction);
+TVar *getLastAddedVar(TFunction);
 
 /*
  * vlozi novou funci do tabulky funkci
  * @param   tabulka funkci
  * @param   klic
  */
-int tableInsertFunction (TBTree, string);
+int tableInsertFunction (TTable* /*TBTree*/, string*);
 
 /*
  * vlozi novou promenou do tabulky promenych(fce->variables)
  * @param   funkce
  * @param   klic
  */
-int fuctionInsertVar(TFunction, string);
+int fuctionInsertVar(TFunction*, string*);
 
 /*
+ * NENI IMPLEMENTOVANO !!!
  * vlozi novou konstantu
  * @param   funkce (fce->constants)
  * @param   klic
@@ -79,19 +81,19 @@ int functionInsertConstatnt(/*TList*/);
  * @param   tabulka funkci
  * @param   klic
  */
-TFunction tableSearchFunction(TBTree, string);
+TFunction *tableSearchFunction(TTable, string);
 
 /*
  * vyhleda promenou z tabulky promenych(fce->variables)
  * @param   funkce
  * @param   klic
  */
-TVar functionSearchVar  (TFunction, string);
+TVar *functionSearchVar  (TFunction, string);
 
 /*
  * vycisti celou tabulku funckci se vsim vsudy
  */
-void  tableClear(TBTree);
+void  tableClear(TTable);
 
 /*
  * reallocuje *var ve strukture TVar
