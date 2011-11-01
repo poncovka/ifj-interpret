@@ -92,8 +92,9 @@ TVar *functionSearchVar  (TFunction, string);
 
 /*
  * vycisti celou tabulku funckci se vsim vsudy
+ * @param   tabulka funkci
  */
-void  tableClear(TTable);
+void  tableClear(TTable*);
 
 /*
  * reallocuje *var ve strukture TVar
