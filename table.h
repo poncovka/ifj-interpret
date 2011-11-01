@@ -2,6 +2,7 @@
 #define TABLE_H_INCLUDED
 
 #include "binaryTree.h"
+#include "str.h"
 
 typedef struct{
    TBTree *variables;      // tabulka promenych
@@ -38,18 +39,33 @@ typedef struct{
 }TVar;
 
 /*
+ * vrati naposled vlozenou funckni
+ * @param   tabulka(strom) funkci!
+ * @return  funce
+ */
+
+TFunction getLastAddedFunction(TBTree);
+
+/*
+ * naposled vllzena promena do tabulky symbolu ve funkci
+ * @param   funkce
+ * @return  data promene(struct TVar)
+ */
+TVar getLastAddedVar(TFunction);
+
+/*
  * vlozi novou funci do tabulky funkci
  * @param   tabulka funkci
  * @param   klic
  */
-int tableInsertFunction (TBTree, char*);
+int tableInsertFunction (TBTree, string);
 
 /*
  * vlozi novou promenou do tabulky promenych(fce->variables)
  * @param   funkce
  * @param   klic
  */
-int fuctionInsertVar(TFunction, char*);
+int fuctionInsertVar(TFunction, string);
 
 /*
  * vlozi novou konstantu
@@ -63,18 +79,25 @@ int functionInsertConstatnt(/*TList*/);
  * @param   tabulka funkci
  * @param   klic
  */
-TFunction tableSearchFunction(TBTree, char*);
+TFunction tableSearchFunction(TBTree, string);
 
 /*
  * vyhleda promenou z tabulky promenych(fce->variables)
  * @param   funkce
  * @param   klic
  */
-TVar functionSearchVar  (TFunction, char*);
+TVar functionSearchVar  (TFunction, string);
 
 /*
- * vycisti celou tabulku funckci
+ * vycisti celou tabulku funckci se vsim vsudy
  */
-void  tableClear(TBtree);
+void  tableClear(TBTree);
+
+/*
+ * reallocuje *var ve strukture TVar
+ * @param   promena(symbol)
+ * @return  1 vse OK, 0 neslo alokovat
+ */
+int varRealloc(TVar);
 
 #endif // TABLE_H_INCLUDED
