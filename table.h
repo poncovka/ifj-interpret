@@ -53,7 +53,7 @@ int fuctionInsertVar(TFunction, char*);
 
 /*
  * vlozi novou konstantu
- * @param   seznam konstant (fce->constants)
+ * @param   funkce (fce->constants)
  * @param   klic
  */
 int functionInsertConstatnt(/*TList*/);
