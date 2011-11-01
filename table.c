@@ -85,6 +85,7 @@ TVar *functionSearchVar  (TFunction F, string s){
 
 /*
  * pomocna fce pro tableClear, maza podle urceneho kontextu
+ * bacha na to! maze strom funkci :)
  * @param   uzel strom
  * @param   typ stromu(urcuje predpis mazani dat)
  */
@@ -102,13 +103,14 @@ void clearNode(TNode n, EBTreeDataType type){
             // free(temp->name);
             // smazat konstanty
             // smazat seznam instrukci
-            free(temp);  // data u funkce sem asi taky alokovala proto je mazu
+            free(n->data);  // data jsem asi taky alokovala proto ji smazu
          }break;
          // predpis jak smazat data poku jsou typu xxx
          case VAR:{
             TVar *temp = ((TVar *)n->data);
             free(temp->var);
-            free(temp);
+            //free(temp->name);
+            free(n->data);
          }break;
          // nic nedelam
          case DEFAULT:

@@ -17,7 +17,7 @@
 typedef enum{
    DEFAULT,       // data budou void repektive zadna, nijak se nemazou
    FUNCIONS,      // data se pretypuji na TFunction*
-   VAR,     // tady jeste nevim 28.10.2011 jak bude vypadat polozka pro symbol|identifikator
+   VAR,           // tady jeste nevim 28.10.2011 jak bude vypadat polozka pro symbol|identifikator
 }EBTreeDataType;
 
 typedef struct TBTreeNode{

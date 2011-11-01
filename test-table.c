@@ -7,13 +7,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "binaryTree.h"
 #include "table.h"
 #include "str.h"
-
-void printTreeNode(TNode, int);
-void printTreeNodeOrder(TBTree*);
-void tablePrintOrder(TTable);
 
 int main()
 {
