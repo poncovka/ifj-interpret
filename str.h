@@ -10,6 +10,7 @@ typedef struct
 } string;
 
 
+char *strCopyChar(string *s);
 int strInit(string *s);
 void strFree(string *s);
 
