@@ -1,14 +1,17 @@
-/*---------------------------------hlavicka lexikalniho analyzatoru-------------------------------
- * @author: Tomas Trkal, xtrkal00
+//=================================================================================================>
+//-----------------------------LEXIKALNI ANALYZATOR - HLAVICKOVY SOUBOR---------------------------->
+//=================================================================================================>
+/* @author: Tomas Trkal, xtrkal00@stud.fit.vutbr.cz
  * @date: 	11.11.2011
  */
 
-
 /*vycet typu lexem*/
 enum ELexem { 	
-	KW_DO,		KW_ELSE,		KW_END,		KW_FALSE,		KW_FUNCTION,	
-	KW_IF,		KW_LOCAL,		KW_NIL,		KW_READ,		KW_RETURN,
-	KW_THEN,	KW_TRUE,		KW_WHILE,	KW_WRITE,   //14
+	KW_END, 			KW_LOCAL,		KW_WRITE,
+	KW_RETURN,		KW_IF,			KW_THEN,
+	KW_FUNCTION,	KW_READ,		KW_DO,	
+	KW_ELSE,			KW_WHILE,		KW_NIL,		
+	KW_FALSE,			KW_TRUE, 		//14
 
 	RESERVED_WORD,				// rezervovane slovo
 	END_OF_FILE,					// EOF
@@ -38,12 +41,12 @@ enum ELexem {
 /*vycet stavu*/
 enum EState {
 	S_DEFAULT, 	
-	S_POINT, 
+	S_CONCATENATION, 
 	S_BIGGER,		
 	S_SMALLER,	
 	S_UNEQUAL,
 	S_EQUAL,		
-	S_DASH,		
+	S_SUBTRACTION,		
 	S_COMMENT,	
 	S_COMMENT_ROW,
 	S_COMMENT_BLOCK,
@@ -51,6 +54,8 @@ enum EState {
 	S_COMMENT_END,
 	S_STRING,
 	S_ESCAPE,
+	S_ESCAPE_NUMERAL,
+	S_ESCAPE_DDD,
 	S_ID,
 	S_NUMBER,
 	S_EXPONENT,
@@ -59,19 +64,21 @@ enum EState {
 	S_DECIMAL_NUMBER
 };
 
-/*false = 0, true = 1*/
+/*FALSE = 0, TRUE = 1*/
 enum {FALSE, TRUE};
 
-/*definice chyb*/
 #define LEX_ERROR -1
-#define LEX_ERR_MALLOC -10
+#define ERR_MALLOC -10
+#define RESERVED_MAX 8
+#define ASCII_MIN 32
+#define ASCII_MAX 255
+#define HUNDRED 100
+#define TEN 10
 
-/*hlavicky funkci*/
+/*deklarace promennych*/
+int countOfRows;
+
+/*deklarace funkci*/
 void setSourceFile(FILE *f);
-int getNextToken(void);
-
-/*tabulka s rezervovanymi a klicovymi slovy => to cely nacpu do scanner.c
-const char *reservedWords[] = {"and", "break", "elseif", "for", "in", "not", "or", "repeat", "until"};
-const char *keyWords[] = {"do",		"else",		"end",		"false",	"function",
-													"if",		"local",	"nil",		"read",		"return",
-													"then",	"true",		"while",	"write"};*/	
+int getNextToken(string *attr);
+int isKeyOrReserved(char *word);
