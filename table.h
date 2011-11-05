@@ -59,14 +59,14 @@ TVar *getLastAddedVar(TFunction);
  * @param   tabulka funkci
  * @param   klic
  */
-int tableInsertFunction (TTable*, string*);
+int tableInsertFunction (TTable*, string);
 
 /*
  * vlozi novou promenou do tabulky promenych(fce->variables)
  * @param   funkce
  * @param   klic
  */
-int fuctionInsertVar(TFunction*, string*);
+int fuctionInsertVar(TFunction*, string);
 
 /*
  * NENI IMPLEMENTOVANO !!!
@@ -81,14 +81,14 @@ int functionInsertConstatnt(/*TList*/);
  * @param   tabulka funkci
  * @param   klic
  */
-TFunction *tableSearchFunction(TTable, string);
+TFunction *tableSearchFunction(TTable*, string);
 
 /*
  * vyhleda promenou z tabulky promenych(fce->variables)
  * @param   funkce
  * @param   klic
  */
-TVar *functionSearchVar  (TFunction, string);
+TVar *functionSearchVar  (TFunction*, string);
 
 /*
  * vycisti celou tabulku funckci se vsim vsudy
@@ -101,7 +101,7 @@ void  tableClear(TTable*);
  * @param   promena(symbol)
  * @return  1 vse OK, 0 neslo alokovat
  */
-int varRealloc(TVar);
+int varRealloc(TVar*);
 
 //----------------
 /*

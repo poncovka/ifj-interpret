@@ -24,10 +24,10 @@ TVar *getLastAddedVar(TFunction F){
 /*
  * @todo    INICIALIZACE !!!
  */
-int tableInsertFunction (TTable *T, string *s){
+int tableInsertFunction (TTable *T, string s){
 
    TFunction *f  = malloc(sizeof(TFunction));
-   char *newName = strCopyChar(s);
+   char *newName = strCopyChar(&s);
 
    if(f == NULL || newName == NULL)
       return INS_MALLOC;
@@ -43,38 +43,48 @@ int tableInsertFunction (TTable *T, string *s){
    if(err)  // probehl insert v poradku?
       T->lastAddedFunc = f;
    // T->lastAddedFunc = ((TFunction *)T->functions.lastAdded->data);
+   else{
+      free(f);
+      free(newName);
+   }
 
    return err;
 }
 
 //----------------------------------------------------------------------
 
-int fuctionInsertVar(TFunction *F, string *s){
+int fuctionInsertVar(TFunction *F, string s){
    TVar     *v   = malloc(sizeof(TVar));
    TVarData *vd  = malloc(sizeof(TVarData)*VAR_ALLOC_SIZE);
-   char *newName = strCopyChar(s);
+   char *newName = strCopyChar(&s);
 
    if(v == NULL || vd == NULL || newName == NULL)
       return INS_MALLOC;
 
    v->name  = newName;
    v->alloc = VAR_ALLOC_SIZE;
-   v->var = vd;
+   v->var   = vd;
 
-   return BTreeInsert(&(F->variables), newName, v);
+   int err = BTreeInsert(&(F->variables), newName, v);
+   if(!err){
+      free(v);
+      free(vd);
+      free(newName);
+   }
+   return err;
 }
 
 //----------------------------------------------------------------------
 
-TFunction *tableSearchFunction(TTable T, string s){
-   TNode n = BTreeSearch(&(T.functions), s.str);
+TFunction *tableSearchFunction(TTable *T, string s){
+   TNode n = BTreeSearch(&(T->functions), s.str);
    return (n != NULL) ? (TFunction *)(n->data) : NULL;
 }
 
 //----------------------------------------------------------------------
 
-TVar *functionSearchVar  (TFunction F, string s){
-   TNode n = BTreeSearch(&(F.variables), s.str);
+TVar *functionSearchVar  (TFunction *F, string s){
+   TNode n = BTreeSearch(&(F->variables), s.str);
    return (n != NULL) ? (TVar *)(n->data) : NULL;
 }
 
