@@ -22,49 +22,46 @@ TVar *getLastAddedVar(TFunction F){
 //----------------------------------------------------------------------
 
 /*
- * @todo    dodelat inicializaci fce
- *          copirovat string to retezce
+ * @todo    INICIALIZACE !!!
  */
 int tableInsertFunction (TTable *T, string *s){
 
-   TFunction *f = malloc(sizeof(TFunction));
-   if(f == NULL)
+   TFunction *f  = malloc(sizeof(TFunction));
+   char *newName = strCopyChar(s);
+
+   if(f == NULL || newName == NULL)
       return INS_MALLOC;
 
    BTreeInit(&(f->variables), VAR);
    // inicializace seznamu instrukci
-   //f->constants = NULL; // inicializace seznamu komstant
-   f->name = s->str; // PREKOPCIT!! ale zatim neni hotova funkce v str.h
+   // inicializace seznamu komstant
+
+   f->name = newName;
    f->cnt = 0;
 
-   int err = BTreeInsert(&(T->functions), s->str, f);
-   if(err){
-      //                 respektive f, ale takhle to je vice dramaticke
-      //T->lastAddedFunc = ((TFunction *)T->functions.lastAdded->data);
+   int err = BTreeInsert(&(T->functions), newName, f);
+   if(err)  // probehl insert v poradku?
       T->lastAddedFunc = f;
-   }
+   // T->lastAddedFunc = ((TFunction *)T->functions.lastAdded->data);
+
    return err;
 }
 
 //----------------------------------------------------------------------
 
-/*
- * @todo    copirovat string to retezce
- */
 int fuctionInsertVar(TFunction *F, string *s){
    TVar     *v   = malloc(sizeof(TVar));
-   TVarData **vd = malloc(sizeof(TVarData)*VAR_ALLOC_SIZE);
-   if(v == NULL || vd == NULL)
+   TVarData *vd  = malloc(sizeof(TVarData)*VAR_ALLOC_SIZE);
+   char *newName = strCopyChar(s);
+
+   if(v == NULL || vd == NULL || newName == NULL)
       return INS_MALLOC;
 
-   //vd[0]->type  = T_NIL;
-   // hodnotu neinicializuju
-
-   v->name  = s->str; // PREKOPCIT!! ale zatim neni hotova funkce v str.h
+   v->name  = newName;
    v->alloc = VAR_ALLOC_SIZE;
    v->var = vd;
 
-   return BTreeInsert(&(F->variables), s->str, v);
+   return BTreeInsert(&(F->variables), newName, v);
 }
 
 //----------------------------------------------------------------------
@@ -100,22 +97,21 @@ void clearNode(TNode n, EBTreeDataType type){
          case FUNCIONS:{
             TBTree *temp = &(((TFunction *)n->data)->variables);
             clearNode( temp->root, temp->type); // type by mel byt VAR
-            // free(temp->name);
             // smazat konstanty
             // smazat seznam instrukci
             free(n->data);  // data jsem asi taky alokovala proto ji smazu
          }break;
-         // predpis jak smazat data poku jsou typu xxx
+         // predpis jak smazat data poku jsou typu TVar *
          case VAR:{
             TVar *temp = ((TVar *)n->data);
             free(temp->var);
-            //free(temp->name);
             free(n->data);
          }break;
          // nic nedelam
          case DEFAULT:
          default: break;
       }
+      free(n->key);
       free(n);
    }
 }

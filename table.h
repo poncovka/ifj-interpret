@@ -39,7 +39,7 @@ typedef struct{
 
 typedef struct{
    char      *name;
-   TVarData  **var;   // budem alokovat jenom jednou a ne 2x :) a pujdem po 8
+   TVarData  *var;   // budem alokovat jenom jednou a ne 2x :) a pujdem po 8
    int        alloc;
 }TVar;
 
@@ -59,7 +59,7 @@ TVar *getLastAddedVar(TFunction);
  * @param   tabulka funkci
  * @param   klic
  */
-int tableInsertFunction (TTable* /*TBTree*/, string*);
+int tableInsertFunction (TTable*, string*);
 
 /*
  * vlozi novou promenou do tabulky promenych(fce->variables)
