@@ -12,6 +12,9 @@
 #include "str.h"
 #include "scanner.h"
 
+/*nastavi pocitadlo radku na jedna*/
+int countOfRows = 1;
+
 /*tabulka s klicovymi a rezervovanymi slovy*/
 const char *reservedWords[] = {"and", "break", "elseif", "for", "in", "not", "or", "repeat", "until"};
 const char *keyWords[] = {
@@ -70,8 +73,11 @@ int getNextToken(string *attr) {
 		
 			/*vychozi stav automatu*/ 
 			case S_DEFAULT:
-				if (isspace(c)) state = S_DEFAULT; 	//ignorace bilych mist
-				else if (c == EOF) return END_OF_FILE; 
+				if (isspace(c)) { //ignorace bilych mist
+					if (c == '\n') countOfRows++; 
+					state = S_DEFAULT; 
+				}
+				else if (c == EOF) return END_OF_FILE;
 				else if (c == '(') return L_LEFT_BRACKET;
 				else if (c == ')') return L_RIGHT_BRACKET;
 				else if (c == ';') return L_SEMICOLON;
@@ -149,6 +155,7 @@ int getNextToken(string *attr) {
 		/*stavy pro retezce*/
 			/*S_STRING*/
 			case S_STRING:
+				if (c == '\n') countOfRows++;
 				if (c == EOF) return LEX_ERROR;
 				else if (c == '"') return L_STRING;
 				else if (c == '\\') state = S_ESCAPE;
@@ -283,8 +290,11 @@ int getNextToken(string *attr) {
 			/*S_COMMENT*/
 			case S_COMMENT:
 				if (c == EOF) return END_OF_FILE;
-				else if (c == '\n') state = S_DEFAULT;
 				else if (c == '[') state = S_COMMENT_BLOCK;
+				else if (c == '\n') {
+					countOfRows++;
+					state = S_DEFAULT;
+				}
 			  else state = S_COMMENT_ROW;	
 			break;
 
@@ -292,17 +302,23 @@ int getNextToken(string *attr) {
 			case S_COMMENT_BLOCK:
 				if (c == EOF) return END_OF_FILE;
 				else if (c == '[') state = S_COMMENT_BEGIN;
+				else if (c == '\n') {
+					countOfRows++;
+					state = S_DEFAULT;
+				}
 				else state = S_COMMENT_ROW;
 			break;
 
 			/*S_COMMENT_BEGIN*/
 			case S_COMMENT_BEGIN:
+				if (c == '\n') countOfRows++;
 				if (c == EOF) return LEX_ERROR;
 				if (c == ']') state = S_COMMENT_END;
 			break;
 
 			/*S_COMMENT_END*/
-			case S_COMMENT_END: 
+			case S_COMMENT_END:
+				if (c == '\n') countOfRows++;
 				if (c == EOF) return LEX_ERROR;
 				else if (c == ']') state = S_DEFAULT;
 				else state = S_COMMENT_BEGIN; 
@@ -311,7 +327,10 @@ int getNextToken(string *attr) {
 			/*S_COMMENT_ROW*/
 			case S_COMMENT_ROW:
 				if (c == EOF) return END_OF_FILE;
-				if (c == '\n') state = S_DEFAULT;
+				if (c == '\n') {
+					countOfRows++;
+					state = S_DEFAULT;
+				}
 			break;
 
 		} /*konec switch*/

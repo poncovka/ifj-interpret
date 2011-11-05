@@ -76,9 +76,8 @@ enum {FALSE, TRUE};
 #define TEN 10
 
 /*deklarace promennych*/
-int countOfRows;
+extern int countOfRows;
 
 /*deklarace funkci*/
 void setSourceFile(FILE *f);
 int getNextToken(string *attr);
-int isKeyOrReserved(char *word);
