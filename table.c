@@ -15,8 +15,8 @@ void tableInit(TTable *T){
 
 //----------------------------------------------------------------------
 
-TVar *getLastAddedVar(TFunction F){
-   return (TVar *)(F.variables.lastAdded->data);
+TVar *getLastAddedVar(TFunction *F){
+   return (TVar *)(F->variables.lastAdded->data);
 }
 
 //----------------------------------------------------------------------

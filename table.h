@@ -6,7 +6,7 @@
 
 typedef struct{
    TBTree variables;      // tabulka promenych
-   TBTree constants;      // tabulka konstant -- predelat na seznam!!!
+   // seznam constants;
    // seznam instrukci
    char   *name;           // jmeno fce(identifikator)void tableInit(TTable*);
    int    cnt;             // pocet spusteni funkce
@@ -56,7 +56,7 @@ void tableInit(TTable*);
  * @param   funkce
  * @return  data promene(struct TVar)
  */
-TVar *getLastAddedVar(TFunction);
+TVar *getLastAddedVar(TFunction*);
 
 /*
  * vlozi novou funci do tabulky funkci
