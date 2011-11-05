@@ -21,12 +21,12 @@ int main()
 {
    // priprava testovacich dat
 
-   char *f1 = "func1";
-   char *f2 = "func2";
-   char *f3 = "func3";
-   string func1 = makeString(&func1, f1);
-   string func2 = makeString(&func2, f2);
-   string func3 = makeString(&func3, f3);
+   //char *f1 = "func1";
+   //char *f2 = "func2";
+   //char *f3 = "func3";
+   string func1 = strCreateString("func1");
+   string func2 = strCreateString("func2");
+   string func3 = strCreateString("func3");
 
    char *v1f1 = "var1func1";
    char *v2f1 = "var2func1";

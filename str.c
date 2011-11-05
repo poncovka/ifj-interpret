@@ -103,14 +103,13 @@ int strGetLength(string *s)
 }
 
 string strCreateString (char *str)
-// vrátí naplněnou strukturu string
+// vrati naplnenou strukturu string
 {
 
   string s;
   s.length = strlen(str);
   s.allocSize = s.length + 1;
   s.str = str;
-  s.str = strCopyChar(&s);
 
   return s;
 }
