@@ -64,7 +64,7 @@ int fuctionInsertVar(TFunction *F, string s){
    v->name  = newName;
    v->alloc = VAR_ALLOC_SIZE;
    v->var   = vd;
-
+   v->type  = VT_VAR;
    int err = BTreeInsert(&(F->variables), newName, v);
    if(!err){
       free(v);

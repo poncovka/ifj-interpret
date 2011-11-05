@@ -18,12 +18,15 @@ typedef struct{
 }TTable;
 
 typedef enum{
-   T_CONST_NUM,
-   T_CONST_STR,
-   T_NIL,
-   T_BOOL,
-   T_NUMBER,
-   T_STRING,
+   NIL,
+   BOOL,
+   NUMBER,
+   STRING,
+}EVarDataType;
+
+typedef enum{
+   VT_VAR,
+   VT_CONST,
 }EVarType;
 
 typedef union{
@@ -33,12 +36,13 @@ typedef union{
 }UVarValue;
 
 typedef struct{
-   EVarType  type;
-   UVarValue value;
+   EVarDataType type;
+   UVarValue    value;
 }TVarData;
 
 typedef struct{
    char      *name;
+   EVarType   type;
    TVarData  *var;   // budem alokovat jenom jednou a ne 2x :) a pujdem po 8
    int        alloc;
 }TVar;
