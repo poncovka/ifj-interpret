@@ -11,17 +11,6 @@
 #define STR_ERROR   1
 #define STR_SUCCESS 0
 
-char *strCopyChar(string *s)
-// funkcia vytvori novy retazec
-// a skopiruje don retazec zo str
-{
-   char *strNew;
-   if((strNew = (char *) malloc(s->length)) == NULL)
-      return NULL;
-   strcpy(strNew,s->str);
-   return strNew;
-}
-
 int strInit(string *s)
 // funkce vytvori novy retezec
 {
@@ -101,3 +90,31 @@ int strGetLength(string *s)
 {
    return s->length;
 }
+
+
+char *strCopyChar(string *s)
+// funkcia vytvori novy retazec
+// a skopiruje don retazec zo str
+// pokud se alokace nezdaří, vrátí NULL
+{
+  char *strNew = NULL;
+  if ( (strNew = (char *)malloc(sizeof(char) * (s->length + 1))) != NULL) {
+     strcpy(strNew,s->str);
+  }
+  return strNew;
+}
+
+string strCreateString (char *str)
+// vrátí naplněnou strukturu string
+{
+
+  string s;
+  s.length = strlen(str);
+  s.allocSize = s.length + 1;
+  s.str = str;
+  s.str = strCopyChar(&s);
+  
+  return s;
+}
+
+/* konec souboru str.c */
