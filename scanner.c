@@ -31,7 +31,7 @@ const char *keyWords[] = {
 	[KW_RETURN] = "return",			[KW_IF] = "if", 				[KW_THEN] ="then",
 	[KW_FUNCTION] = "function",	[KW_READ] = "read",			[KW_DO] = "do",             
 	[KW_ELSE] = "else",    			[KW_WHILE] = "while",		[KW_NIL] = "nil", 	
-	[KW_FALSE] = "false", 			[KW_TRUE] = "true" 		
+	[KW_FALSE] = "false", 			[KW_TRUE] = "true", 		[KW_MAIN] = "main"	
 };
 
 /*promenna pro ulozeni vstupniho souboru*/
@@ -55,7 +55,7 @@ int isKeyOrReserved(char *word) {
 	}
 	
 	/*porovna se vsemi klicovymi slovy*/
-	for (i = KW_END; i <= KW_TRUE; i++) {
+	for (i = KW_END; i <= KW_MAIN; i++) {
     if (strcmp(keyWords[i], word) == 0)
 			return i;
 	}

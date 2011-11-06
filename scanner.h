@@ -14,7 +14,7 @@ enum ELexem {
 	KW_RETURN,		KW_IF,			KW_THEN,
 	KW_FUNCTION,	KW_READ,		KW_DO,	
 	KW_ELSE,			KW_WHILE,		KW_NIL,		
-	KW_FALSE,			KW_TRUE, 		//14
+	KW_FALSE,			KW_TRUE, 		KW_MAIN, //15
 
 	RESERVED_WORD,				// rezervovane slovo
 	END_OF_FILE,					// EOF
