@@ -7,7 +7,6 @@
 
 #ifndef SCANNER_H_INCLUDED                                                                                                           │
 #define SCANNER_H_INCLUDED
-#endif
 
 /*vycet typu lexem*/
 enum ELexem { 	
@@ -77,3 +76,5 @@ extern int countOfRows;
 /*deklarace funkci*/
 void setSourceFile(FILE *f);
 int getNextToken(string *attr);
+
+#endif
