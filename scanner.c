@@ -12,6 +12,15 @@
 #include "str.h"
 #include "scanner.h"
 
+#define RESERVED_MAX 8
+#define ASCII_MIN 32
+#define ASCII_MAX 255
+#define HUNDRED 100
+#define TEN 10
+
+/*FALSE = 0, TRUE = 1*/
+enum {FALSE, TRUE};
+
 /*nastavi pocitadlo radku na jedna*/
 int countOfRows = 1;
 

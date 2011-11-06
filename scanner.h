@@ -5,6 +5,10 @@
  * @date: 	11.11.2011
  */
 
+#ifndef SCANNER_H_INCLUDED                                                                                                           │
+#define SCANNER_H_INCLUDED
+#endif
+
 /*vycet typu lexem*/
 enum ELexem { 	
 	KW_END, 			KW_LOCAL,		KW_WRITE,
@@ -64,16 +68,8 @@ enum EState {
 	S_DECIMAL_NUMBER
 };
 
-/*FALSE = 0, TRUE = 1*/
-enum {FALSE, TRUE};
-
 #define LEX_ERROR -1
-#define ERR_MALLOC -10
-#define RESERVED_MAX 8
-#define ASCII_MIN 32
-#define ASCII_MAX 255
-#define HUNDRED 100
-#define TEN 10
+#define ERR_MALLOC -5
 
 /*deklarace promennych*/
 extern int countOfRows;
