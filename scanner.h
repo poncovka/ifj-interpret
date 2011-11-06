@@ -1,12 +1,12 @@
+#ifndef SCANNER_H_INCLUDED
+#define SCANNER_H_INCLUDED
+
 //=================================================================================================>
 //-----------------------------LEXIKALNI ANALYZATOR - HLAVICKOVY SOUBOR---------------------------->
 //=================================================================================================>
 /* @author: Tomas Trkal, xtrkal00@stud.fit.vutbr.cz
  * @date: 	11.11.2011
  */
-
-#ifndef SCANNER_H_INCLUDED                                                                                                           │
-#define SCANNER_H_INCLUDED
 
 /*vycet typu lexem*/
 enum ELexem { 	
