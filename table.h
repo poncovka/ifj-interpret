@@ -6,7 +6,7 @@
 
 typedef struct{
    TBTree variables;      // tabulka promenych
-   TBTree constants;      // tabulka konstant -- predelat na seznam!!!
+   // seznam constants;
    // seznam instrukci
    char   *name;           // jmeno fce(identifikator)void tableInit(TTable*);
    int    cnt;             // pocet spusteni funkce
@@ -18,12 +18,15 @@ typedef struct{
 }TTable;
 
 typedef enum{
-   T_CONST_NUM,
-   T_CONST_STR,
-   T_NIL,
-   T_BOOL,
-   T_NUMBER,
-   T_STRING,
+   NIL,
+   BOOL,
+   NUMBER,
+   STRING,
+}EVarDataType;
+
+typedef enum{
+   VT_VAR,
+   VT_CONST,
 }EVarType;
 
 typedef union{
@@ -33,13 +36,14 @@ typedef union{
 }UVarValue;
 
 typedef struct{
-   EVarType  type;
-   UVarValue value;
+   EVarDataType type;
+   UVarValue    value;
 }TVarData;
 
 typedef struct{
    char      *name;
-   TVarData  **var;   // budem alokovat jenom jednou a ne 2x :) a pujdem po 8
+   EVarType   type;
+   TVarData  *var;   // budem alokovat jenom jednou a ne 2x :) a pujdem po 8
    int        alloc;
 }TVar;
 
@@ -52,21 +56,21 @@ void tableInit(TTable*);
  * @param   funkce
  * @return  data promene(struct TVar)
  */
-TVar *getLastAddedVar(TFunction);
+TVar *getLastAddedVar(TFunction*);
 
 /*
  * vlozi novou funci do tabulky funkci
  * @param   tabulka funkci
  * @param   klic
  */
-int tableInsertFunction (TTable* /*TBTree*/, string*);
+int tableInsertFunction (TTable*, string);
 
 /*
  * vlozi novou promenou do tabulky promenych(fce->variables)
  * @param   funkce
  * @param   klic
  */
-int fuctionInsertVar(TFunction*, string*);
+int fuctionInsertVar(TFunction*, string);
 
 /*
  * NENI IMPLEMENTOVANO !!!
@@ -81,14 +85,14 @@ int functionInsertConstatnt(/*TList*/);
  * @param   tabulka funkci
  * @param   klic
  */
-TFunction *tableSearchFunction(TTable, string);
+TFunction *tableSearchFunction(TTable*, string);
 
 /*
  * vyhleda promenou z tabulky promenych(fce->variables)
  * @param   funkce
  * @param   klic
  */
-TVar *functionSearchVar  (TFunction, string);
+TVar *functionSearchVar  (TFunction*, string);
 
 /*
  * vycisti celou tabulku funckci se vsim vsudy
@@ -101,7 +105,7 @@ void  tableClear(TTable*);
  * @param   promena(symbol)
  * @return  1 vse OK, 0 neslo alokovat
  */
-int varRealloc(TVar);
+int varRealloc(TVar*);
 
 //----------------
 /*

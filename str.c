@@ -16,7 +16,7 @@ char *strCopyChar(string *s)
 // a skopiruje don retazec zo str
 {
    char *strNew;
-   if((strNew = (char *) malloc(s->length)) == NULL)
+   if((strNew = (char *) malloc(sizeof(char)*(s->length + 1))) == NULL)
       return NULL;
    strcpy(strNew,s->str);
    return strNew;
@@ -101,3 +101,17 @@ int strGetLength(string *s)
 {
    return s->length;
 }
+
+string strCreateString (char *str)
+// vrati naplnenou strukturu string
+{
+
+  string s;
+  s.length = strlen(str);
+  s.allocSize = s.length + 1;
+  s.str = str;
+
+  return s;
+}
+
+/* konec souboru str.c */

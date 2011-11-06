@@ -15,69 +15,76 @@ void tableInit(TTable *T){
 
 //----------------------------------------------------------------------
 
-TVar *getLastAddedVar(TFunction F){
-   return (TVar *)(F.variables.lastAdded->data);
+TVar *getLastAddedVar(TFunction *F){
+   return (TVar *)(F->variables.lastAdded->data);
 }
 
 //----------------------------------------------------------------------
 
 /*
- * @todo    dodelat inicializaci fce
- *          copirovat string to retezce
+ * @todo    INICIALIZACE !!!
  */
-int tableInsertFunction (TTable *T, string *s){
+int tableInsertFunction (TTable *T, string s){
 
-   TFunction *f = malloc(sizeof(TFunction));
-   if(f == NULL)
+   TFunction *f  = malloc(sizeof(TFunction));
+   char *newName = strCopyChar(&s);
+
+   if(f == NULL || newName == NULL)
       return INS_MALLOC;
 
    BTreeInit(&(f->variables), VAR);
    // inicializace seznamu instrukci
-   //f->constants = NULL; // inicializace seznamu komstant
-   f->name = s->str; // PREKOPCIT!! ale zatim neni hotova funkce v str.h
+   // inicializace seznamu komstant
+
+   f->name = newName;
    f->cnt = 0;
 
-   int err = BTreeInsert(&(T->functions), s->str, f);
-   if(err){
-      //                 respektive f, ale takhle to je vice dramaticke
-      //T->lastAddedFunc = ((TFunction *)T->functions.lastAdded->data);
+   int err = BTreeInsert(&(T->functions), newName, f);
+   if(err)  // probehl insert v poradku?
       T->lastAddedFunc = f;
+   // T->lastAddedFunc = ((TFunction *)T->functions.lastAdded->data);
+   else{
+      free(f);
+      free(newName);
+   }
+
+   return err;
+}
+
+//----------------------------------------------------------------------
+
+int fuctionInsertVar(TFunction *F, string s){
+   TVar     *v   = malloc(sizeof(TVar));
+   TVarData *vd  = malloc(sizeof(TVarData)*VAR_ALLOC_SIZE);
+   char *newName = strCopyChar(&s);
+
+   if(v == NULL || vd == NULL || newName == NULL)
+      return INS_MALLOC;
+
+   v->name  = newName;
+   v->alloc = VAR_ALLOC_SIZE;
+   v->var   = vd;
+   v->type  = VT_VAR;
+   int err = BTreeInsert(&(F->variables), newName, v);
+   if(!err){
+      free(v);
+      free(vd);
+      free(newName);
    }
    return err;
 }
 
 //----------------------------------------------------------------------
 
-/*
- * @todo    copirovat string to retezce
- */
-int fuctionInsertVar(TFunction *F, string *s){
-   TVar     *v   = malloc(sizeof(TVar));
-   TVarData **vd = malloc(sizeof(TVarData)*VAR_ALLOC_SIZE);
-   if(v == NULL || vd == NULL)
-      return INS_MALLOC;
-
-   //vd[0]->type  = T_NIL;
-   // hodnotu neinicializuju
-
-   v->name  = s->str; // PREKOPCIT!! ale zatim neni hotova funkce v str.h
-   v->alloc = VAR_ALLOC_SIZE;
-   v->var = vd;
-
-   return BTreeInsert(&(F->variables), s->str, v);
-}
-
-//----------------------------------------------------------------------
-
-TFunction *tableSearchFunction(TTable T, string s){
-   TNode n = BTreeSearch(&(T.functions), s.str);
+TFunction *tableSearchFunction(TTable *T, string s){
+   TNode n = BTreeSearch(&(T->functions), s.str);
    return (n != NULL) ? (TFunction *)(n->data) : NULL;
 }
 
 //----------------------------------------------------------------------
 
-TVar *functionSearchVar  (TFunction F, string s){
-   TNode n = BTreeSearch(&(F.variables), s.str);
+TVar *functionSearchVar  (TFunction *F, string s){
+   TNode n = BTreeSearch(&(F->variables), s.str);
    return (n != NULL) ? (TVar *)(n->data) : NULL;
 }
 
@@ -100,22 +107,21 @@ void clearNode(TNode n, EBTreeDataType type){
          case FUNCIONS:{
             TBTree *temp = &(((TFunction *)n->data)->variables);
             clearNode( temp->root, temp->type); // type by mel byt VAR
-            // free(temp->name);
             // smazat konstanty
             // smazat seznam instrukci
             free(n->data);  // data jsem asi taky alokovala proto ji smazu
          }break;
-         // predpis jak smazat data poku jsou typu xxx
+         // predpis jak smazat data poku jsou typu TVar *
          case VAR:{
             TVar *temp = ((TVar *)n->data);
             free(temp->var);
-            //free(temp->name);
             free(n->data);
          }break;
          // nic nedelam
          case DEFAULT:
          default: break;
       }
+      free(n->key);
       free(n);
    }
 }

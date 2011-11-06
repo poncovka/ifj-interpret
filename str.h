@@ -10,7 +10,6 @@ typedef struct
 } string;
 
 
-char *strCopyChar(string *s);
 int strInit(string *s);
 void strFree(string *s);
 
@@ -22,5 +21,8 @@ int strCmpConstStr(string *s1, char *s2);
 
 char *strGetStr(string *s);
 int strGetLength(string *s);
+
+char *strCopyChar(string *s);
+string strCreateString (char *str);
 
 #endif //STR_H_INCLUDED
