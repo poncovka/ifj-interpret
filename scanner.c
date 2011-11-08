@@ -31,7 +31,9 @@ const char *keyWords[] = {
 	[KW_RETURN] = "return",			[KW_IF] = "if", 				[KW_THEN] ="then",
 	[KW_FUNCTION] = "function",	[KW_READ] = "read",			[KW_DO] = "do",             
 	[KW_ELSE] = "else",    			[KW_WHILE] = "while",		[KW_NIL] = "nil", 	
-	[KW_FALSE] = "false", 			[KW_TRUE] = "true", 		[KW_MAIN] = "main"	
+	[KW_FALSE] = "false", 			[KW_TRUE] = "true", 		[KW_TYPE] = "type",
+	[KW_SUBSTR] = "substr",			[KW_FIND] = "find",			[KW_SORT] = "sort",	
+	[KW_MAIN] = "main"	
 };
 
 /*promenna pro ulozeni vstupniho souboru*/
