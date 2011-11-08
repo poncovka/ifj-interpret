@@ -10,9 +10,9 @@
 
 #define INS_OK          1  // vlozeno v poradku
 #define INS_NODE_EXIST  0  // prvek se zadanym klicem uz existuje
-#define INS_MALLOC     -1  // chyba pri alokaci
-#define INS_TREE_NULL  -2  // misto stromu NULL
-#define INS_KEY_NULL   -3  // misto klice NULL
+#define INS_MALLOC     -5  // chyba pri alokaci
+#define INS_TREE_NULL  -1  // misto stromu NULL
+#define INS_KEY_NULL   -2  // misto klice NULL
 
 typedef enum{
    DEFAULT,       // data budou void repektive zadna, nijak se nemazou

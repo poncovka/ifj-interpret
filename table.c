@@ -37,7 +37,7 @@ int tableInsertFunction (TTable *T, string s){
    // inicializace seznamu komstant
 
    f->name = newName;
-   f->cnt = 0;
+   f->cnt = -1;
 
    int err = BTreeInsert(&(T->functions), newName, f);
    if(err)  // probehl insert v poradku?
@@ -53,7 +53,7 @@ int tableInsertFunction (TTable *T, string s){
 
 //----------------------------------------------------------------------
 
-int fuctionInsertVar(TFunction *F, string s){
+int functionInsertVar(TFunction *F, string s){
    TVar     *v   = malloc(sizeof(TVar));
    TVarData *vd  = malloc(sizeof(TVarData)*VAR_ALLOC_SIZE);
    char *newName = strCopyChar(&s);

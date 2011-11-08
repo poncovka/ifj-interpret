@@ -70,7 +70,7 @@ int tableInsertFunction (TTable*, string);
  * @param   funkce
  * @param   klic
  */
-int fuctionInsertVar(TFunction*, string);
+int functionInsertVar(TFunction*, string);
 
 /*
  * NENI IMPLEMENTOVANO !!!

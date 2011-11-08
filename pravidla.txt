@@ -1,50 +1,50 @@
 PROGRAM -> function DEF_FUNC
-
 DEF_FUNC -> main ( ) STAT end ;
 DEF_FUNC -> idFunc ( PARAMS ) STAT end PROGRAM
-
-PARAMS -> eps
-PARAMS -> id NEXT_PARAMS
-NEXT_PARAMS -> eps
-NEXT_PARAMS -> , id NEXT_PARAMS
-
-STAT -> eps
-STAT -> DEF_VAR STAT_LIST
-
-DEF_VAR -> local id ; DEF_VAR_NEXT
-DEF_VAR_NEXT -> eps
-DEF_VAR_NEXT -> DEF_VAR
-
+  PARAMS -> eps
+  PARAMS -> id PARAMS_N
+  PARAMS_N -> eps
+  PARAMS_N -> , id PARAMS_N
+STAT -> DEF_VAR STAT_LIST  
+DEF_VAR -> eps   
+DEF_VAR -> local id INIT ; DEF_VAR
+  INIT -> eps
+  INIT -> = LIT
+    LIT -> literal
 STAT_LIST -> eps
-STAT_LIST -> if     expression then STAT_LIST else STAT_LIST end ; STAT_LIST
-STAT_LIST -> while  expression then STAT_LIST end ; STAT_LIST
-STAT_LIST -> return expression ;
-STAT_LIST -> id =   EXP ; STAT_LIST
+STAT_LIST -> COMMAND ; STAT_LIST  
+  COMMAND -> if     expression then STAT_LIST else STAT_LIST end
+  COMMAND -> while  expression then STAT_LIST end
+  COMMAND -> return expression
+  COMMAND -> write ( expression EXPRESSION_N )
+    EXPRESSION_N -> eps
+    EXPRESSION_N -> , expression EXPRESSION_N
+  COMMAND -> id = ASSIGN
+    ASSIGN -> expression
+    ASSIGN -> read ( LIT )
+    ASSIGN -> idFunc ( VAR_PARAMS )
+      VAR_PARAMS -> eps
+      VAR_PARAMS -> VAR VAR_N
+      VAR -> LIT
+      VAR -> id
+      VAR_N -> eps
+      VAR_N -> , VAR VAR_N 
 
-EXP -> expression
-EXP -> idFunc ( VAR_PARAMS )
 
-VAR_PARAMS -> VAR VAR_P_NEXT
-VAR -> string
-VAR -> nil
-VAR -> number
-VAR -> id
-VAR -> true
-VAR -> false
-VAR_P_NEXT -> eps
-VAR_P_NEXT -> , VAR VAR_P_NEXT
+
 
 function idFunc ( id , id , id ) 
   local id ; 
   id = expression ; 
   if expression then 
-    id = idFunc ( number , string , nil , true , false ) ; 
+    id = idFunc ( literal , id ) ; 
   else 
-  end ; 
+  end ;
+  return expression ; 
 end 
 
 function idFunc ( )
-  local id ;
+  write ( expression , expression , expression ) ;
 end   
 
 function idFunc ( )
@@ -52,9 +52,9 @@ function idFunc ( )
 end 
 
 function main ( )  
-  local id ;
+  local id = expressiom ;
   while expression then
-    id = idFunc ( id , true ) ;
+    id = idFunc ( id , literal ) ;
     id = expression ;
   end ;
 end ;
