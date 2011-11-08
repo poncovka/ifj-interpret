@@ -7,24 +7,23 @@
 
 #include "stack.h"
 
-// co s chybama?
-#define error() printf("Chyba!\n")
-
 /*
  * Inicializuje se zásobník. Ukazatel na NULL vyvolá chybu.
  * @param   ukazatel na zásobník
- * @return  void
+ * @return  kód chyby
  */
-void stackInit (tStack *s) {
+int stackInit (tStack *s) {
   if (s != NULL) {
     s->top = NULL;
   }
-  else error();
+  else return STACK_ERR; // chybný ukazatel
 
+  return STACK_EOK;
 }
 
 /*
  * Vrátí nulu, pokud je zásobník prázdný, jinak nenulovou hodnotu.
+ * Není o¹etøena platnost ukazatele na zásobník.
  * @param   ukazatel na zásobník
  * @return  true/false
  */
@@ -34,85 +33,97 @@ int stackEmpty (tStack *s) {
 }
 
 /*
- * Vrátí data z polo¾ky na vrcholu zásobníku.
- * Pokud je zásobník prázdný, vyvolá se chyba.
+ * Vrátí ukazatel na data z polo¾ky na vrcholu zásobníku.
+ * Pokud dojde k chybì, vrátí se NULL.
  * @param   ukazatel na zásobník
- * @param   ukazatel, kam se data ulo¾í
- * @return  void
+ * @return  ukazatel na data nebo NULL
  */
-void stackTop (tStack *s, int *uk) {
+void *stackTop (tStack *s) {
 
-  if (!stackEmpty(s)) {
-    *uk = s->top->data;
+  if (s != NULL && !stackEmpty(s)) {
+     return s->top->data;
   }
-  else error();
-
+  else return NULL;
 }
 
 /*
  * Vyjme polo¾ku na vrcholu zásobníku.
  * Pokud je zásobník prázdný, vyvolá se chyba.
  * @param   ukazatel na zásobník
- * @return  void
+ * @return  kód chyby
  */
-void stackPop (tStack *s) {
+int stackPop (tStack *s) {
 
-  if (!stackEmpty(s)) {
-    tElemPtr pom = s->top;
-    s->top = s->top->ptr;
-    free(pom);
+  if (s != NULL) {
+    if (!stackEmpty(s)) {
+      tElemPtr pom = s->top;
+      s->top = s->top->ptr;
+      free(pom);
+    }
+    else return STACK_EEMPTY; // pøístup do prázdného zásobníku
   }
-  else error();
+  else return STACK_ERR; // neplatný ukazatel
 
+  return STACK_EOK;
 }
 
 /*
  * Vlo¾í na vrchol zásobníku novou polo¾ku s daty.
- * Pokud je nedostatek pìmti, vyvolá se chyba.
+ * Pokud je nedostatek pamìti, vyvolá se chyba.
  * @param   ukazatel na zásobník
- * @param   data
- * @return  void
+ * @param   ukazatel na data
+ * @return  kód chyby
  */
-void stackPush (tStack *s, int data ) {
+int stackPush (tStack *s, void *data) {
 
-  tElemPtr elem;
+  if (s != NULL) {
+    tElemPtr elem;
 
-  if ( (elem = (tElemPtr)malloc(sizeof(struct tElem))) != NULL ) {
+    if ( (elem = (tElemPtr)malloc(sizeof(struct tElem))) != NULL ) {
 
-    elem->data = data;
-    elem->ptr = s->top;
-    s->top = elem;
+      elem->data = data;
+      elem->ptr = s->top;
+      s->top = elem;
+    }
+    else return STACK_EALLOC; // nedostatek pamìti
   }
-  else error();
+  else return STACK_ERR; // neplatný ukazatel
 
+  return STACK_EOK;
+}
+
+/*
+ * Vrátí ukazatel na data na vrcholu zásobníku
+ * a vyjme polo¾ku z vrcholu zásobníku.
+ * Pokud dojde k chybì, vrátí NULL.
+ * @param   ukazatel na zásobník
+ * @return  ukazatel na data nebo NULL
+ */
+void *stackTopPop (tStack *s) {
+
+  void *pom = stackTop(s);
+  if ((pom == NULL) || (stackPop(s) != STACK_EOK)) {
+    return NULL;
+  }
+  else return pom;
 }
 
 /*
  * Vyjme ze zásobníku v¹echny polo¾ky.
  * Voláním tento funkce se zásobník stane prázdným.
  * @param   ukazatel na zásobník
- * @return  void
+ * @return  kód chyby
  */
-void stackDelete (tStack *s) {
+int stackDelete (tStack *s) {
   
-  while (!stackEmpty(s)) {
-    stackPop(s);
+  if (s != NULL) {
+    while (!stackEmpty(s)) {
+      stackPop(s);
+    }
   }
+  else return STACK_ERR; // chybný ukazatel
 
+  return STACK_EOK;
 }
-
-/*
- * Pøeète a vyjme polo¾ku na vrcholu zásobníku.
- * @param   ukazatel na zásobník
- * @param   ukazatel, kam se ulo¾í data
- * @return  void
- */
-
-void stackTopPop (tStack *s, int *uk) {
-
-  stackTop(s, uk);
-  stackPop(s);
-}
-
 
 /* konec stack.c */
