@@ -12,10 +12,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define STACK_EOK     0
+#define STACK_ERR    -1
+#define STACK_EEMPTY -2
+#define STACK_EALLOC -3
 
 typedef struct tElem {   // struktura pro polo¾ku v zásobníku
   struct tElem *ptr;     // ukazatel na dal¹í polo¾ku
-  int data;              // data
+  void *data;            // ukazatel na data
 } *tElemPtr;
 
 typedef struct {         // struktura pro zásobník
@@ -25,14 +29,13 @@ typedef struct {         // struktura pro zásobník
 
 // Funkce pro práci se zásobníkem:
 
-void stackInit (tStack *s);
-void stackDelete (tStack *s);
-void stackTop (tStack *s, int *uk);
-void stackPop (tStack *s);
-void stackPush (tStack *s, int data );
+int stackInit     (tStack *s);
+int stackEmpty    (tStack *s);
+void *stackTop    (tStack *s);
+int stackPop      (tStack *s);
+int stackPush     (tStack *s, void *data);
 
-void stackTopPop (tStack *s, int *uk);
-int stackEmpty (tStack *s);
-
+void *stackTopPop (tStack *s);
+int stackDelete   (tStack *s);
 
 #endif // STACK_H_INCLUDED
