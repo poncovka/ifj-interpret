@@ -10,6 +10,9 @@ function hello(a,b,c)
   local z = 30;
   local t = true;
   local v = nil;
+  
+  v = my_while();
+  
   return 23*z;
 end
 
@@ -23,62 +26,3 @@ function main()
       return xx;
     end;
 end;  
-
---[[
- vystup
- 
- Instrukce "my_while"
-        STACK_E
-        LAB while_1
-        JMP_Z (exp_result) while_end_1
-        WRITE (exp_result)
-        JMP while_1
-        LAB while_end_1
-Instrukce "hello"
-        POP a
-        POP b
-        POP c
-        STACK_E
-        MOV x
-        MOV y "ahoj svete"
-        MOV z 30
-        MOV t true
-        MOV v nil
-        RETURN (exp_result)
-Instrukce "main"
-        STACK_E
-        MOV a 00.1E-20
-        WRITE (exp_result)
-        WRITE (exp_result)
-        WRITE (exp_result)
-        JMP_Z (exp_result) else_2
-        WRITE (exp_result)
-        JMP if_end_2
-        LAB else_2
-        RETURN (exp_result)
-        LAB if_end_2
-
------------------------------------------------
-
-Vse v poradku
-
------------------------------------------------
-Tabulka
-
-   hello
-      a
-      b
-      c
-      t
-      v
-      x
-      y
-      z
-   main
-      a
-   my_while
-
-Process returned 0 (0x0)   execution time : 0.214 s
-Press any key to continue. 
-
-]]

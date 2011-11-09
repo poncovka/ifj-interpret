@@ -34,7 +34,7 @@ HALT  --- --- ---
 WRITE src  --- ---
 READ  dest prm ---
 
-TYPE   --- --- ---
-SUBSTR --- --- ---
-FIND   --- --- ---
-SORT   --- --- --- 
+TYPE   src --- ---
+SUBSTR str int int
+FIND   str str ---
+SORT   str --- --- 

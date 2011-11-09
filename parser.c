@@ -6,7 +6,7 @@
 #include "scanner.h"
 #include "str.h"
 
-#define NEXT_TOKEN lex = getNextToken(&token); if(lex == LEX_ERR) return LEX_ERR;
+#define NEXT_TOKEN lex = getNextToken(&token); if(lex < 0) return lex;
 
 string token;
 int    lex;
@@ -223,8 +223,14 @@ int prsInit(){
    // 12. <init> -> = <lit>
    if(lex != L_ASSIGN)  return SYN_ERR;
 
+   NEXT_TOKEN
    err = prsLit();
    if(err != PRS_OK) return err;
+
+      if(lex == L_STRING)
+         printf("\tMOV %s \"%s\"\n", getLastAddedVar(table->lastAddedFunc)->name, token.str);
+      else
+         printf("\tMOV %s %s\n", getLastAddedVar(table->lastAddedFunc)->name, token.str);
 
    // musim nacist dalsi token protoze prsDefVar pocita ze je nacteny
    NEXT_TOKEN
@@ -232,21 +238,9 @@ int prsInit(){
 }
 
 int prsLit(){
-   NEXT_TOKEN
    // <lit> -> literal // nejaky z literalu
-   switch(lex){
-      case KW_NIL:
-      case KW_FALSE:
-      case KW_TRUE:
-      case L_NUMBER:{
-         printf("\tMOV %s %s\n", getLastAddedVar(table->lastAddedFunc)->name, token.str);
+   if( lex == KW_NIL || lex == KW_FALSE || lex == KW_TRUE || lex == L_NUMBER || lex == L_STRING )
          return PRS_OK;
-      }break;
-      case L_STRING:{
-         printf("\tMOV %s \"%s\"\n", getLastAddedVar(table->lastAddedFunc)->name, token.str);
-         return PRS_OK;
-      }break;
-   }
    return SYN_ERR;
 }
 
@@ -271,13 +265,12 @@ int prsStatList(){
    return prsStatList();
 }
 
-
 int expJump(){
    //int i = 1;
    while(lex != END_OF_FILE){
-      NEXT_TOKEN
       if(lex == L_COMMA  || lex == L_SEMICOLON || lex == L_RIGHT_BRACKET || lex == KW_THEN)
          break;
+      NEXT_TOKEN
    }
    return 1;
 }
@@ -289,15 +282,21 @@ int prsCommand(){
       // 22. <command> -> id = <assign>
       case L_ID:{
          // je id v tabulce symbolu pro tuhle funkci?
-         if(functionSearchVar(table->lastAddedFunc, token) == NULL ) return SEM_ERR;
+         TVar *tmp;
+         if( (tmp = functionSearchVar(table->lastAddedFunc, token) ) == NULL ) return SEM_ERR;
          NEXT_TOKEN
          if(lex != L_ASSIGN) return SYN_ERR;
 
-         return prsAssign();
+         int err = prsAssign();
+         if(err != PRS_OK) return err;
+
+         printf("\tPOP %s\n", tmp->name);
+         return PRS_OK;
       }break;
       // 16. <command> -> if expression then <stat_list> else <stat_list> end
       case KW_IF:{
          int err;
+         NEXT_TOKEN
          expJump();
          if(lex != KW_THEN) return SYN_ERR;
 
@@ -322,6 +321,7 @@ int prsCommand(){
       case KW_WHILE:{
          int tmp = ++cnt;
          printf("\tLAB while_%d\n", tmp);
+         NEXT_TOKEN
          expJump();
          printf("\tJMP_Z (exp_result) while_end_%d\n", tmp);
          if(lex != KW_THEN) return SYN_ERR;
@@ -338,6 +338,7 @@ int prsCommand(){
       // 18. <command> -> return expression
       case KW_RETURN:{
          // preskocim vyraz a vratim ze bylo vse OK
+         NEXT_TOKEN
          expJump();
          // printf("\tPOP (exp_result)\n");
          printf("\tRETURN (exp_result)\n");
@@ -349,6 +350,7 @@ int prsCommand(){
          NEXT_TOKEN
          if(lex != L_LEFT_BRACKET) return SYN_ERR;
 
+         NEXT_TOKEN
          expJump();
          printf("\tWRITE (exp_result)\n");
 
@@ -371,16 +373,101 @@ int prsExpN(){
 
    // 21. <expression_n> -> , expression <expression_n>
    if(lex != L_COMMA) return SYN_ERR;
+   NEXT_TOKEN
    expJump();
    printf("\tWRITE (exp_result)\n");
 
    return prsExpN();
 }
 
-
 int prsAssign(){
-   return INTR_ERR;
+   NEXT_TOKEN
+   switch(lex){
+      // muze byt vyraz nebo funkce
+      case L_ID:{
+         TFunction *Ftmp;
+         if( (Ftmp = tableSearchFunction(table, token) ) == NULL){
+            // 23. <assign> -> expression
+            expJump();
+         }
+         else{
+            char *tmp = Ftmp->name;
+            // 25. <assign> -> idFunc ( <var_params> )
+            NEXT_TOKEN
+            if(lex != L_LEFT_BRACKET) return SYN_ERR;
+
+            int err = prsVarParams();
+            if(err != PRS_OK) return err;
+
+            if(lex != L_RIGHT_BRACKET) return SYN_ERR;
+
+            printf("\tCALL %s\n", tmp);
+
+            NEXT_TOKEN
+            return PRS_OK;
+         }
+      }break;
+      case KW_READ:{}break;
+      case KW_TYPE:{}break;
+      case KW_SUBSTR:{}break;
+      case KW_FIND:{}break;
+      case KW_SORT:{}break;
+   }
+   return SYN_ERR;
 }
-int prsVarParams(){return INTR_ERR;}
-int prsVar(){return INTR_ERR;}
-int prsVarN(){return INTR_ERR;}
+
+int prsVarParams(){
+   NEXT_TOKEN
+   // 26. <var_params> -> eps
+   if(lex == L_RIGHT_BRACKET) return PRS_OK;
+
+   // 27. <var_params> -> <var> <var_n>
+   int err = prsVar();
+   if(err != PRS_OK) return err;
+
+   err = prsVarN();
+   if(err != PRS_OK) return err;
+
+   if(lex == L_RIGHT_BRACKET) return PRS_OK;
+
+   return SYN_ERR;
+}
+
+int prsVar(){
+   // 28. <var> -> <lit>
+   int err = prsLit();
+   if(err == PRS_OK){
+      // konstantka
+      if(lex == L_STRING)
+         printf("\tPUSH \"%s\"\n", token.str);
+      else
+         printf("\tPUSH %s\n", token.str);
+      return PRS_OK;
+   }
+   if(err == SYN_ERR){
+      // 29. <var> -> id
+      if(lex != L_ID) return SYN_ERR;
+      TVar *tmp = functionSearchVar(table->lastAddedFunc, token);
+      if(tmp == NULL)   return SEM_ERR;
+      printf("\tPUSH %s\n", tmp->name);
+
+      return PRS_OK;
+   }
+   return err;
+}
+int prsVarN(){
+   NEXT_TOKEN
+   // 30. <var_n> -> eps
+   if(lex == L_RIGHT_BRACKET) return PRS_OK;
+   // 31. <var_n> -> , <var> <var_n>
+   if(lex != L_COMMA) return SYN_ERR;
+
+   NEXT_TOKEN
+   int err = prsVar();
+   if(err != PRS_OK) return err;
+
+   err = prsVarN();
+   if(err != PRS_OK) return err;
+
+   return PRS_OK;
+}
