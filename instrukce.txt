@@ -32,9 +32,9 @@ CALL fptr --- ---
 HALT  --- --- ---
 
 WRITE src  --- ---
-READ  dest prm ---
+READ  dest --- ---
 
-TYPE   src --- ---
-SUBSTR str int int
-FIND   str str ---
-SORT   str --- --- 
+TYPE   --- --- ---
+SUBSTR --- --- ---
+FIND   --- --- ---
+SORT   --- --- --- 

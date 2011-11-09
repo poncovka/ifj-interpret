@@ -409,7 +409,7 @@ int prsAssign(){
    }
 
    // 25. <assign> -> idFunc ( <params> )
-   char *tmp;
+   char *tmp = NULL;
    if(lex == L_ID)
       tmp = Ftmp->name;
 
@@ -423,19 +423,19 @@ int prsAssign(){
 
    switch(lexTmp){
       case L_ID:{
-            printf("\tCALL\n", tmp);
+            printf("\tCALL %s\n", tmp);
          }break;
       case KW_TYPE:{
-            printf("\tTYPE\n", tmp);
+            printf("\tTYPE\n");
          }break;
       case KW_SUBSTR:{
-            printf("\tSUBSTR\n", tmp);
+            printf("\tSUBSTR\n");
          }break;
       case KW_FIND:{
-            printf("\tFIND\n", tmp);
+            printf("\tFIND\n");
          }break;
       case KW_SORT:{
-            printf("\tSORT\n", tmp);
+            printf("\tSORT\n");
          }break;
    }
 
