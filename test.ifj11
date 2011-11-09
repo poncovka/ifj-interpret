@@ -10,14 +10,13 @@ function hello(a,b,c)
   local z = 30;
   local t = true;
   local v = nil;
-  
-  v = my_while();
-  
+  v = my_while(x,a, "nejaky text" );  -- v poradku "a" je parametr
   return 23*z;
 end
 
 function main()
     local a=00.1E-20;
+    local d=00.1E-20;
     
     write("to sem napsal".."15", a+15/30, 10);
     if a < b then
