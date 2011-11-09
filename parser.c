@@ -170,6 +170,7 @@ int prsParamsN(){
 }
 
 int prsStat(){
+   // 8. <stat> -> <def_var> <stat_list>
    int err;
    err = prsDefVar();
    if(err != PRS_OK) return err;
@@ -238,7 +239,7 @@ int prsInit(){
 }
 
 int prsLit(){
-   // <lit> -> literal // nejaky z literalu
+   // 13. <lit> -> literal // nejaky z literalu
    if( lex == KW_NIL || lex == KW_FALSE || lex == KW_TRUE || lex == L_NUMBER || lex == L_STRING )
          return PRS_OK;
    return SYN_ERR;
@@ -247,11 +248,10 @@ int prsLit(){
 int prsStatList(){
    // TOKEN UZ JE NACTENY
    int err;
-   // <stat_list> -> eps
+   // 14. <stat_list> -> eps
    if(lex == KW_END || lex == KW_ELSE) return PRS_OK;
 
-   //printf("\n--%s--\n", token.str);
-   // <stat_list> -> <commad> ; <stat_list>
+   // 15. <stat_list> -> <commad> ; <stat_list>
    if(lex != L_ID    && lex != KW_IF   && lex != KW_WHILE   && lex != KW_RETURN  && lex != KW_WRITE )
       return SYN_ERR;
 
@@ -367,7 +367,6 @@ int prsCommand(){
 }
 
 int prsExpN(){
-   //NEXT_TOKEN
    // 20. <expression_n> -> eps
    if(lex == L_RIGHT_BRACKET) return PRS_OK;
 
@@ -449,11 +448,14 @@ int prsVarParams(){
    if(lex == L_RIGHT_BRACKET) return PRS_OK;
 
    // 27. <var_params> -> <var> <var_n>
+   printf("\t---\n");
    int err = prsVar();
    if(err != PRS_OK) return err;
 
    err = prsVarN();
    if(err != PRS_OK) return err;
+
+   printf("\t---\n");
 
    if(lex == L_RIGHT_BRACKET) return PRS_OK;
 
