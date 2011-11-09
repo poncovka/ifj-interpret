@@ -382,38 +382,65 @@ int prsExpN(){
 
 int prsAssign(){
    NEXT_TOKEN
-   switch(lex){
-      // muze byt vyraz nebo funkce
-      case L_ID:{
-         TFunction *Ftmp;
-         if( (Ftmp = tableSearchFunction(table, token) ) == NULL){
-            // 23. <assign> -> expression
-            expJump();
-         }
-         else{
-            char *tmp = Ftmp->name;
-            // 25. <assign> -> idFunc ( <var_params> )
-            NEXT_TOKEN
-            if(lex != L_LEFT_BRACKET) return SYN_ERR;
+   if(lex == KW_READ){
+      // 24. <assign> -> read ( <lit> )
+      NEXT_TOKEN
+      if(lex != L_LEFT_BRACKET) return SYN_ERR;
 
-            int err = prsVarParams();
-            if(err != PRS_OK) return err;
+      NEXT_TOKEN
+      if(lex != L_STRING && lex != L_NUMBER ) return SYN_ERR;
 
-            if(lex != L_RIGHT_BRACKET) return SYN_ERR;
+      printf("\tREAD \"%s\"\n", token.str);
 
-            printf("\tCALL %s\n", tmp);
+      NEXT_TOKEN
+      if(lex != L_RIGHT_BRACKET) return SYN_ERR;
 
-            NEXT_TOKEN
-            return PRS_OK;
-         }
-      }break;
-      case KW_READ:{}break;
-      case KW_TYPE:{}break;
-      case KW_SUBSTR:{}break;
-      case KW_FIND:{}break;
-      case KW_SORT:{}break;
+      NEXT_TOKEN
+      return PRS_OK;
    }
-   return SYN_ERR;
+
+   int lexTmp = lex; // ulozim si token abych potom vedel jakou instrukci generovat
+   TFunction *Ftmp = tableSearchFunction(table, token);
+
+   if(Ftmp == NULL && (lex != KW_TYPE && lex != KW_SUBSTR && lex != KW_FIND && lex != KW_SORT) ){
+      // 23. <assign> -> expression
+      expJump();
+      return PRS_OK;
+   }
+
+   // 25. <assign> -> idFunc ( <params> )
+   char *tmp;
+   if(lex == L_ID)
+      tmp = Ftmp->name;
+
+   NEXT_TOKEN
+   if(lex != L_LEFT_BRACKET) return SYN_ERR;
+
+   int err = prsVarParams();
+   if(err != PRS_OK) return err;
+
+   if(lex != L_RIGHT_BRACKET) return SYN_ERR;
+
+   switch(lexTmp){
+      case L_ID:{
+            printf("\tCALL\n", tmp);
+         }break;
+      case KW_TYPE:{
+            printf("\tTYPE\n", tmp);
+         }break;
+      case KW_SUBSTR:{
+            printf("\tSUBSTR\n", tmp);
+         }break;
+      case KW_FIND:{
+            printf("\tFIND\n", tmp);
+         }break;
+      case KW_SORT:{
+            printf("\tSORT\n", tmp);
+         }break;
+   }
+
+   NEXT_TOKEN
+   return PRS_OK;
 }
 
 int prsVarParams(){
@@ -455,6 +482,7 @@ int prsVar(){
    }
    return err;
 }
+
 int prsVarN(){
    NEXT_TOKEN
    // 30. <var_n> -> eps

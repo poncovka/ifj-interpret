@@ -1,4 +1,6 @@
 function my_while()
+  local v;
+  v = 5+53*85;
   while xxx then
     write(s);
   end ;
@@ -24,6 +26,13 @@ function main()
     else
       return xx;
     end;
+    
+    d = sort("aaa", "gggg");
+    d = type();
+    d = substr("aa", "aa", d);
+    d = find(a,d);
+    
+    a = read("*n");
 end;
 
 --[[
@@ -31,6 +40,8 @@ end;
 
 Instrukce "my_while"
         STACK_E
+        MOV v
+        POP v
         LAB while_1
         JMP_Z (exp_result) while_end_1
         WRITE (exp_result)
@@ -49,7 +60,7 @@ Instrukce "hello"
         PUSH x
         PUSH a
         PUSH "nejaky text"
-        CALL my_while
+        CALL
         POP v
         RETURN (exp_result)
 Instrukce "main"
@@ -65,6 +76,23 @@ Instrukce "main"
         LAB else_2
         RETURN (exp_result)
         LAB if_end_2
+        PUSH "aaa"
+        PUSH "gggg"
+        SORT
+        POP d
+        TYPE
+        POP d
+        PUSH "aa"
+        PUSH "aa"
+        PUSH d
+        SUBSTR
+        POP d
+        PUSH a
+        PUSH d
+        FIND
+        POP d
+        READ "*n"
+        POP a
 
 -----------------------------------------------
 
@@ -86,6 +114,9 @@ Tabulka
       a
       d
    my_while
+      v
 
+Process returned 0 (0x0)   execution time : 0.200 s
+Press any key to continue.
 
 ]]  
