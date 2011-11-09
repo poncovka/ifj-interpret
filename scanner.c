@@ -12,6 +12,7 @@
 #include "str.h"
 #include "scanner.h"
 
+#define NONE 0
 #define RESERVED_MAX 8
 #define ASCII_MIN 32
 #define ASCII_MAX 255
@@ -74,7 +75,7 @@ int getNextToken(string *attr) {
 	/*nasteveni vychoziho stavu*/
 	strClear(attr);					
 	int state = S_DEFAULT;	//defaultni stav
- 	int ascii;							
+ 	int ascii = NONE;							
 	int c;									
 
 	/*konecny automat*/
