@@ -24,4 +24,68 @@ function main()
     else
       return xx;
     end;
-end;  
+end;
+
+--[[
+-- vystup
+
+Instrukce "my_while"
+        STACK_E
+        LAB while_1
+        JMP_Z (exp_result) while_end_1
+        WRITE (exp_result)
+        JMP while_1
+        LAB while_end_1
+Instrukce "hello"
+        POP a
+        POP b
+        POP c
+        STACK_E
+        MOV x
+        MOV y "ahoj svete"
+        MOV z 30
+        MOV t true
+        MOV v nil
+        PUSH x
+        PUSH a
+        PUSH "nejaky text"
+        CALL my_while
+        POP v
+        RETURN (exp_result)
+Instrukce "main"
+        STACK_E
+        MOV a 00.1E-20
+        MOV d 00.1E-20
+        WRITE (exp_result)
+        WRITE (exp_result)
+        WRITE (exp_result)
+        JMP_Z (exp_result) else_2
+        WRITE (exp_result)
+        JMP if_end_2
+        LAB else_2
+        RETURN (exp_result)
+        LAB if_end_2
+
+-----------------------------------------------
+
+Vse v poradku
+
+-----------------------------------------------
+Tabulka
+
+   hello
+      a
+      b
+      c
+      t
+      v
+      x
+      y
+      z
+   main
+      a
+      d
+   my_while
+
+
+]]  
