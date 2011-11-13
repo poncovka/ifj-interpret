@@ -18,6 +18,7 @@ int InitList (tList *L) {
   if (L != NULL) {      // inicializace
     L->Act = NULL;
     L->First = NULL;
+    L->Last = NULL;
   }
   else return LIST_ERR; // neplatný uk
   return LIST_EOK;
@@ -34,6 +35,7 @@ int DisposeList (tList *L) {
   if (L != NULL) {
     tElemPtr pom = NULL;
     L->Act = NULL;
+    L->Last = NULL;
 
     while (L->First != NULL) {  // mazání prvkù
       pom = L->First;
@@ -62,6 +64,41 @@ int InsertFirst  (tList *L, void *data) {
       pom->data = data;         // inicializace
       pom->ptr = L->First;
       L->First = pom;
+                                // první prvek je i poslední
+      if (L->First->ptr == NULL) L->Last = pom; 
+    }
+    else return LIST_EALLOC;    // nedostatek pamìti
+  }
+  else return LIST_ERR;         // neplatný uk
+  return LIST_EOK;
+
+}
+
+/*
+ * Vlo¾í polo¾ku s ukazatelem na data na konec seznamu.
+ * Ukazatel na NULL a nedostatek pamìti vyvolá chybu.
+ * @param   ukazatel na seznam
+ * @param   ukazatel na data
+ * @return  kód chyby
+ */
+int InsertLast  (tList *L, void *data) {
+
+  if (L != NULL) {
+    tElemPtr pom = NULL;        // alokace nového prvku
+
+    if ( (pom = (tElemPtr)malloc(sizeof(struct tElem))) != NULL ) {
+      pom->data = data;         // inicializace
+      pom->ptr = NULL;
+
+      if (L->First == NULL) {   // seznam byl prázdný
+        L->First = pom;         // nový prvek je prvním
+      }
+      else {                    // v seznamu alespoò 1 prvek
+        L->Last->ptr = pom;
+      }
+
+      L->Last = pom;            // nový prvek je poslední
+
     }
     else return LIST_EALLOC;    // nedostatek pamìti
   }
@@ -87,6 +124,22 @@ int First (tList *L) {
 }
 
 /*
+ * Aktivitu seznamu nastaví na poslední polo¾ku.
+ * Ukazatel na NULL vyvolá chybu.
+ * @param   ukazatel na seznam
+ * @return  kód chyby
+ */
+int Last (tList *L) {
+
+  if (L != NULL) {
+    L->Act = L->Last;
+  }
+  else return LIST_ERR;
+  return LIST_EOK;
+
+}
+
+/*
  * Vrátí ukazatel na data v první polo¾ce.
  * Pokud je ukazatel na seznam neplatný,
  * nebo je seznam prázdný, vrátí se NULL.
@@ -103,6 +156,23 @@ void *CopyFirst (tList *L) {
 }
 
 /*
+ * Vrátí ukazatel na data v poslední polo¾ce.
+ * Pokud je ukazatel na seznam neplatný,
+ * nebo je seznam prázdný, vrátí se NULL.
+ * @param   ukazatel na seznam
+ * @return  ukazatel na data nebo NULL
+ */
+void *CopyLast (tList *L) {
+
+  if (L != NULL && L->Last != NULL) {
+    return L->Last->data;   // v poøádku, vrací uk na data
+  }
+  else return NULL;         // chyba, neplatný ukazatel
+
+}
+
+
+/*
  * Zru¹í první polo¾ku seznamu, pokud byla aktivní, aktivita se zru¹í.
  * Ukazatel na NULL vyvolá chybu.
  * @param   ukazatel na seznam
@@ -115,6 +185,10 @@ int DeleteFirst (tList *L) {
 
       if (L->First == L->Act){  // první prvek je aktivní
         L->Act = NULL;          // zru¹ aktivitu
+      }
+
+      if (L->First == L->Last){ // první prvek je poslední
+        L->Last = NULL;         // poslední zru¹íme
       }
 
       tElemPtr pom = L->First;  // zru¹ prvek
@@ -145,6 +219,8 @@ int PostInsert (tList *L, void *data) {
         pom->data = data;        // inicializace
         pom->ptr = L->Act->ptr;
         L->Act->ptr = pom;
+                                 // nastavení posledního prvku
+        if (L->Act == L->Last) L->Last = pom;
       }
       else return LIST_EALLOC;   // nedostatek pamìti
     }
@@ -179,7 +255,7 @@ int Succ (tList *L) {
  * @param   ukazatel na seznam
  * @return  ukazatel na data nebo NULL
  */
-int *Copy (tList *L) {
+void *Copy (tList *L) {
 
   if (L != NULL && L->Act != NULL) {
     return L->Act->data;  // ok, vrací se uk na data
@@ -214,6 +290,34 @@ int Actualize (tList *L, void *data ) {
  */
 int Active (tList *L) {
   return (L->Act != NULL);
+}
+
+/*
+ * Vrátí ukazatel na aktivní prvek.
+ * Neplatnost ukazatele na seznam vrací NULL.
+ * @param   ukazatel na seznam
+ * @return  ukazatel na prvek seznamu
+ */
+tElemPtr GetActive (tList *L) {
+  if (L != NULL) {
+    return L->Act;
+  }
+  return NULL;
+}
+
+/*
+ * Nastaví daný prvek na aktivní.
+ * Neplatnost ukazatele na seznam vrací chybu.
+ * @param   ukazatel na seznam
+ * @param   ukazatel na prvek seznamu
+ * @return  kód chyby
+ */
+int SetActive (tList *L, tElemPtr uk) {
+  if (L != NULL ) {
+    L->Act = uk;
+  }
+  else return LIST_ERR;
+  return LIST_EOK;
 }
 
 
