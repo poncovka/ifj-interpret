@@ -1,4 +1,5 @@
 LAB  --- --- ---          // nedela nic
+RETURN  --- --- ---       // ukonci interpretaci
 
 POP  src  --- ---         // TVar src->data[fce->cnt] da na zasobnik   
 PUSH dest --- ---         // vybere ze zasobniku TVarData a priradi do dest[fce->cnt]
@@ -27,7 +28,6 @@ JMP_Z  lab src ---        // obdobne
 JMP_NZ lab src ---
 
 CALL fptr --- ---         // zvedne cnt o jedna a zintepretuje fptr(rekurzivne) pokud bude vse OK snizi index
-RETURN  --- --- ---       // ukonci interpretaci
 
 WRITE  --- src ---        // vypise co je v TVar src
 READ   dst --- ---

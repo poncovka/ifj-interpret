@@ -28,6 +28,7 @@ typedef enum{
 typedef enum{
    VT_VAR,
    VT_CONST,
+   VT_TMP_VAR,
 }EVarType;
 
 typedef union{
@@ -51,15 +52,16 @@ typedef struct{
 // Instrukce
 typedef enum{
    I_LAB,      // --- --- ---
+   I_RETURN,   // --- --- ---
 
-   I_POP,      // src --- ---       src je *TVar ale na stacku je TVarData
-   I_PUSH,     // dst --- ---       dst je *TVar ale na stack se vlozi odpovidajici TVarData
+   I_POP,      // src --- ---       src je TVar ale na stacku je TVarData
+   I_PUSH,     // dst --- ---       dst je TVar ale na stack se vlozi odpovidajici TVarData
    I_STACK_E,
 
-   I_MOV,      // dst --- ---       nastavi odpovidajici *TVar -> TVarData[fce->cnt] -> type = NIL
-               // dst src ---       odpovidajici dest *TVar nastavi podle odpovidajiciho src *TVar,
+   I_MOV,      // dst --- ---       nastavi odpovidajici TVar -> TVarData[fce->cnt] -> type = NIL
+               // dst src ---       odpovidajici dest *TVar nastavi podle odpovidajiciho src TVar,
 
-   I_ADD,      // dst src src       vsechno *TVar
+   I_ADD,      // dst src src       vsechno TVar
    //I_SUB,                         neresime :)
    I_MUL,      // dst src src
    I_DIV,      // dst src src
@@ -73,13 +75,13 @@ typedef enum{
    I_CMP_E,    // dst src src
    I_CMP_NE,   // dst src src
 
-   I_JMP,      // lab --- ---       lab je nasvesti *TLElemPtr
+   I_JMP,      // lab --- ---       lab je nasvesti TLElemPtr
    I_JMP_Z,    // lab src ---       src je *TVar
    I_JMP_NZ,   // lab src ---
 
-   I_WRITE,    // --- src ---       src *TVar
-   I_READ,     // dst --- ---       dst *TVar
-   I_CALL,     // fce --- ---       fce je *TFunction
+   I_WRITE,    // --- src ---       src TVar
+   I_READ,     // dst --- ---       dst TVar
+   I_CALL,     // fce --- ---       fce je TFunction
 
    I_TYPE,     // --- --- ---
    I_SUBSTR,   // --- --- ---
@@ -148,9 +150,10 @@ void  tableClear(TTable*);
 /*
  * reallocuje *var ve strukture TVar
  * @param   promena(symbol)
- * @return  1 vse OK, 0 neslo alokovat
+ * @params  po kolikate je volana funkce!
+ * @return  1 vse OK, -5 neslo alokovat
  */
-int varRealloc(TVar*);
+int varRealloc(TVar*, int);
 
 //----------------
 /*

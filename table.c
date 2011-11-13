@@ -8,6 +8,17 @@
 
 #define VAR_ALLOC_SIZE 8
 
+int varRealloc(TVar *v, int cnt){
+   if((cnt = v->alloc - cnt) >= 1)
+      return INS_OK;
+   cnt *=-1;
+   cnt = cnt / VAR_ALLOC_SIZE + 1;
+
+   v->alloc += cnt*VAR_ALLOC_SIZE;
+   if( ( v->var = realloc(v->var, v->alloc) ) == NULL)
+      return INS_MALLOC;
+   return INS_OK;
+}
 //----------------------------------------------------------------------
 
 void tableInit(TTable *T){
@@ -90,6 +101,28 @@ TVar *functionSearchVar  (TFunction *F, string s){
 
 //----------------------------------------------------------------------
 
+void freeConstList(TList *l){
+   listFirst(l);
+   while( l->Act != NULL ){
+      free( ((TVar *)l->Act->data)->name );
+      free( ((TVar *)l->Act->data)->var );
+      free( l->Act->data );
+
+      listDeleteFirst(l);
+      listFirst(l);
+   }
+}
+
+void freeInstrList(TList *l){
+   listFirst(l);
+   while( l->Act != NULL ){
+      free( l->Act->data );
+
+      listDeleteFirst(l);
+      listFirst(l);
+   }
+}
+
 /*
  * pomocna fce pro tableClear, maze podle urceneho kontextu
  * bacha na to! maze strom funkci :)
@@ -105,10 +138,11 @@ void clearNode(TNode n, EBTreeDataType type){
       switch(type){
          // predpis jak smazat data u funkce pokud jsou typu TFunction*
          case FUNCIONS:{
-            TBTree *temp = &(((TFunction *)n->data)->variables);
-            clearNode( temp->root, temp->type); // type by mel byt VAR
-            // smazat konstanty
-            // smazat seznam instrukci
+            TFunction *f = ((TFunction *)n->data);
+
+            clearNode( f->variables.root, f->variables.type); // type by mel byt VAR
+            freeConstList( &(f->constants) );
+            freeInstrList( &(f->instructions) );
             free(n->data);  // data jsem asi taky alokovala proto ji smazu
          }break;
          // predpis jak smazat data poku jsou typu TVar *
