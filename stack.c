@@ -12,7 +12,7 @@
  * @param   ukazatel na zásobník
  * @return  kód chyby
  */
-int stackInit (tStack *s) {
+int stackInit (TStack *s) {
   if (s != NULL) {
     s->top = NULL;
   }
@@ -27,7 +27,7 @@ int stackInit (tStack *s) {
  * @param   ukazatel na zásobník
  * @return  true/false
  */
-int stackEmpty (tStack *s) {
+int stackEmpty (TStack *s) {
 
   return (s->top == NULL);
 }
@@ -38,7 +38,7 @@ int stackEmpty (tStack *s) {
  * @param   ukazatel na zásobník
  * @return  ukazatel na data nebo NULL
  */
-void *stackTop (tStack *s) {
+void *stackTop (TStack *s) {
 
   if (s != NULL && !stackEmpty(s)) {
      return s->top->data;
@@ -52,12 +52,12 @@ void *stackTop (tStack *s) {
  * @param   ukazatel na zásobník
  * @return  kód chyby
  */
-int stackPop (tStack *s) {
+int stackPop (TStack *s) {
 
   if (s != NULL) {
     if (!stackEmpty(s)) {
-      tSElemPtr pom = s->top;
-      s->top = s->top->ptr;
+      TSElemPtr pom = s->top;
+      s->top = s->top->next;
       free(pom);
     }
     else return STACK_EEMPTY; // pøístup do prázdného zásobníku
@@ -74,15 +74,15 @@ int stackPop (tStack *s) {
  * @param   ukazatel na data
  * @return  kód chyby
  */
-int stackPush (tStack *s, void *data) {
+int stackPush (TStack *s, void *data) {
 
   if (s != NULL) {
-    tSElemPtr elem;
+    TSElemPtr elem;
 
-    if ( (elem = (tSElemPtr)malloc(sizeof(struct tSElem))) != NULL ) {
+    if ( (elem = (TSElemPtr)malloc(sizeof(struct TSElem))) != NULL ) {
 
       elem->data = data;
-      elem->ptr = s->top;
+      elem->next = s->top;
       s->top = elem;
     }
     else return STACK_EALLOC; // nedostatek pamìti
@@ -99,7 +99,7 @@ int stackPush (tStack *s, void *data) {
  * @param   ukazatel na zásobník
  * @return  ukazatel na data nebo NULL
  */
-void *stackTopPop (tStack *s) {
+void *stackTopPop (TStack *s) {
 
   void *pom = stackTop(s);
   if ((pom == NULL) || (stackPop(s) != STACK_EOK)) {
@@ -114,7 +114,7 @@ void *stackTopPop (tStack *s) {
  * @param   ukazatel na zásobník
  * @return  kód chyby
  */
-int stackDelete (tStack *s) {
+int stackDelete (TStack *s) {
   
   if (s != NULL) {
     while (!stackEmpty(s)) {

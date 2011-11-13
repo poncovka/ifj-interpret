@@ -14,24 +14,24 @@
 #include "list.h"
 
 
-void tiskniStack (tStack *s) {
+void tiskniStack (TStack *s) {
 
   printf("Stav zásobníku:\n");
 
-  tSElemPtr pom = s->top;
+  TSElemPtr pom = s->top;
 
   while (pom != NULL) {
     printf("\t%s\n",((TVar*)(pom->data))->name);
-    pom = pom->ptr;
+    pom = pom->next;
   }
   printf("________________\n\n");
 }
 
-void tiskniList (tList *L) {
+void tiskniList (TList *L) {
 
   printf("Stav seznamu:\n");
 
-  tLElemPtr pom = L->First;
+  TLElemPtr pom = L->First;
 
   while (pom != NULL) {
     printf("\t%s",((TVar*)(pom->data))->name);
@@ -39,14 +39,14 @@ void tiskniList (tList *L) {
     if (pom == L->Last) printf("\t<- posledni prvek");
     if (pom == L->Act) printf("\t<- aktivni prvek");
     printf("\n");
-    pom = pom->ptr;
+    pom = pom->next;
   }
   printf("________________\n\n");
 }
 
 
 #define prazdnyStack(stack) printf("Je zásobník prázdný? %s\n",(stackEmpty(&stack))? "ANO" : "NE");
-#define aktivniList(List) printf("Je seznam aktivní? %s\n",(Active(&List))? "ANO" : "NE");
+#define aktivniList(List) printf("Je seznam aktivní? %s\n",(listActive(&List))? "ANO" : "NE");
 
 
 int main()
@@ -124,7 +124,7 @@ int main()
   printf("TEST ZASOBNIKU:\n");
   printf("----------------------------\n");
 
-  tStack s;
+  TStack s;
   stackInit(&s);
   
   prazdnyStack(s);
@@ -177,68 +177,65 @@ int main()
   printf("----------------------------\n");
 
 
-  tList L;
-  InitList (&L);
+  TList L;
+  listInit (&L);
   id = functionSearchVar(fce, strCreateString("var1func2"));
-  tLElemPtr uk2 = GetActive (&L);
-  SetActive(&L, uk2);
+  TLElemPtr uk2 = listGetActive (&L);
+  listSetActive(&L, uk2);
   aktivniList(L);
 
-  InsertLast(&L, id);
+  listInsertLast(&L, id);
   tiskniList(&L);
 
-  void *uk4 = CopyLast(&L);
+  void *uk4 = listCopyLast(&L);
   printf("Zkopírováno:  %s\n",((TVar*)uk4)->name);
 
 
   aktivniList(L);
-  First(&L);
+  listFirst(&L);
   tiskniList(&L);	
 
-  Last(&L);
+  listLast(&L);
   tiskniList(&L);
 
   id = functionSearchVar(fce, strCreateString("var2func2"));
-  PostInsert(&L, id);
+  listPostInsert(&L, id);
   tiskniList(&L);
 
   id = functionSearchVar(fce, strCreateString("var3func2"));
-  InsertLast(&L, id);
+  listInsertLast(&L, id);
   tiskniList(&L);
 
 
   id = functionSearchVar(fce, strCreateString("var1func2"));
-  InsertLast(&L, id);
+  listInsertLast(&L, id);
   tiskniList(&L);	
 
-  First(&L);
-  Succ(&L);
-  tLElemPtr uk = GetActive (&L);
+  listFirst(&L);
+  listSucc(&L);
+  TLElemPtr uk = listGetActive (&L);
   tiskniList(&L);	
 
-  Last(&L);
+  listLast(&L);
   tiskniList(&L);	
 
-  SetActive(&L, uk);
+  listSetActive(&L, uk);
   tiskniList(&L);
 
   aktivniList(L);
-  DeleteFirst(&L);
+  listDeleteFirst(&L);
   tiskniList(&L);
 
-  void *uk3 = CopyLast(&L);
+  void *uk3 = listCopyLast(&L);
   printf("Zkopírováno:  %s\n",((TVar*)uk3)->name);
-  Succ(&L);
+  listSucc(&L);
   tiskniList(&L);
 
-  Actualize(&L, uk3);
+  listActualize(&L, uk3);
   tiskniList(&L);
 
+  listDispose (&L);
   printf("----------------------------\n");
-
-
-  DisposeList (&L);
-
   // konec testu seznamu
 
    printf("\nSmazu: \n");

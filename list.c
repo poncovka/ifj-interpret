@@ -13,7 +13,7 @@
  * @param   ukazatel na seznam
  * @return  kód chyby
  */
-int InitList (tList *L) {
+int listInit (TList *L) {
 
   if (L != NULL) {      // inicializace
     L->Act = NULL;
@@ -30,16 +30,16 @@ int InitList (tList *L) {
  * @param   ukazatel na seznam
  * @return  kód chyby
  */
-int DisposeList (tList *L) {
+int listDispose (TList *L) {
   
   if (L != NULL) {
-    tLElemPtr pom = NULL;
+    TLElemPtr pom = NULL;
     L->Act = NULL;
     L->Last = NULL;
 
     while (L->First != NULL) {  // mazání prvkù
       pom = L->First;
-      L->First = L->First->ptr;
+      L->First = L->First->next;
       free(pom);
     }
   }
@@ -55,17 +55,17 @@ int DisposeList (tList *L) {
  * @param   ukazatel na data
  * @return  kód chyby
  */
-int InsertFirst  (tList *L, void *data) {
+int listInsertFirst  (TList *L, void *data) {
 
   if (L != NULL) {
-    tLElemPtr pom = NULL;        // alokace nového prvku
+    TLElemPtr pom = NULL;        // alokace nového prvku
 
-    if ( (pom = (tLElemPtr)malloc(sizeof(struct tLElem))) != NULL ) {
+    if ( (pom = (TLElemPtr)malloc(sizeof(struct TLElem))) != NULL ) {
       pom->data = data;         // inicializace
-      pom->ptr = L->First;
+      pom->next = L->First;
       L->First = pom;
                                 // první prvek je i poslední
-      if (L->First->ptr == NULL) L->Last = pom; 
+      if (L->First->next == NULL) L->Last = pom; 
     }
     else return LIST_EALLOC;    // nedostatek pamìti
   }
@@ -81,20 +81,20 @@ int InsertFirst  (tList *L, void *data) {
  * @param   ukazatel na data
  * @return  kód chyby
  */
-int InsertLast  (tList *L, void *data) {
+int listInsertLast  (TList *L, void *data) {
 
   if (L != NULL) {
-    tLElemPtr pom = NULL;        // alokace nového prvku
+    TLElemPtr pom = NULL;        // alokace nového prvku
 
-    if ( (pom = (tLElemPtr)malloc(sizeof(struct tLElem))) != NULL ) {
+    if ( (pom = (TLElemPtr)malloc(sizeof(struct TLElem))) != NULL ) {
       pom->data = data;         // inicializace
-      pom->ptr = NULL;
+      pom->next = NULL;
 
       if (L->First == NULL) {   // seznam byl prázdný
         L->First = pom;         // nový prvek je prvním
       }
       else {                    // v seznamu alespoò 1 prvek
-        L->Last->ptr = pom;
+        L->Last->next = pom;
       }
 
       L->Last = pom;            // nový prvek je poslední
@@ -113,7 +113,7 @@ int InsertLast  (tList *L, void *data) {
  * @param   ukazatel na seznam
  * @return  kód chyby
  */
-int First (tList *L) {
+int listFirst (TList *L) {
 
   if (L != NULL) {
     L->Act = L->First;
@@ -129,7 +129,7 @@ int First (tList *L) {
  * @param   ukazatel na seznam
  * @return  kód chyby
  */
-int Last (tList *L) {
+int listLast (TList *L) {
 
   if (L != NULL) {
     L->Act = L->Last;
@@ -146,7 +146,7 @@ int Last (tList *L) {
  * @param   ukazatel na seznam
  * @return  ukazatel na data nebo NULL
  */
-void *CopyFirst (tList *L) {
+void *listCopyFirst (TList *L) {
 
   if (L != NULL && L->First != NULL) {
     return L->First->data;  // v poøádku, vrací uk na data
@@ -162,7 +162,7 @@ void *CopyFirst (tList *L) {
  * @param   ukazatel na seznam
  * @return  ukazatel na data nebo NULL
  */
-void *CopyLast (tList *L) {
+void *listCopyLast (TList *L) {
 
   if (L != NULL && L->Last != NULL) {
     return L->Last->data;   // v poøádku, vrací uk na data
@@ -178,7 +178,7 @@ void *CopyLast (tList *L) {
  * @param   ukazatel na seznam
  * @return  kód chyby
  */
-int DeleteFirst (tList *L) {
+int listDeleteFirst (TList *L) {
   
   if (L != NULL) {
     if (L->First != NULL) {     // seznam není prázdný
@@ -191,8 +191,8 @@ int DeleteFirst (tList *L) {
         L->Last = NULL;         // poslední zru¹íme
       }
 
-      tLElemPtr pom = L->First;  // zru¹ prvek
-      L->First = L->First->ptr;
+      TLElemPtr pom = L->First;  // zru¹ prvek
+      L->First = L->First->next;
       free (pom);
     }
   }
@@ -208,17 +208,17 @@ int DeleteFirst (tList *L) {
  * @param   ukazatel na data
  * @return  kód chyby
  */
-int PostInsert (tList *L, void *data) {
+int listPostInsert (TList *L, void *data) {
 
   if (L != NULL) {
     if (L->Act != NULL) {        // nìjaký prvek je aktivní
 
-      tLElemPtr pom = NULL;       // alokace
-      if ( (pom = (tLElemPtr)malloc(sizeof(struct tLElem))) != NULL ) {
+      TLElemPtr pom = NULL;       // alokace
+      if ( (pom = (TLElemPtr)malloc(sizeof(struct TLElem))) != NULL ) {
 
         pom->data = data;        // inicializace
-        pom->ptr = L->Act->ptr;
-        L->Act->ptr = pom;
+        pom->next = L->Act->next;
+        L->Act->next = pom;
                                  // nastavení posledního prvku
         if (L->Act == L->Last) L->Last = pom;
       }
@@ -237,12 +237,12 @@ int PostInsert (tList *L, void *data) {
  * @param   ukazatel na data
  * @return  kód chyby
  */
-int Succ (tList *L) {
+int listSucc (TList *L) {
 
   if (L != NULL) {
 
     if (L->Act != NULL) {
-      L->Act = L->Act->ptr;
+      L->Act = L->Act->next;
     }
   }
   else return LIST_ERR;
@@ -255,7 +255,7 @@ int Succ (tList *L) {
  * @param   ukazatel na seznam
  * @return  ukazatel na data nebo NULL
  */
-void *Copy (tList *L) {
+void *listCopy (TList *L) {
 
   if (L != NULL && L->Act != NULL) {
     return L->Act->data;  // ok, vrací se uk na data
@@ -270,7 +270,7 @@ void *Copy (tList *L) {
  * @param   ukazatel na data
  * @return  kód chyby
  */
-int Actualize (tList *L, void *data ) {
+int listActualize (TList *L, void *data ) {
   
   if (L != NULL) {
 
@@ -288,7 +288,7 @@ int Actualize (tList *L, void *data ) {
  * @param   ukazatel na seznam
  * @return  true/false
  */
-int Active (tList *L) {
+int listActive (TList *L) {
   return (L->Act != NULL);
 }
 
@@ -298,7 +298,7 @@ int Active (tList *L) {
  * @param   ukazatel na seznam
  * @return  ukazatel na prvek seznamu
  */
-tLElemPtr GetActive (tList *L) {
+TLElemPtr listGetActive (TList *L) {
   if (L != NULL) {
     return L->Act;
   }
@@ -312,7 +312,7 @@ tLElemPtr GetActive (tList *L) {
  * @param   ukazatel na prvek seznamu
  * @return  kód chyby
  */
-int SetActive (tList *L, tLElemPtr uk) {
+int listSetActive (TList *L, TLElemPtr uk) {
   if (L != NULL ) {
     L->Act = uk;
   }

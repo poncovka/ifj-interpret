@@ -12,15 +12,15 @@
 #include <string.h>
 #include "stack.h"
 
-void tiskniStack (tStack *s) {
+void tiskniStack (TStack *s) {
 
   printf("Stav zásobníku:\n");
 
-  tSElemPtr pom = s->top;
+  TSElemPtr pom = s->top;
 
   while (pom != NULL) {
     printf("\t%s\n",((TVar*)(pom->data))->name);
-    pom = pom->ptr;
+    pom = pom->next;
   }
   printf("________________\n\n");
 }
@@ -100,7 +100,7 @@ int main()
 
   // test zásobníku:
 
-  tStack s;
+  TStack s;
   stackInit(&s);
   
   prazdnyStack(s);
