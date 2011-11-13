@@ -16,7 +16,7 @@ void tiskniStack (tStack *s) {
 
   printf("Stav zásobníku:\n");
 
-  tElemPtr pom = s->top;
+  tSElemPtr pom = s->top;
 
   while (pom != NULL) {
     printf("\t%s\n",((TVar*)(pom->data))->name);

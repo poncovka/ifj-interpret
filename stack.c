@@ -56,7 +56,7 @@ int stackPop (tStack *s) {
 
   if (s != NULL) {
     if (!stackEmpty(s)) {
-      tElemPtr pom = s->top;
+      tSElemPtr pom = s->top;
       s->top = s->top->ptr;
       free(pom);
     }
@@ -77,9 +77,9 @@ int stackPop (tStack *s) {
 int stackPush (tStack *s, void *data) {
 
   if (s != NULL) {
-    tElemPtr elem;
+    tSElemPtr elem;
 
-    if ( (elem = (tElemPtr)malloc(sizeof(struct tElem))) != NULL ) {
+    if ( (elem = (tSElemPtr)malloc(sizeof(struct tSElem))) != NULL ) {
 
       elem->data = data;
       elem->ptr = s->top;

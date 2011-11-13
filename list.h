@@ -17,13 +17,15 @@
 #define LIST_ERR    -1
 #define LIST_EALLOC -2
 
-// struktura pro polo¾ku seznamu: tElem
-// datový typ tElem a tElemPtr je definován ve stack.h
+typedef struct tLElem {        // struktura pro polo¾ku seznamu
+  struct tLElem *ptr;          // ukazatel na dal¹í polo¾ku
+  void *data;                  // ukazatel na data
+} *tLElemPtr;
 
-typedef struct {                // struktura pro seznam:
-  tElemPtr Act;                 // uk na aktivní prvek
-  tElemPtr First;               // uk na první prvek
-  tElemPtr Last;               // uk na poslední prvek
+typedef struct {               // struktura pro seznam:
+  tLElemPtr Act;               // uk na aktivní prvek
+  tLElemPtr First;             // uk na první prvek
+  tLElemPtr Last;              // uk na poslední prvek
 } tList;
 
 
@@ -40,14 +42,15 @@ void *CopyFirst  (tList *L);
 void *CopyLast   (tList *L);
 int DeleteFirst  (tList *L);
 
-int PostDelete   (tList *L);              // neimplementováno
+int PostDelete   (tList *L);  // neimplementováno
+
 int PostInsert   (tList *L, void *data);
 int Succ         (tList *L);
 void *Copy        (tList *L);	
 int Actualize    (tList *L, void *data );
 int Active       (tList *L);
 
-tElemPtr GetActive (tList *L);
-int SetActive (tList *L, tElemPtr uk);
+tLElemPtr GetActive (tList *L);
+int SetActive (tList *L, tLElemPtr uk);
 
 #endif // LIST_H_INCLUDED
