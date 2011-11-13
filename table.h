@@ -52,34 +52,35 @@ typedef struct{
 typedef enum{
    I_LAB,      // --- --- ---
 
-   I_POP,      // src --- ---       src je TVar ale na stacku je je TVarData
-   I_PUSH,     // dst --- ---       dst je TVar ale na stack se vlozi odpovidajici TVarData
+   I_POP,      // src --- ---       src je *TVar ale na stacku je TVarData
+   I_PUSH,     // dst --- ---       dst je *TVar ale na stack se vlozi odpovidajici TVarData
    I_STACK_E,
 
-   I_MOV,      // dst --- ---       nastavi odpovidajici TVarData -> type na NIL
-               // dst src ---       odpovidajici dest TVar nastavi podle odpovidajiciho src TVar,
+   I_MOV,      // dst --- ---       nastavi odpovidajici *TVar -> TVarData[fce->cnt] -> type = NIL
+               // dst src ---       odpovidajici dest *TVar nastavi podle odpovidajiciho src *TVar,
 
-   I_ADD,      // dest src1 src2    vsechno TVar
-   //I_SUB,
-   I_MUL,      // dest src1 src2
-   I_DIV,      // dest src1 src2
-   I_POW,      // dest src1 src2
-   I_CON,      // dest src1 src2
+   I_ADD,      // dst src src       vsechno *TVar
+   //I_SUB,                         neresime :)
+   I_MUL,      // dst src src
+   I_DIV,      // dst src src
+   I_POW,      // dst src src
+   I_CON,      // dst src src
 
-   I_CMP_L,    // dest src1 src2
-   I_CMP_LE,   // dest src1 src2
-   I_CMP_G,    // dest src1 src2
-   I_CMP_GE,   // dest src1 src2
-   I_CMP_E,    // dest src1 src2
-   I_CMP_NE,   // dest src1 src2
+   I_CMP_L,    // dst src src
+   I_CMP_LE,   // dst src src
+   I_CMP_G,    // dst src src
+   I_CMP_GE,   // dst src src
+   I_CMP_E,    // dst src src
+   I_CMP_NE,   // dst src src
 
-   I_JMP,      // lab --- ---       lab je nasvesti TLElemPtr
-   I_JMP_Z,    // lab src ---       src je TVar
+   I_JMP,      // lab --- ---       lab je nasvesti *TLElemPtr
+   I_JMP_Z,    // lab src ---       src je *TVar
    I_JMP_NZ,   // lab src ---
 
-   I_CALL,     // fce --- ---       fce je TFunction
-   I_WRITE,    // --- src ---       src TVar
-   I_READ,     // dst --- ---       dst TVar
+   I_WRITE,    // --- src ---       src *TVar
+   I_READ,     // dst --- ---       dst *TVar
+   I_CALL,     // fce --- ---       fce je *TFunction
+
    I_TYPE,     // --- --- ---
    I_SUBSTR,   // --- --- ---
    I_FIND,     // --- --- ---
@@ -92,10 +93,11 @@ typedef struct{
    void *src1;
    void *scr2;
 }TInstr;
+
 void tableInit(TTable*);
 
 /*
- * naposled vllzena promena do tabulky symbolu ve funkci
+ * naposled vlozena promena do tabulky symbolu ve funkci
  * @param   funkce
  * @return  data promene(struct TVar)
  */
