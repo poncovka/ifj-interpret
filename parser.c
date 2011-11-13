@@ -219,7 +219,7 @@ int prsInit(){
       // inicializuji promenou na nil
       // ve skutecnosti ji inicializuju pomoci konstanty ktera bude ulozena
       // jako prvni v tabulce konstant a bude NIL
-      printf("\tMOV %s\n", getLastAddedVar(table->lastAddedFunc)->name );
+      printf("\tSET %s\n", getLastAddedVar(table->lastAddedFunc)->name );
       return PRS_OK;
    }
    // 12. <init> -> = <lit>
@@ -230,9 +230,9 @@ int prsInit(){
    if(err != PRS_OK) return err;
 
       if(lex == L_STRING)
-         printf("\tMOV %s \"%s\"\n", getLastAddedVar(table->lastAddedFunc)->name, token.str);
+         printf("\tSET %s \"%s\"\n", getLastAddedVar(table->lastAddedFunc)->name, token.str);
       else
-         printf("\tMOV %s %s\n", getLastAddedVar(table->lastAddedFunc)->name, token.str);
+         printf("\tSET %s %s\n", getLastAddedVar(table->lastAddedFunc)->name, token.str);
 
    // musim nacist dalsi token protoze prsDefVar pocita ze je nacteny
    NEXT_TOKEN

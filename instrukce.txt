@@ -1,3 +1,4 @@
+SET                       // dst src ---       nastavi promenou vola varReallo!!!
 LAB  --- --- ---          // nedela nic
 RETURN  --- --- ---       // ukonci interpretaci
 

@@ -59,7 +59,8 @@ typedef enum{
    I_STACK_E,
 
    I_MOV,      // dst --- ---       nastavi odpovidajici TVar -> TVarData[fce->cnt] -> type = NIL
-               // dst src ---       odpovidajici dest *TVar nastavi podle odpovidajiciho src TVar,
+               // dst src ---       odpovidajici dest TVar nastavi podle odpovidajiciho src TVar,
+   I_SET       // dst src ---       nastavi promenou vola varReallo!!!
 
    I_ADD,      // dst src src       vsechno TVar
    //I_SUB,                         neresime :)
