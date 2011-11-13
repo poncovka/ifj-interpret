@@ -1,8 +1,10 @@
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "table.h"
 #include "binaryTree.h"
 #include "str.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include "list.h"
 
 #define VAR_ALLOC_SIZE 8
 
@@ -21,9 +23,7 @@ TVar *getLastAddedVar(TFunction *F){
 
 //----------------------------------------------------------------------
 
-/*
- * @todo    INICIALIZACE !!!
- */
+
 int tableInsertFunction (TTable *T, string s){
 
    TFunction *f  = malloc(sizeof(TFunction));
@@ -33,8 +33,8 @@ int tableInsertFunction (TTable *T, string s){
       return INS_MALLOC;
 
    BTreeInit(&(f->variables), VAR);
-   // inicializace seznamu instrukci
-   // inicializace seznamu komstant
+   listInit (&(f->constants));
+   listInit (&(f->instructions));
 
    f->name = newName;
    f->cnt = -1;
@@ -91,7 +91,7 @@ TVar *functionSearchVar  (TFunction *F, string s){
 //----------------------------------------------------------------------
 
 /*
- * pomocna fce pro tableClear, maza podle urceneho kontextu
+ * pomocna fce pro tableClear, maze podle urceneho kontextu
  * bacha na to! maze strom funkci :)
  * @param   uzel strom
  * @param   typ stromu(urcuje predpis mazani dat)

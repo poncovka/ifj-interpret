@@ -3,6 +3,7 @@
 
 #include "parser.h"
 #include "table.h"
+#include "list.h"
 #include "scanner.h"
 #include "str.h"
 

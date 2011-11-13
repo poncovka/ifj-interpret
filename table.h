@@ -3,11 +3,12 @@
 
 #include "binaryTree.h"
 #include "str.h"
+#include "list.h"
 
 typedef struct{
-   TBTree variables;      // tabulka promenych
-   // seznam constants;
-   // seznam instrukci
+   TBTree variables;       // tabulka promenych
+   TList  constants;       // seznam konstant + pomocnych promenyh
+   TList  instructions;    // seznam instrukci
    char   *name;           // jmeno fce(identifikator)void tableInit(TTable*);
    int    cnt;             // pocet spusteni funkce
 }TFunction;
@@ -42,16 +43,58 @@ typedef struct{
 
 typedef struct{
    char      *name;
-   EVarType   type;
-   TVarData  *var;   // budem alokovat jenom jednou a ne 2x :) a pujdem po 8
-   int        alloc;
+   EVarType   type;  // CONST nebo VAR
+   TVarData  *var;   // pole! bude se alokovat po 8
+   int        alloc; // kolik je alokovano
 }TVar;
 
+// Instrukce
+typedef enum{
+   I_LAB,      // --- --- ---
 
+   I_POP,      // src --- ---       src je TVar ale na stacku je je TVarData
+   I_PUSH,     // dst --- ---       dst je TVar ale na stack se vlozi odpovidajici TVarData
+   I_STACK_E,
+
+   I_MOV,      // dst --- ---       nastavi odpovidajici TVarData -> type na NIL
+               // dst src ---       odpovidajici dest TVar nastavi podle odpovidajiciho src TVar,
+
+   I_ADD,      // dest src1 src2    vsechno TVar
+   //I_SUB,
+   I_MUL,      // dest src1 src2
+   I_DIV,      // dest src1 src2
+   I_POW,      // dest src1 src2
+   I_CON,      // dest src1 src2
+
+   I_CMP_L,    // dest src1 src2
+   I_CMP_LE,   // dest src1 src2
+   I_CMP_G,    // dest src1 src2
+   I_CMP_GE,   // dest src1 src2
+   I_CMP_E,    // dest src1 src2
+   I_CMP_NE,   // dest src1 src2
+
+   I_JMP,      // lab --- ---       lab je nasvesti TLElemPtr
+   I_JMP_Z,    // lab src ---       src je TVar
+   I_JMP_NZ,   // lab src ---
+
+   I_CALL,     // fce --- ---       fce je TFunction
+   I_WRITE,    // --- src ---       src TVar
+   I_READ,     // dst --- ---       dst TVar
+   I_TYPE,     // --- --- ---
+   I_SUBSTR,   // --- --- ---
+   I_FIND,     // --- --- ---
+   I_SORT,     // --- --- ---
+}EInstrType;
+
+typedef struct{
+   EInstrType type;
+   void *dest;
+   void *src1;
+   void *scr2;
+}TInstr;
 void tableInit(TTable*);
 
 /*
- * NENI IMPLEMENTOVANO !!!
  * naposled vllzena promena do tabulky symbolu ve funkci
  * @param   funkce
  * @return  data promene(struct TVar)

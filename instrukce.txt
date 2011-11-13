@@ -23,14 +23,14 @@ CMP_E  dest src1 src2
 CMP_NE dest src1 src2
 
 JMP    lab --- ---        // nastavi akticni instrukci na lab, lab je ukazatel na list item 
-JMP_Z  src lab ---        // obdobne
-JMP_NZ src lab ---
+JMP_Z  lab src ---        // obdobne
+JMP_NZ lab src ---
 
 CALL fptr --- ---         // zvedne cnt o jedna a zintepretuje fptr(rekurzivne) pokud bude vse OK snizi index
 RETURN  --- --- ---       // ukonci interpretaci
 
-WRITE src  --- ---        // vypise co je v TVar src
-READ  dest --- ---
+WRITE  --- src ---        // vypise co je v TVar src
+READ   dst --- ---
 
 TYPE   --- --- ---        // udela co se ceka + *
 SUBSTR --- --- ---
