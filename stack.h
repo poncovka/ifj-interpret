@@ -15,7 +15,7 @@
 #define STACK_EOK     0
 #define STACK_ERR    -1
 #define STACK_EEMPTY -2
-#define STACK_EALLOC -3
+#define STACK_EALLOC -5
 
 typedef struct tSElem {   // struktura pro polo¾ku v zásobníku
   struct tSElem *ptr;     // ukazatel na dal¹í polo¾ku

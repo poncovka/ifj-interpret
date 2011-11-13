@@ -11,11 +11,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "stack.h"
 
 #define LIST_EOK     0
 #define LIST_ERR    -1
-#define LIST_EALLOC -2
+#define LIST_EALLOC -5
 
 typedef struct tLElem {        // struktura pro polo¾ku seznamu
   struct tLElem *ptr;          // ukazatel na dal¹í polo¾ku
