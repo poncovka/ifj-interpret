@@ -1,9 +1,13 @@
 #ifndef TABLE_H_INCLUDED
 #define TABLE_H_INCLUDED
 
+#include <stdlib.h>
+#include <stdio.h>
 #include "binaryTree.h"
 #include "str.h"
 #include "list.h"
+
+#define VAR_ALLOC_SIZE 8
 
 typedef struct{
    TBTree variables;       // tabulka promenych
@@ -60,7 +64,7 @@ typedef enum{
 
    I_MOV,      // dst --- ---       nastavi odpovidajici TVar -> TVarData[fce->cnt] -> type = NIL
                // dst src ---       odpovidajici dest TVar nastavi podle odpovidajiciho src TVar,
-   I_SET       // dst src ---       nastavi promenou vola varReallo!!!
+   I_SET,       // dst src ---       nastavi promenou vola varReallo!!!
 
    I_ADD,      // dst src src       vsechno TVar
    //I_SUB,                         neresime :)

@@ -1,34 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
+
 
 #include "parser.h"
-#include "table.h"
-#include "list.h"
-#include "scanner.h"
-#include "str.h"
-
-#define NEXT_TOKEN lex = getNextToken(&token); if(lex < 0) return lex;
-
-string token;
-int    lex;
-TTable *table;
-
-int prsProgram();
-int prsDefFunc();
-int prsStat();
-int prsParams();
-int prsParamsN();
-int prsDefVar();
-int prsStatList();
-int prsInit();
-int prsLit();
-int prsCommand();
-int prsExpN();
-int prsAssign();
-int prsVarParams();
-int prsVar();
-int prsVarN();
-
 
 int parser(TTable *t){
    table = t;

@@ -1,12 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
+
 
 #include "table.h"
-#include "binaryTree.h"
-#include "str.h"
-#include "list.h"
-
-#define VAR_ALLOC_SIZE 8
 
 int varRealloc(TVar *v, int cnt){
    if((cnt = v->alloc - cnt) >= 1)

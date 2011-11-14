@@ -1,15 +1,6 @@
 //jednoducha knihovna pro praci s nekonecne dlouhymi retezci
-#include <string.h>
-#include <malloc.h>
+
 #include "str.h"
-
-#define STR_LEN_INC 8
-// konstanta STR_LEN_INC udava, na kolik bytu provedeme pocatecni alokaci pameti
-// pokud nacitame retezec znak po znaku, pamet se postupne bude alkokovat na
-// nasobky tohoto cisla
-
-#define STR_ERROR   1
-#define STR_SUCCESS 0
 
 char *strCopyChar(string *s)
 // funkcia vytvori novy retazec
