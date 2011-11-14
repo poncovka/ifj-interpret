@@ -18,7 +18,7 @@ void tiskniStack (TStack *s) {
 
   printf("Stav zásobníku:\n");
 
-  TSElemPtr pom = s->top;
+  TSItem *pom = s->top;
 
   while (pom != NULL) {
     printf("\t%s\n",((TVar*)(pom->data))->name);
@@ -31,7 +31,7 @@ void tiskniList (TList *L) {
 
   printf("Stav seznamu:\n");
 
-  TLElemPtr pom = L->First;
+  TLItem *pom = L->First;
 
   while (pom != NULL) {
     printf("\t%s",((TVar*)(pom->data))->name);
@@ -180,7 +180,7 @@ int main()
   TList L;
   listInit (&L);
   id = functionSearchVar(fce, strCreateString("var1func2"));
-  TLElemPtr uk2 = listGetActive (&L);
+  TLItem *uk2 = listGetActive (&L);
   listSetActive(&L, uk2);
   aktivniList(L);
 
@@ -213,7 +213,7 @@ int main()
 
   listFirst(&L);
   listSucc(&L);
-  TLElemPtr uk = listGetActive (&L);
+  TLItem *uk = listGetActive (&L);
   tiskniList(&L);	
 
   listLast(&L);

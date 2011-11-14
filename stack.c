@@ -56,7 +56,7 @@ int stackPop (TStack *s) {
 
   if (s != NULL) {
     if (!stackEmpty(s)) {
-      TSElemPtr pom = s->top;
+      TSItem *pom = s->top;
       s->top = s->top->next;
       free(pom);
     }
@@ -77,9 +77,9 @@ int stackPop (TStack *s) {
 int stackPush (TStack *s, void *data) {
 
   if (s != NULL) {
-    TSElemPtr elem;
+    TSItem *elem;
 
-    if ( (elem = (TSElemPtr)malloc(sizeof(struct TSElem))) != NULL ) {
+    if ( (elem = (TSItem *)malloc(sizeof(TSItem))) != NULL ) {
 
       elem->data = data;
       elem->next = s->top;

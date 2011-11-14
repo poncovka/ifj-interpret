@@ -14,9 +14,9 @@
 
 void tiskniStack (TStack *s) {
 
-  printf("Stav zÃ¡sobnÃ­ku:\n");
+  printf("Stav zásobníku:\n");
 
-  TSElemPtr pom = s->top;
+  TSItem *pom = s->top;
 
   while (pom != NULL) {
     printf("\t%s\n",((TVar*)(pom->data))->name);
@@ -25,7 +25,7 @@ void tiskniStack (TStack *s) {
   printf("________________\n\n");
 }
 
-#define prazdnyStack(stack) printf("Je zÃ¡sobnÃ­k prÃ¡zdnÃ½? %s\n",(stackEmpty(&stack))? "ANO" : "NE");
+#define prazdnyStack(stack) printf("Je zásobník prázdný? %s\n",(stackEmpty(&stack))? "ANO" : "NE");
 
 
 int main()
@@ -98,7 +98,7 @@ int main()
       printf("\n----------------------------\n");
    }
 
-  // test zÃ¡sobnÃ­ku:
+  // test zásobníku:
 
   TStack s;
   stackInit(&s);
@@ -124,18 +124,18 @@ int main()
 
 
   TVar *data = (TVar*)stackTopPop(&s);
-  if (data != NULL)  printf("VybrÃ¡no ze zÃ¡sobnÃ­ku: %s\n",data->name);
-  else printf("Ukazatel je nulovÃ½! \n");
+  if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
+  else printf("Ukazatel je nulový! \n");
   prazdnyStack(s);
 
   data = (TVar*)stackTopPop(&s);
-  if (data != NULL)  printf("VybrÃ¡no ze zÃ¡sobnÃ­ku: %s\n",data->name);
-  else printf("Ukazatel je nulovÃ½! \n");
+  if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
+  else printf("Ukazatel je nulový! \n");
   prazdnyStack(s);
 
   data = (TVar*)stackTopPop(&s);
-  if (data != NULL)  printf("VybrÃ¡no ze zÃ¡sobnÃ­ku: %s\n",data->name);
-  else printf("Ukazatel je nulovÃ½! \n");
+  if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
+  else printf("Ukazatel je nulový! \n");
   prazdnyStack(s);
 
   tiskniStack(&s);
@@ -144,8 +144,8 @@ int main()
   tiskniStack(&s);
   
   data = (TVar*)stackTopPop(&s);
-  if (data != NULL)  printf("VybrÃ¡no ze zÃ¡sobnÃ­ku: %s\n",data->name);
-  else printf("Ukazatel je nulovÃ½! \n");
+  if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
+  else printf("Ukazatel je nulový! \n");
 
   // konec testu stack
 

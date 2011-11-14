@@ -33,7 +33,7 @@ int listInit (TList *L) {
 int listDispose (TList *L) {
   
   if (L != NULL) {
-    TLElemPtr pom = NULL;
+    TLItem *pom = NULL;
     L->Act = NULL;
     L->Last = NULL;
 
@@ -58,9 +58,9 @@ int listDispose (TList *L) {
 int listInsertFirst  (TList *L, void *data) {
 
   if (L != NULL) {
-    TLElemPtr pom = NULL;        // alokace nového prvku
+    TLItem *pom = NULL;        // alokace nového prvku
 
-    if ( (pom = (TLElemPtr)malloc(sizeof(struct TLElem))) != NULL ) {
+    if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
       pom->data = data;         // inicializace
       pom->next = L->First;
       L->First = pom;
@@ -84,9 +84,9 @@ int listInsertFirst  (TList *L, void *data) {
 int listInsertLast  (TList *L, void *data) {
 
   if (L != NULL) {
-    TLElemPtr pom = NULL;        // alokace nového prvku
+    TLItem *pom = NULL;        // alokace nového prvku
 
-    if ( (pom = (TLElemPtr)malloc(sizeof(struct TLElem))) != NULL ) {
+    if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
       pom->data = data;         // inicializace
       pom->next = NULL;
 
@@ -191,7 +191,7 @@ int listDeleteFirst (TList *L) {
         L->Last = NULL;         // poslední zru¹íme
       }
 
-      TLElemPtr pom = L->First;  // zru¹ prvek
+      TLItem *pom = L->First;  // zru¹ prvek
       L->First = L->First->next;
       free (pom);
     }
@@ -213,8 +213,8 @@ int listPostInsert (TList *L, void *data) {
   if (L != NULL) {
     if (L->Act != NULL) {        // nìjaký prvek je aktivní
 
-      TLElemPtr pom = NULL;       // alokace
-      if ( (pom = (TLElemPtr)malloc(sizeof(struct TLElem))) != NULL ) {
+      TLItem *pom = NULL;       // alokace
+      if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
 
         pom->data = data;        // inicializace
         pom->next = L->Act->next;
@@ -298,7 +298,7 @@ int listActive (TList *L) {
  * @param   ukazatel na seznam
  * @return  ukazatel na prvek seznamu
  */
-TLElemPtr listGetActive (TList *L) {
+TLItem *listGetActive (TList *L) {
   if (L != NULL) {
     return L->Act;
   }
@@ -312,7 +312,7 @@ TLElemPtr listGetActive (TList *L) {
  * @param   ukazatel na prvek seznamu
  * @return  kód chyby
  */
-int listSetActive (TList *L, TLElemPtr uk) {
+int listSetActive (TList *L, TLItem *uk) {
   if (L != NULL ) {
     L->Act = uk;
   }

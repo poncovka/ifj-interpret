@@ -16,15 +16,15 @@
 #define LIST_ERR    -1
 #define LIST_EALLOC -5
 
-typedef struct TLElem {        // struktura pro polo¾ku seznamu
-  struct TLElem *next;         // ukazatel na dal¹í polo¾ku
-  void *data;                  // ukazatel na data
-} *TLElemPtr;
+typedef struct tLItem {      // struktura pro polo¾ku seznamu
+  struct tLItem *next;       // ukazatel na dal¹í polo¾ku
+  void *data;                // ukazatel na data
+} TLItem;
 
-typedef struct {               // struktura pro seznam:
-  TLElemPtr Act;               // uk na aktivní prvek
-  TLElemPtr First;             // uk na první prvek
-  TLElemPtr Last;              // uk na poslední prvek
+typedef struct {             // struktura pro seznam:
+  TLItem *Act;               // uk na aktivní prvek
+  TLItem *First;             // uk na první prvek
+  TLItem *Last;              // uk na poslední prvek
 } TList;
 
 
@@ -49,7 +49,7 @@ void *listCopy       (TList *L);
 int listActualize    (TList *L, void *data );
 int listActive       (TList *L);
 
-TLElemPtr listGetActive (TList *L);
-int listSetActive (TList *L, TLElemPtr uk);
+TLItem *listGetActive (TList *L);
+int listSetActive (TList *L, TLItem *uk);
 
 #endif // LIST_H_INCLUDED
