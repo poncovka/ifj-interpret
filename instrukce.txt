@@ -11,7 +11,7 @@ MOV dest src1 ---         // do TVar dest[fce->cnt] proradi to co je v TVar src1
 MOV dest  --- ---         // TVarData dest[fce->cnt] nastavi na nil
 
 ADD dest src1 src2        // dalsi jsou obdobne jako MOV
-SUB dest src1 src2        //  -- neresime ;)
+SUB dest src1 src2    
 MUL dest src1 src2        
 DIV dest src1 src2      
 POW dest src1 src2        

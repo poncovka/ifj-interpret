@@ -24,7 +24,7 @@ int prsInit();
 int prsLit();
 int prsCommand();
 int prsExpN();
-int prsAssign();
+int prsAssign(TVar*);
 int prsVarParams();
 int prsVar();
 int prsVarN();
@@ -137,6 +137,7 @@ int prsParams(){
    if(err == INS_NODE_EXIST) return SEM_ERR;
    if(err != INS_OK) return INTR_ERR;
 
+   printf("\tSET %s\n", token.str);
    printf("\tPOP %s\n", token.str);
 
    err = prsParamsN();
@@ -165,6 +166,7 @@ int prsParamsN(){
    if(err == INS_NODE_EXIST) return SEM_ERR;
    if(err != INS_OK) return INTR_ERR;
 
+   printf("\tSET %s\n", token.str);
    printf("\tPOP %s\n", token.str);
 
    return prsParamsN();
@@ -268,6 +270,7 @@ int prsStatList(){
 
 int expJump(){
    //int i = 1;
+   printf("\t---\n\texp magic\n\t---\n");
    while(lex != END_OF_FILE){
       if(lex == L_COMMA  || lex == L_SEMICOLON || lex == L_RIGHT_BRACKET || lex == KW_THEN)
          break;
@@ -288,10 +291,9 @@ int prsCommand(){
          NEXT_TOKEN
          if(lex != L_ASSIGN) return SYN_ERR;
 
-         int err = prsAssign();
+         int err = prsAssign(tmp);
          if(err != PRS_OK) return err;
 
-         printf("\tPOP %s\n", tmp->name);
          return PRS_OK;
       }break;
       // 16. <command> -> if expression then <stat_list> else <stat_list> end
@@ -302,7 +304,7 @@ int prsCommand(){
          if(lex != KW_THEN) return SYN_ERR;
 
          int tmp = ++cnt;
-         printf("\tJMP_Z (exp_result) else_%d\n", tmp);
+         printf("\tJMP_Z tmp else_%d\n", tmp);
          err = prsStat();
          printf("\tJMP if_end_%d\n", tmp);
          if(err != PRS_OK) return err;
@@ -324,7 +326,7 @@ int prsCommand(){
          printf("\tLAB while_%d\n", tmp);
          NEXT_TOKEN
          expJump();
-         printf("\tJMP_Z (exp_result) while_end_%d\n", tmp);
+         printf("\tJMP_Z tmp while_end_%d\n", tmp);
          if(lex != KW_THEN) return SYN_ERR;
 
          int err = prsStat();
@@ -341,8 +343,8 @@ int prsCommand(){
          // preskocim vyraz a vratim ze bylo vse OK
          NEXT_TOKEN
          expJump();
-         // printf("\tPOP (exp_result)\n");
-         printf("\tRETURN (exp_result)\n");
+         printf("\tPOP tmp\n");
+         printf("\tRETURN\n");
          return PRS_OK;
       }break;
       // 19. <command> -> write ( expression <expression_n> )
@@ -353,7 +355,7 @@ int prsCommand(){
 
          NEXT_TOKEN
          expJump();
-         printf("\tWRITE (exp_result)\n");
+         printf("\tWRITE tmp\n");
 
          err = prsExpN();
          if(err != PRS_OK ) return err;
@@ -375,12 +377,13 @@ int prsExpN(){
    if(lex != L_COMMA) return SYN_ERR;
    NEXT_TOKEN
    expJump();
-   printf("\tWRITE (exp_result)\n");
+   printf("\tWRITE tmp\n");
 
    return prsExpN();
 }
 
-int prsAssign(){
+int prsAssign(TVar *var){
+
    NEXT_TOKEN
    if(lex == KW_READ){
       // 24. <assign> -> read ( <lit> )
@@ -390,7 +393,7 @@ int prsAssign(){
       NEXT_TOKEN
       if(lex != L_STRING && lex != L_NUMBER ) return SYN_ERR;
 
-      printf("\tREAD \"%s\"\n", token.str);
+      printf("\tREAD %s \"%s\"\n",var->name, token.str);
 
       NEXT_TOKEN
       if(lex != L_RIGHT_BRACKET) return SYN_ERR;
@@ -405,6 +408,7 @@ int prsAssign(){
    if(Ftmp == NULL && (lex != KW_TYPE && lex != KW_SUBSTR && lex != KW_FIND && lex != KW_SORT) ){
       // 23. <assign> -> expression
       expJump();
+      printf("\tMOV %s tmp\n", var->name);
       return PRS_OK;
    }
 
@@ -438,6 +442,8 @@ int prsAssign(){
             printf("\tSORT\n");
          }break;
    }
+
+   printf("\tPOP %s\n", var->name);
 
    NEXT_TOKEN
    return PRS_OK;

@@ -8,6 +8,7 @@
 typedef struct{
    TBTree variables;       // tabulka promenych
    TList  constants;       // seznam konstant + pomocnych promenyh
+   TList  tmpVar;          // pomocne promene
    TList  instructions;    // seznam instrukci
    char   *name;           // jmeno fce(identifikator)void tableInit(TTable*);
    int    cnt;             // pocet spusteni funkce
@@ -34,7 +35,7 @@ typedef enum{
 typedef union{
    int     b;
    double  n;
-   char*   s;
+   string  s;
 }UVarValue;
 
 typedef struct{
@@ -44,8 +45,8 @@ typedef struct{
 
 typedef struct{
    char      *name;
-   EVarType   type;  // CONST nebo VAR
-   TVarData  *var;   // pole! bude se alokovat po 8
+   EVarType   varType;  // CONST nebo VAR
+   TVarData  *var;   // pole! bude se alokovat po 8  var[f->cnt]->type =
    int        alloc; // kolik je alokovano
 }TVar;
 
@@ -54,16 +55,17 @@ typedef enum{
    I_LAB,      // --- --- ---
    I_RETURN,   // --- --- ---
 
-   I_POP,      // src --- ---       src je TVar ale na stacku je TVarData
+   I_POP,      // --- src ---       src je TVar ale na stacku je TVarData
    I_PUSH,     // dst --- ---       dst je TVar ale na stack se vlozi odpovidajici TVarData
    I_STACK_E,
 
    I_MOV,      // dst --- ---       nastavi odpovidajici TVar -> TVarData[fce->cnt] -> type = NIL
                // dst src ---       odpovidajici dest TVar nastavi podle odpovidajiciho src TVar,
-   I_SET       // dst src ---       nastavi promenou vola varReallo!!!
+   I_SET,      // dst --- ---       nastavi promenou na nil jako prvni vola varRealloc!!!
+               // dst src ---       nastavi na podle src
 
    I_ADD,      // dst src src       vsechno TVar
-   //I_SUB,                         neresime :)
+   I_SUB,      // dst src src
    I_MUL,      // dst src src
    I_DIV,      // dst src src
    I_POW,      // dst src src
@@ -76,12 +78,12 @@ typedef enum{
    I_CMP_E,    // dst src src
    I_CMP_NE,   // dst src src
 
-   I_JMP,      // lab --- ---       lab je nasvesti TLElemPtr
-   I_JMP_Z,    // lab src ---       src je *TVar
+   I_JMP,      // lab --- ---       lab je nasvesti TItem nebp TLElemPtr (podle impelentace listu)
+   I_JMP_Z,    // lab src ---       src je TVar
    I_JMP_NZ,   // lab src ---
 
    I_WRITE,    // --- src ---       src TVar
-   I_READ,     // dst --- ---       dst TVar
+   I_READ,     // dst prm ---       dst TVar, prm je parametr read
    I_CALL,     // fce --- ---       fce je TFunction
 
    I_TYPE,     // --- --- ---
@@ -93,7 +95,7 @@ typedef enum{
 typedef struct{
    EInstrType type;
    void *dest;
-   void *src1;
+   void *src1;   // ((TVar *)L->act->data)->var[f->cnt]->type --- VAR CONST TMP_VAR
    void *scr2;
 }TInstr;
 

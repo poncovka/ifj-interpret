@@ -46,6 +46,7 @@ int tableInsertFunction (TTable *T, string s){
    BTreeInit(&(f->variables), VAR);
    listInit (&(f->constants));
    listInit (&(f->instructions));
+   listInit (&(f->tmpVar));
 
    f->name = newName;
    f->cnt = -1;
@@ -75,7 +76,7 @@ int functionInsertVar(TFunction *F, string s){
    v->name  = newName;
    v->alloc = VAR_ALLOC_SIZE;
    v->var   = vd;
-   v->type  = VT_VAR;
+   v->varType  = VT_VAR;
    int err = BTreeInsert(&(F->variables), newName, v);
    if(!err){
       free(v);
@@ -101,12 +102,29 @@ TVar *functionSearchVar  (TFunction *F, string s){
 
 //----------------------------------------------------------------------
 
-void freeConstList(TList *l){
+void freeConstTmpVarList(TList *l){
    listFirst(l);
    while( l->Act != NULL ){
-      free( ((TVar *)l->Act->data)->name );
-      free( ((TVar *)l->Act->data)->var );
-      free( l->Act->data );
+      TVar *tmp = (TVar *)l->Act->data;
+
+      if(tmp->varType == VT_VAR){
+      // jestli to byla promena tak musim projit cele pole a smazat vsechny stringy
+         for(int i = 0; i < tmp->alloc; i++){
+            if(tmp->var[i].type == STRING)
+               free(tmp->var[i].value.s.str);
+         }
+         // protoze sem musel pole alokovat tak ho musim smazat
+         free(tmp->var );
+      }
+      else if(tmp->varType == VT_CONST || tmp->varType == VT_TMP_VAR){
+      // jestlize je to konstanta nebo pomocna promena tak overim jestli je string a pripadne smazu
+         if(tmp->var->type == STRING)
+            free(tmp->var->value.s.str);
+         // tmp->var nemazu protoze sem ho nealokoval (teda spon ja :D )
+      }
+
+      free(tmp->name);
+      free( l->Act->data ); // data jsem asi zrejmne taky alokoval tak je mazu
 
       listDeleteFirst(l);
       listFirst(l);
@@ -116,7 +134,7 @@ void freeConstList(TList *l){
 void freeInstrList(TList *l){
    listFirst(l);
    while( l->Act != NULL ){
-      free( l->Act->data );
+      free( l->Act->data );   // u instrukce byla data alokovana musim je smazat
 
       listDeleteFirst(l);
       listFirst(l);
@@ -141,7 +159,8 @@ void clearNode(TNode n, EBTreeDataType type){
             TFunction *f = ((TFunction *)n->data);
 
             clearNode( f->variables.root, f->variables.type); // type by mel byt VAR
-            freeConstList( &(f->constants) );
+            freeConstTmpVarList( &(f->constants) );
+            freeConstTmpVarList( &(f->tmpVar) );
             freeInstrList( &(f->instructions) );
             free(n->data);  // data jsem asi taky alokovala proto ji smazu
          }break;

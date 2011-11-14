@@ -21,6 +21,7 @@ function main()
     local d=00.1E-20;
     
     write("to sem napsal".."15", a+15/30, 10);
+    a = a < b + 3;
     if a < b then
       write(a);
     else
