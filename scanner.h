@@ -8,30 +8,48 @@
  * @date: 	11.11.2011
  */
 
-/*vycet typu lexem*/
-enum ELexem { 	
-	KW_END, 			KW_LOCAL,		KW_WRITE,
-	KW_RETURN,		KW_IF,			KW_THEN,
-	KW_FUNCTION,	KW_READ,		KW_DO,	
-	KW_ELSE,			KW_WHILE,		KW_NIL,		
-	KW_FALSE,			KW_TRUE, 		KW_TYPE,
-	KW_SUBSTR,		KW_FIND,		KW_SORT,
-	KW_MAIN, //18
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "str.h"
 
-	RESERVED_WORD,				// rezervovane slovo
-	END_OF_FILE,					// EOF
+#define LEX_ERROR -1
+#define ERR_MALLOC -5
+
+#define NONE 0
+#define RESERVED_MAX 8
+#define ASCII_MIN 32
+#define ASCII_MAX 255
+#define HUNDRED 100
+#define TEN 10
+
+/*FALSE = 0, TRUE = 1*/
+enum {FALSE, TRUE};
+
+/*vycet typu lexem*/
+enum ELexem {
+
+	KW_MAIN,  KW_FUNCTION, KW_LOCAL, KW_RETURN, // funkce
+	KW_IF,    KW_THEN,     KW_ELSE,             // podminka
+	KW_WHILE, KW_DO,	     KW_END, 			        // cyklus
+  KW_READ,  KW_WRITE,                         // prikazy
+  KW_TYPE,  KW_SUBSTR,	 KW_FIND,  KW_SORT,   // vestavene funkce
+  KW_TRUE,  KW_FALSE,    KW_NIL,              // konstanty
+  //18
 
 	L_ID,									// identifikator
 	L_NUMBER,							// cislo
+	L_STRING,							// retezec
+
 	L_LEFT_BRACKET,				// ( 
 	L_RIGHT_BRACKET,			// ) 
-	L_SEMICOLON,					// ; 
+
 	L_POWER,							// ^
 	L_MULTIPLICATION,			// * 
  	L_DIVISION,						// / 
 	L_ADDITION,						// + 
 	L_SUBTRACTION,				// -
-  L_COMMA,							// , 
 	L_CONCATENATION,			// .. 
 	L_SMALLER,						// <
 	L_SMALLER_EQUAL,			// <=
@@ -39,8 +57,13 @@ enum ELexem {
 	L_BIGGER_EQUAL,				// >=
 	L_UNEQUAL,						// ~=
 	L_EQUAL,							// ==
+
 	L_ASSIGN,							// =
-	L_STRING							// ".."
+	L_SEMICOLON,					// ; 
+  L_COMMA,							// , 
+
+	RESERVED_WORD,				// rezervovane slovo
+	END_OF_FILE,					// EOF
 };
 
 /*vycet stavu*/
@@ -68,9 +91,6 @@ enum EState {
 	S_DECIMAL_POINT,
 	S_DECIMAL_NUMBER
 };
-
-#define LEX_ERROR -1
-#define ERR_MALLOC -5
 
 /*deklarace promennych*/
 extern int countOfRows;

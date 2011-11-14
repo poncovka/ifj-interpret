@@ -59,27 +59,27 @@ int main()
    printf("\n----------------------------\n");
 
    tableInsertFunction(&table, strCreateString("func1"));
-      fuctionInsertVar(table.lastAddedFunc, strCreateString("var1func1"));
-      fuctionInsertVar(table.lastAddedFunc, strCreateString("var2func1"));
-      fuctionInsertVar(table.lastAddedFunc, strCreateString("var3func1"));
+      functionInsertVar(table.lastAddedFunc, strCreateString("var1func1"));
+      functionInsertVar(table.lastAddedFunc, strCreateString("var2func1"));
+      functionInsertVar(table.lastAddedFunc, strCreateString("var3func1"));
 
    printf("\nJedna funkce: \n");
    tablePrintOrder(table);
    printf("\n----------------------------\n");
 
    tableInsertFunction(&table, strCreateString("func2"));
-      fuctionInsertVar(table.lastAddedFunc, strCreateString("var1func2"));
-      fuctionInsertVar(table.lastAddedFunc, strCreateString("var2func2"));
-      fuctionInsertVar(table.lastAddedFunc, strCreateString("var3func2"));
+      functionInsertVar(table.lastAddedFunc, strCreateString("var1func2"));
+      functionInsertVar(table.lastAddedFunc, strCreateString("var2func2"));
+      functionInsertVar(table.lastAddedFunc, strCreateString("var3func2"));
 
    printf("\nDve funkce: \n");
    tablePrintOrder(table);
    printf("\n----------------------------\n");
 
    tableInsertFunction(&table, strCreateString("func3"));
-      fuctionInsertVar(table.lastAddedFunc, strCreateString("var1func3"));
-      fuctionInsertVar(table.lastAddedFunc, strCreateString("var2func3"));
-      fuctionInsertVar(table.lastAddedFunc, strCreateString("var3func3"));
+      functionInsertVar(table.lastAddedFunc, strCreateString("var1func3"));
+      functionInsertVar(table.lastAddedFunc, strCreateString("var2func3"));
+      functionInsertVar(table.lastAddedFunc, strCreateString("var3func3"));
 
    printf("\nVsechny: \n");
    tablePrintOrder(table);

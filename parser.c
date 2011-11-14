@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "parser.h"
 #include "table.h"
 #include "list.h"
@@ -28,7 +25,6 @@ int prsAssign(TVar*);
 int prsVarParams();
 int prsVar();
 int prsVarN();
-
 
 int parser(TTable *t){
    table = t;

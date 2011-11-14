@@ -8,6 +8,10 @@
 #ifndef BINARYTREEAVL_H_INCLUDED
 #define BINARYTREEAVL_H_INCLUDED
 
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 #define INS_OK          1  // vlozeno v poradku
 #define INS_NODE_EXIST  0  // prvek se zadanym klicem uz existuje
 #define INS_MALLOC     -5  // chyba pri alokaci
@@ -81,5 +85,55 @@ void BTreeDelete(TBTree*);
  *    @return  pozice uzlu, pokud uzel nebyl nalezen vraci NULL
  */
 TNode BTreeSearch(TBTree*, char*);
+
+/*
+ * vyhleda misto kde polozka patri a vlozi ji
+ * @param   uzel
+ * @param   klic podle ktereho hledat
+ * @param   ukazatel na data(jedno jaka)
+ * @return  vraci ukazatel na uzel(muze totiz nekdy dojit k tomu ze je treba strom vyvazit
+ *          proto se musi zasadne volat jako (TNode)root=insert(root, "key", NULL)
+ * navic funkce nastavuje urcite pomocne promene(position-pozice posledniho vkladaneho prvku, returnValue-makra INS_XXX)
+ */
+TNode insert(TNode, char*, void*);
+
+/*
+ * maze uzly stromu, pomocna funkce pro BTreeDelet
+ * smaze i data pode predpisu ktery je v tele funkce
+ * @param uzel stromu
+ * @param jak mazat data
+ */
+void deleteNode(TNode);
+
+/*
+ * hleda uzel, pomocna promena BTreeSearch
+ * @param   uzel
+ * @param   klic
+ * @return  pozice prvku
+ */
+TNode search(TNode, char*);
+
+/*
+ * nasledujici funkce pomahaji vyvazovat strom hned pri vkladani
+ * podrobejsi popis v tele funkce
+ * @param   uzel
+ * @return  ukazatel na novy vyvazeny uzel(podstrom)
+ {
+ */
+   TNode rotationRight (TNode);
+   TNode rotationLeft(TNode);
+   TNode doubleRotationRight(TNode);
+   TNode doubleRotationLeft(TNode);
+/*
+ }
+ */
+
+/*
+ * hleda vysku podstromu
+ * @param   uzel
+ * @return  vysku uzlu, -1 v pripade ze uzel neexistuje = NULL
+ */
+int height(TNode);
+
 
 #endif // BINARYTREEAVL_H_INCLUDED

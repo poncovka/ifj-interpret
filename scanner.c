@@ -5,22 +5,8 @@
  * @date: 	11.11.2011
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include "str.h"
 #include "scanner.h"
 
-#define NONE 0
-#define RESERVED_MAX 8
-#define ASCII_MIN 32
-#define ASCII_MAX 255
-#define HUNDRED 100
-#define TEN 10
-
-/*FALSE = 0, TRUE = 1*/
-enum {FALSE, TRUE};
 
 /*nastavi pocitadlo radku na jedna*/
 int countOfRows = 1;
@@ -58,7 +44,7 @@ int isKeyOrReserved(char *word) {
 	}
 	
 	/*porovna se vsemi klicovymi slovy*/
-	for (i = KW_END; i <= KW_MAIN; i++) {
+	for (i = KW_MAIN; i <= KW_NIL; i++) {
     if (strcmp(keyWords[i], word) == 0)
 			return i;
 	}

@@ -1,9 +1,13 @@
 #ifndef TABLE_H_INCLUDED
 #define TABLE_H_INCLUDED
 
+#include <stdlib.h>
+#include <stdio.h>
 #include "binaryTree.h"
 #include "str.h"
 #include "list.h"
+
+#define VAR_ALLOC_SIZE 8
 
 typedef struct{
    TBTree variables;       // tabulka promenych
