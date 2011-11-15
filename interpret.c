@@ -7,12 +7,21 @@
 
 #include "interpret.h"
 
-int interpret(ukazet na seznam instrukci) {
+/*vykona interpretaci funkce*/
+int interpret(TFunction *fce) {
 
-	// inkrementovat funkce... u ukonceni interpretace ho musim zase dekrementovat
+	fce->cnt++;
+	TInstr *instr; 
+  if (listFirst(&fce->instructions) == LIST_ERR) 
+		return ERR_INTERNAL;
 
-	while (dokud sou instrukce) {
-		switch (instrukce) {
+  /*cyklus provede vykonani vsech fci ze seznamu*/
+	while (listActive(&fce->instructions)) {
+		if ((instr = (TInstr*) listCopy(&fce->instructions)) == NULL)
+			return ERR_INTERNAL;
+
+		/*rozpozna instrukci*/
+		switch (instr->type) {
 
 			case I_LAB: break;
 			case I_RETURN: break;
