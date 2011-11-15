@@ -37,6 +37,7 @@ const char precedentTable[MAXTAB][MAXTAB] = {
 
 
 TList LTmpVars;
+TList LInstr;
 TStack Stack;
 
 /////////////////////////////////////////////////////////////
@@ -47,15 +48,15 @@ int parseExpression() {
   stackInit(&Stack);
   listInit(&LTmpVars);
 
-  TStackData *pom = createStackData(0 ,ENDEXPR, NULL, &err);
-  err = stackPush(&Stack, pom);
+  shift(&Stack, ENDEXPR, NULL);
 
   int a,b;
   char c;
+  TInstr instr = {NOINSTR, NULL, NULL, NULL};
 
   do {
-    a = lex;                         // naèteneme token
-    b = stackTopTerminal(&Stack);    // najdeme nejvrchnìj¹í terminál
+    a = token;                       // aktuální token
+    b = getTopTerminal(&Stack);      // najdeme nejvrchnìj¹í terminál
     c = precedentTable[b][a];        // podíváme se do tabulky
 
     if (c == 0) {                    // chyba
@@ -64,20 +65,22 @@ int parseExpression() {
     } 
 
     switch(c) {
-      case '=':  //push(a)
-                 //next token
+      case '=':
+      case '<':  err = shift(&Stack, a, NULL);    // push(a)
+                 if (err != EOK) break;
+                 //err = getNextToken(&attr);     // next token
                  break;
-      case '<':  //zamìò v zásobníku b za b<
-                 //push(a)
-                 //next token
+
+      case '>':  err = findRule(&Stack, &instr);  // najdi pravidlo
+                 if (err != EOK) break;
+                                                  // generuj instrukci
+                 err = generateInstr(&LInstr, &instr, &LTmpVars);
+                 if (err != EOK) break;
+                                                  // push(výsledek)
+                 err = shift(&Stack, EXPRESSION, instr.dest); 
                  break;
-      case '>':  // vyber ze zasobniku v¹e po < vèetnì
-                 // najdi pravidlo r:A->y
-                 // generuj instrukci
-                 // push(A)
-                 // jinak chyba
-                 break;
-      default :  err = SYN_ERR;
+
+      default :  err = SYN_ERR;                   // syntaktická chyba
     };
 
   } while(0 && err == EOK);
@@ -89,15 +92,136 @@ int parseExpression() {
   stackDelete(&Stack);
   return err;
 }
-
 //////////////////////////////////////////////////////////////////
-int stackTopTerminal(TStack *S) {
+int shift (TStack *S, int token, TVar *pom) {
+
+  int err = EOK;
+
+  // inicialiazce dat
+  if (isId(token)) {
+/*  pom = functionSearchVar (table.lastAddedFunc, &attr);
+    if (pom == NULL) err = SEM_ERR; // nedefinovaná promìnná */
+    token = EXPRESSION; // pravidlo E->id
+  }
+  else if (isConst(token)) {
+/*  err = functionInsertConstatnt(table.lastAddedFunc, &attr);
+    if (err == EOK) {
+      TVar *pom = getLastAddedConst(TFunction*);
+    }
+    else err = INTR_ERR; // nedostatek pamìti */
+    token = EXPRESSION; // pravidlo E->const
+  }
+
+  // vytvoøení struktury pro data na zásobníku
+  TStackData *data = createStackData(token, pom, &err);
+
+  // vlo¾íme data na zásobník
+  if (err == EOK){
+    err = stackPush(S, data);
+  }
+  else err = INTR_ERR; // nedostatek pamìti
+
+  return EOK;
+}
+//////////////////////////////////////////////////////////////////
+int findRule(TStack *S, TInstr *instr) {
+
+  int err = SYN_ERR;
+  TStackData *top = NULL;
+
+  if (!stackEmpty(S)){
+    top = (TStackData *) stackTopPop(S);
+
+    // pravidlo E -> (E)
+    if (top->token == L_RIGHT_BRACKET) {         // pop(pravá závorka)
+      instr->type = NOINSTR;                     // nebude se generovat pravidlo
+      free(top);
+      if (!stackEmpty(S)) {
+        top = (TStackData *) stackTopPop(S);  
+
+        if (top->token == EXPRESSION) {          // pop(výraz)
+          instr->dest = top->var;
+          free(top);
+          if (!stackEmpty(S)){
+            top = (TStackData *) stackTopPop(S);
+
+            if (top->token == L_LEFT_BRACKET) {  // pop(levá závorka)
+              err = EOK;                         // nalezeno pravidlo!
+              free(top);
+            }
+          }
+        }
+      }
+    } // konec pravidla
+
+    // pravidlo E -> E op E
+    else if (top->token == EXPRESSION) {        // pop(výraz)
+      instr->src2 = top->var;
+      free(top);
+      if (!stackEmpty(S)) {
+        top = (TStackData *) stackTopPop(S);
+
+        if (isOperator(top->token)) {           // pop(operátor) 
+          instr->type = top->token;             // v tuto chvíli neodpovídá!!!!
+          free(top);
+          if (!stackEmpty(S)) {
+            top = (TStackData *) stackTopPop(S);
+
+            if (top->token == EXPRESSION) {    // pop(výraz)
+              err = EOK;                       // nalezeno pravidlo!
+              instr->src1 = top->var;
+              free(top);      
+            }
+          }
+        }
+      }
+    } // konec pravidla
+  }
+
+  // pokud nìkde zhavarovalo
+  if (top != NULL) {
+    free(top);
+  }
+
+  return err;
+}
+//////////////////////////////////////////////////////////////////
+int generateInstr(TList *LInstr, TInstr *instr, TList *LTmpVars) {
+
+  // pravidlo E -> (E)
+  if (instr->type == NOINSTR) return EOK;
+
+  // pravidlo E -> E op E
+  int err = EOK;
+ 
+  // vytvoø pomocnou promìnnou pro výsledek operace
+  TVar *var = createTmpVar(LTmpVars, &err);
+  if (err == EOK) {
+    instr->dest = var;
+    
+    // vytvoø novou instrukci a zkopíruj do ní starou
+    TInstr *newInstr = NULL;
+    if ( (newInstr = (TInstr *)malloc(sizeof(TInstr))) != NULL) {
+      newInstr->type = instr->type;
+      newInstr->dest = instr->dest;
+      newInstr->src1 = instr->src1;
+      newInstr->src2 = instr->src2;
+
+      err = listInsertLast(LInstr, newInstr);
+    }
+    else err = INTR_ERR; // nedostatek pamìti
+  }
+
+  return err;
+}
+//////////////////////////////////////////////////////////////////
+int getTopTerminal(TStack *S) {
 
   // pøedpokládáme, ¾e pøed voláním fce jsme na zás. vlo¾ili $
   TSItem *pom = S->top;
 
   // hledáme terminál nejblí¾e k zásobníku: 
-  while (pom != NULL && ((TStackData*)pom->data)->token == NONTOKEN) {
+  while (pom != NULL && ((TStackData*)pom->data)->token == EXPRESSION) {
     pom = pom->next;
   }
   return ((TStackData*)pom->data)->token;
@@ -105,15 +229,14 @@ int stackTopTerminal(TStack *S) {
 }
 
 //////////////////////////////////////////////////////////////////
-TStackData *createStackData(char c, int token, TVar *var, int *err) {
+TStackData *createStackData(int token, TVar *var, int *err) {
 
   TStackData *data = NULL;
   if ( (data = (TStackData*)malloc(sizeof(TStackData))) != NULL ){
-    data->c = c;
     data->token = token;
     data->var = var;
   }
-  else *err = INTR_ERR;
+  else *err = INTR_ERR; // nedostatek pamìti
 
   return data;
 }
