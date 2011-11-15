@@ -1,13 +1,6 @@
 #ifndef SCANNER_H_INCLUDED
 #define SCANNER_H_INCLUDED
 
-//=================================================================================================>
-//-----------------------------LEXIKALNI ANALYZATOR - HLAVICKOVY SOUBOR---------------------------->
-//=================================================================================================>
-/* @author: Tomas Trkal, xtrkal00@stud.fit.vutbr.cz
- * @date: 	11.11.2011
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
