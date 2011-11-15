@@ -31,25 +31,26 @@ enum ELexem {
   KW_TRUE,  KW_FALSE,    KW_NIL,              // konstanty
   //18
 
-	L_ID,									// identifikator
 	L_NUMBER,							// cislo
 	L_STRING,							// retezec
+	L_ID,									// identifikator
 
 	L_LEFT_BRACKET,				// ( 
 	L_RIGHT_BRACKET,			// ) 
 
-	L_POWER,							// ^
-	L_MULTIPLICATION,			// * 
- 	L_DIVISION,						// / 
 	L_ADDITION,						// + 
 	L_SUBTRACTION,				// -
-	L_CONCATENATION,			// .. 
+	L_MULTIPLICATION,			// * 
+ 	L_DIVISION,						// / 
+	L_POWER,							// ^
+	L_CONCATENATION,			// ..
+ 
 	L_SMALLER,						// <
 	L_SMALLER_EQUAL,			// <=
 	L_BIGGER,							// >
 	L_BIGGER_EQUAL,				// >=
-	L_UNEQUAL,						// ~=
 	L_EQUAL,							// ==
+	L_UNEQUAL,						// ~=
 
 	L_ASSIGN,							// =
 	L_SEMICOLON,					// ; 

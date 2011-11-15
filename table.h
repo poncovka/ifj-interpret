@@ -100,7 +100,7 @@ typedef struct{
    EInstrType type;
    void *dest;
    void *src1;   // ((TVar *)L->act->data)->var[f->cnt]->type --- VAR CONST TMP_VAR
-   void *scr2;
+   void *src2;
 }TInstr;
 
 void tableInit(TTable*);

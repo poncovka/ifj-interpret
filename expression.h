@@ -21,13 +21,13 @@
 #define ENDEXPR   END_OF_FILE + 1    // ukonèovaè øetìzce a dno zásobníku
 #define MAXTAB    ENDEXPR + 1        // rozmìr precedenèní tabulky
 #define EXPRESSION  -1               // není token
-#define NOINSTR   I_SORT + 1
+#define NOINSTR   100
 
 
 #define isId(t)       (t == L_ID)
-#define isConst(t)    (t == L_NUMBER || t == L_STRING || t == KW_TRUE || t == KW_FALSE || t == KW_NIL)
 #define isBracket(t)  (t == L_LEFT_BRACKET || t == L_RIGHT_BRACKET)
-#define isOperator(t) (t >= L_POWER && t <= L_EQUAL)
+#define isConst(t)    (t >= KW_TRUE        && t <= L_STRING)
+#define isOperator(t) (t >= L_ADDITION     && t <= L_UNEQUAL)
 
 
 // pomocná struktura pro data na zásobníku:
