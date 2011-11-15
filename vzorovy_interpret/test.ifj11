@@ -1,0 +1,122 @@
+function my_while()
+  local v;
+  v = 5+53*85;
+  while xxx then
+    write(s);
+  end ;
+end
+
+function hello(a,b,c)
+  local x;
+  local y = "ahoj svete";
+  local z = 30;
+  local t = true;
+  local v = nil;
+  v = my_while(x,a, "nejaky text" );  -- v poradku "a" je parametr
+  return 23*z;
+end
+
+function main()
+    local a=00.1E-20;
+    local d=00.1E-20;
+    
+    write("to sem napsal".."15", a+15/30, 10);
+    if a < b then
+      write(a);
+    else
+      return xx;
+    end;
+    
+    d = sort("aaa", "gggg");
+    d = type();
+    d = substr("aa", "aa", d);
+    d = find(a,d);
+    
+    a = read("*n");
+end;
+
+--[[
+-- vystup
+
+Instrukce "my_while"
+        STACK_E
+        MOV v
+        POP v
+        LAB while_1
+        JMP_Z (exp_result) while_end_1
+        WRITE (exp_result)
+        JMP while_1
+        LAB while_end_1
+Instrukce "hello"
+        POP a
+        POP b
+        POP c
+        STACK_E
+        MOV x
+        MOV y "ahoj svete"
+        MOV z 30
+        MOV t true
+        MOV v nil
+        PUSH x
+        PUSH a
+        PUSH "nejaky text"
+        CALL
+        POP v
+        RETURN (exp_result)
+Instrukce "main"
+        STACK_E
+        MOV a 00.1E-20
+        MOV d 00.1E-20
+        WRITE (exp_result)
+        WRITE (exp_result)
+        WRITE (exp_result)
+        JMP_Z (exp_result) else_2
+        WRITE (exp_result)
+        JMP if_end_2
+        LAB else_2
+        RETURN (exp_result)
+        LAB if_end_2
+        PUSH "aaa"
+        PUSH "gggg"
+        SORT
+        POP d
+        TYPE
+        POP d
+        PUSH "aa"
+        PUSH "aa"
+        PUSH d
+        SUBSTR
+        POP d
+        PUSH a
+        PUSH d
+        FIND
+        POP d
+        READ "*n"
+        POP a
+
+-----------------------------------------------
+
+Vse v poradku
+
+-----------------------------------------------
+Tabulka
+
+   hello
+      a
+      b
+      c
+      t
+      v
+      x
+      y
+      z
+   main
+      a
+      d
+   my_while
+      v
+
+Process returned 0 (0x0)   execution time : 0.200 s
+Press any key to continue.
+
+]]  

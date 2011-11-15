@@ -6,10 +6,21 @@
 #define STR_LEN_INC 8
 // konstanta STR_LEN_INC udava, na kolik bytu provedeme pocatecni alokaci pameti
 // pokud nacitame retezec znak po znaku, pamet se postupne bude alkokovat na
-// nasobky tohoto cisla 
+// nasobky tohoto cisla
 
 #define STR_ERROR   1
 #define STR_SUCCESS 0
+
+char *strCopyChar(string *s)
+// funkcia vytvori novy retazec
+// a skopiruje don retazec zo str
+{
+   char *strNew;
+   if((strNew = (char *) malloc(sizeof(char)*(s->length + 1))) == NULL)
+      return NULL;
+   strcpy(strNew,s->str);
+   return strNew;
+}
 
 int strInit(string *s)
 // funkce vytvori novy retezec
@@ -90,3 +101,17 @@ int strGetLength(string *s)
 {
    return s->length;
 }
+
+string strCreateString (char *str)
+// vrati naplnenou strukturu string
+{
+
+  string s;
+  s.length = strlen(str);
+  s.allocSize = s.length + 1;
+  s.str = str;
+
+  return s;
+}
+
+/* konec souboru str.c */

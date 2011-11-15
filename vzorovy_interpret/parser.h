@@ -1,6 +1,17 @@
-#define SYNTAX_OK     1
-#define SYNTAX_ERROR -2
-#define SEM_ERROR    -3
+#ifndef PARSER_H_INCLUDED
+#define PARSER_H_INCLUDED
 
-// hlavicka pro syntakticky analyzator
-int parse(tSymbolTable *ST, tListOfInstr *instrList);
+#include "table.h"
+#include "scanner.h"
+#include "str.h"
+
+#define PRS_OK    0
+#define LEX_ERR  -1
+#define SYN_ERR  -2
+#define SEM_ERR  -3
+#define RUN_ERR  -4
+#define INTR_ERR -5
+
+int parser(TTable*);
+
+#endif // PARSER_H_INCLUDED

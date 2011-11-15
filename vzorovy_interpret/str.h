@@ -1,3 +1,5 @@
+#ifndef STR_H_INCLUDED
+#define STR_H_INCLUDED
 //hlavickovy soubor pro praci s nekonecne dlouhymi retezci
 
 typedef struct
@@ -19,3 +21,8 @@ int strCmpConstStr(string *s1, char *s2);
 
 char *strGetStr(string *s);
 int strGetLength(string *s);
+
+char *strCopyChar(string *s);
+string strCreateString (char *str);
+
+#endif //STR_H_INCLUDED
