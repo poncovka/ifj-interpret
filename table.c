@@ -105,11 +105,13 @@ int functionInsertVar(TFunction *F, string s){
 
 //----------------------------------------------------------------------
 
-int functionInsertConstatnt(TList *l, string token, int lex){
+int functionInsertConstatnt(TFunction *f, string attr, int token){
+   // vytvorim promenou
    TVar     *v   = malloc(sizeof(TVar));
    if(v == NULL)
       return INS_MALLOC;
 
+   // vytvorim jeji data
    TVarData *vd  = malloc(sizeof(TVarData));
    if(vd == NULL){
       free(v);
@@ -117,15 +119,16 @@ int functionInsertConstatnt(TList *l, string token, int lex){
    }
 
    int err = INS_OK;
-   switch(lex){
+   // zjistim co mam ulozit a pak to tak ulozim
+   switch(token){
       case L_NUMBER:{
             vd->type = NUMBER;
-            vd->value.n = atof ( token.str );
+            vd->value.n = atof ( attr.str );
          }break;
       case L_STRING:{
             vd->type = STRING;
             strInit( &(vd->value.s) );
-            if( strCopyString( &token, &(vd->value.s) ) == STR_ERROR)
+            if( strCopyString( &(vd->value.s), &attr ) == STR_ERROR)
                err = INS_MALLOC;
          }break;
       case KW_TRUE:{
@@ -146,7 +149,7 @@ int functionInsertConstatnt(TList *l, string token, int lex){
    v->varType = VT_CONST;
    v->varData = vd;
 
-   if(listInsertLast(l, v) != LIST_EOK || err != INS_OK){
+   if(listInsertLast(&f->constants, v) != LIST_EOK || err != INS_OK){
       // kdyz se nepovedlo vlozit nebo pokud predtim u vytdareni dat
       // doslo k chybe musim vechno smazat
       free(v);
@@ -193,7 +196,6 @@ void freeConstTmpVarList(TList *l){
          // jestlize je to konstanta nebo pomocna promena tak overim jestli je string a pripadne smazu
          if(tmp->varData->type == STRING)
             free(tmp->varData->value.s.str);
-         // tmp->varData nemazu protoze sem ho nealokoval (teda spon ja :D )
       }
       // protoze sem musel pole alokovat tak ho musim smazat
       free(tmp->varData );
@@ -260,22 +262,70 @@ void  tableClear(TTable *T){
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
+// PRO DEBUG!!
 
+void listConstTmpPrint(TList *l){
+   listFirst(l);
+   while(listActive(l)){
+      TVarData *tmp = ((TVar *)l->Act->data)->varData;
+      printf("         ");
+
+      switch( tmp->type ){
+         case STRING:{
+               printf("string \"%s\"", tmp->value.s.str);
+            }break;
+         case NUMBER:{
+               printf("number %g", tmp->value.n);
+            }break;
+         case BOOL:{
+               printf("bool %s", tmp->value.b == 1 ? "true" : "false");
+            }break;
+         case NIL:{
+               printf("nil");
+            }break;
+         default: printf("unknow const");
+      }
+      printf("\n");
+      listSucc(l);
+   }
+}
+
+void listInstrPrint(TList *l){
+   listFirst(l);
+   while(listActive(l)){
+      TInstr *tmp = ((TInstr *)l->Act->data);
+      printf("         ");
+
+      printf("%d", tmp->type);
+
+      printf("\n");
+      listSucc(l);
+   }
+}
 
 //             uzel     typ stromu       oddelovac
 void printNode(TNode n, EBTreeDataType t, char *delim){
    if(n != NULL){
       printNode(n->left, t, delim);
 
-      printf("%s%s\n", delim, n->key);
       switch(t){
          case FUNCIONS:{
-               TBTree *temp   = &(((TFunction *)n->data)->variables);
-               //printf("     variables:\n");
-               printNode( temp->root, temp->type /*VAR*/, "      " );
+               printf("\n %s%s\n    {\n", delim, n->key);
+
+               TFunction *tmp   = n->data;
+               printf("     variables:\n");
+                  printNode( tmp->variables.root, tmp->variables.type /*VAR*/, "         " );
+               printf("     constants:\n");
+                  listConstTmpPrint(&tmp->constants);
+               printf("     tmp_var:\n");
+                  listConstTmpPrint(&tmp->tmpVar);
+               printf("     instruction:\n");
+                  listInstrPrint(&tmp->instructions);
+
+               printf("    }\n");
          }break;
          case VAR:{
-            //fprintf(stderr, "\nTisk promene nebo konstanty neni implenetovan!");
+            printf("%s%s\n", delim, n->key);
          }break;
          case DEFAULT:
          default : break;

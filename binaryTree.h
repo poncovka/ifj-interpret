@@ -1,5 +1,5 @@
 /*
- * @description   Prace s binarnim vyheldavacim stromem (AVL strom)
+ * @description   Prace s binarnim vyheldavacim stromem (AVL strom) 16.11.2011 uz neni AVL :(
  * @author        Marek Salat - xsalat00
  * @projekt       IFJ11
  * @date
@@ -67,12 +67,7 @@ int BTreeInsert(TBTree*, char*, void*);
 //--------------------------------------------------------------------------------
 
 /*
- *    smaze cely strom i jejich daty podle typu stromu
- *    jak se mazi data si ve funkci musi upravit uzivatel
- *    @todo    - mazani konstant
- *             - mazani seznamu instrukci
- *             - aby data smazala sama sebe(nekdo je musel alokovat-staci odkomentovat
-                 free kolem radku 94-zatim je nealokuji protze je mam je staticky)
+ *    smaze cely strom
  *    @param   ukazatel na strom
  */
 void BTreeDelete(TBTree*);

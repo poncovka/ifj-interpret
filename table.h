@@ -112,14 +112,11 @@ typedef struct{
  */
 TInstr *genInstr(EInstrType, void*, void*, void*);
 
-void tableInit(TTable*);
-
 /*
- * naposled vlozena promena do tabulky symbolu ve funkci
- * @param   funkce
- * @return  data promene(struct TVar)
+ * inicializace tabulky
+ * @param   tabulka
  */
-TVar *getLastAddedVar(TFunction*);
+void tableInit(TTable*);
 
 
 /*
@@ -137,11 +134,19 @@ int tableInsertFunction (TTable*, string);
 int functionInsertVar(TFunction*, string);
 
 /*
- * vlozi novou konstantu
- * @param   funkce (fce->constants)
- * @param   klic
+ * naposled vlozena promena do tabulky symbolu ve funkci
+ * @param   funkce
+ * @return  data promene(struct TVar)
  */
-int functionInsertConstatnt(TList*, string, int);
+TVar *getLastAddedVar(TFunction*);
+
+/*
+ * vlozi novou konstantu
+ * @param   funkce
+ * @param   to co nacetl scanner
+ * @param   co to bylo string,number atd..
+ */
+int functionInsertConstatnt(TFunction*, string, int);
 
 /*
  * vyhleda funci v tabulce funkci

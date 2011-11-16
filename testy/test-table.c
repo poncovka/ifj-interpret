@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "table.h"
-#include "str.h"
+#include "../table.h"
+#include "../str.h"
 
 int main()
 {
@@ -24,6 +24,11 @@ int main()
       functionInsertVar(table.lastAddedFunc, strCreateString("var1func1"));
       functionInsertVar(table.lastAddedFunc, strCreateString("var2func1"));
       functionInsertVar(table.lastAddedFunc, strCreateString("var3func1"));
+
+      functionInsertConstatnt(table.lastAddedFunc, strCreateString("hello world"), L_STRING);
+      functionInsertConstatnt(table.lastAddedFunc, strCreateString("12e0"), L_NUMBER);
+      functionInsertConstatnt(table.lastAddedFunc, strCreateString("true"), KW_TRUE);
+      functionInsertConstatnt(table.lastAddedFunc, strCreateString("nil"), KW_NIL);
 
    printf("\nJedna funkce: \n");
    tablePrintOrder(table);
@@ -42,6 +47,11 @@ int main()
       functionInsertVar(table.lastAddedFunc, strCreateString("var1func3"));
       functionInsertVar(table.lastAddedFunc, strCreateString("var2func3"));
       functionInsertVar(table.lastAddedFunc, strCreateString("var3func3"));
+
+      functionInsertConstatnt(table.lastAddedFunc, strCreateString("true"), KW_TRUE);
+      functionInsertConstatnt(table.lastAddedFunc, strCreateString("true"), KW_TRUE);
+      functionInsertConstatnt(table.lastAddedFunc, strCreateString("true"), KW_TRUE);
+      functionInsertConstatnt(table.lastAddedFunc, strCreateString("true"), KW_TRUE);
 
    printf("\nVsechny: \n");
    tablePrintOrder(table);
