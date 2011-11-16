@@ -7,23 +7,27 @@
 
 #include "interpret.h"
 
-enum ESource {SRC1, SRC2};
+enum ESource {DEST, SRC1, SRC2};
 
-/*TVarData *giveMeData(TInstr *instr, TFunction *fce)*/
+//=================================================================================================>
+//-------------------------TVarData *giveMeData(TInstr *instr, TFunction *fce);-------------------->
+//=================================================================================================>
 TVarData *giveMeData(int what, TInstr *instr, TFunction *fce) {
-	if (what == SRC1) {
-  	if (((TVar *) instr->src1)->varType == VT_VAR)
-    	return &((TVar *) instr->src1)->varData[fce->cnt];
-  	else return ((TVar *) instr->src1)->varData;
-	}
-	else if (what == SRC2) {
-    if (((TVar *) instr->src2)->varType == VT_VAR)
-      return &((TVar *) instr->src2)->varData[fce->cnt];
-    else return ((TVar *) instr->src2)->varData;
-	}
+	TVar *tempVar;
+
+	if (what == DEST) tempVar = (TVar *) instr->dest;
+	else if (what == SRC1) tempVar = (TVar *) instr->src1;
+	else if (what == SRC2) tempVar = (TVar *) instr->src2;
 	else return NULL;
+
+  if (tempVar->varType == VT_VAR)
+   	return &tempVar->varData[fce->cnt];
+  else return tempVar->varData;
 }
 
+//=================================================================================================>
+//------------------------------------int interpret(TFunction *fce);------------------------------->
+//=================================================================================================>
 /*vykona interpretaci funkce*/
 int interpret(TFunction *fce) {
 
@@ -79,7 +83,7 @@ int interpret(TFunction *fce) {
 						printf("TRUE");
 					else printf("FALSE");
 				} 
-				else return ERR_SEM;
+				else printf("FALSE");
 			break; 
 
 			/*I_CMP_LE*/
