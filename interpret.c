@@ -11,19 +11,17 @@ enum ESource {SRC1, SRC2};
 
 /*TVarData *giveMeData(TInstr *instr, TFunction *fce)*/
 TVarData *giveMeData(int what, TInstr *instr, TFunction *fce) {
-	TVarData *data;
 	if (what == SRC1) {
   	if (((TVar *) instr->src1)->varType == VT_VAR)
-    	data = &((TVar *) instr->src1)->varData[fce->cnt];
-  	else data = ((TVar *) instr->src1)->varData;
+    	return &((TVar *) instr->src1)->varData[fce->cnt];
+  	else return ((TVar *) instr->src1)->varData;
 	}
 	else if (what == SRC2) {
     if (((TVar *) instr->src2)->varType == VT_VAR)
-      data = &((TVar *) instr->src2)->varData[fce->cnt];
-    else data = ((TVar *) instr->src2)->varData;
+      return &((TVar *) instr->src2)->varData[fce->cnt];
+    else return ((TVar *) instr->src2)->varData;
 	}
-	else data = NULL;
-	return data;
+	else return NULL;
 }
 
 /*vykona interpretaci funkce*/
