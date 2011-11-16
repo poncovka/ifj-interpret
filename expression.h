@@ -17,11 +17,17 @@
 #include "scanner.h"
 #include "parser.h"
 
+TTable table;
+int token;
+string attr;
+
+
 #define EOK       0
 #define ENDEXPR   END_OF_FILE + 1    // ukonèovaè øetìzce a dno zásobníku
 #define MAXTAB    ENDEXPR + 1        // rozmìr precedenèní tabulky
 #define EXPRESSION  -1               // není token
-#define NOINSTR   100
+#define NOINSTR   100                // negenerovat instrukci
+#define OFFSET    I_ADD - L_ADDITION // posun pro generování instrukcí
 
 
 #define isId(t)       (t == L_ID)
@@ -40,7 +46,7 @@ typedef struct {
 
 // funkce pro vyhodnocování výrazù:
 
-int parseExpression();
+int parseExpression(TTable *t);
 
 int shift           (TStack *S, int token, TVar *pom);
 int getTopTerminal  (TStack *S);

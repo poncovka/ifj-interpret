@@ -17,9 +17,36 @@
 
 int main()
 {
- tiskniPrecTab();
- lex = L_NUMBER; 
- //lex = L_RIGHT_BRACKET;
- parseExpression();
+  tableInit(&table);
+
+  tableInsertFunction(&table, strCreateString("fce"));
+  functionInsertVar(table.lastAddedFunc, strCreateString("x"));
+  functionInsertVar(table.lastAddedFunc, strCreateString("y"));
+  functionInsertVar(table.lastAddedFunc, strCreateString("z"));
+
+   printf("\nJedna funkce: \n");
+   tablePrintOrder(table);
+   printf("\n----------------------------\n");
+
+
+ //tiskniPrecTab();
+ FILE *f = fopen("testy/test-expr.txt","r");
+ setSourceFile(f);
+ strInit(&attr);
+ listInit(&table.lastAddedFunc->tmpVar);
+
+ int err = EOK;
+
+ while((token = getNextToken(&attr)) != END_OF_FILE)
+ {
+  err = parseExpression(&table);
+  printf("Test skonèil s chybou: %d\n\n", err);
+ }
+ listDataDelete(&table.lastAddedFunc->tmpVar);
+ listDispose(&table.lastAddedFunc->tmpVar);
+
+ fclose(f);
+ tableClear(&table);
+ strFree(&attr);
  return EXIT_SUCCESS;
 }

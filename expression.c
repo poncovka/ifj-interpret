@@ -31,29 +31,92 @@ const char precedentTable[MAXTAB][MAXTAB] = {
 [L_BIGGER_EQUAL]   = {[KW_TRUE]= 0 , 0 , 0 ,'<','<','<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
 [L_EQUAL]          = {[KW_TRUE]='<','<','<','<','<','<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
 [L_UNEQUAL]        = {[KW_TRUE]='<','<','<','<','<','<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
-[ENDEXPR]          = {[KW_TRUE]='<','<','<','<','<','<','<', 0 ,'<','<','<','<','<','<','<','<','<','<','<','<',[ENDEXPR]= 0 },
+[ENDEXPR]          = {[KW_TRUE]='<','<','<','<','<','<','<', 0 ,'<','<','<','<','<','<','<','<','<','<','<','<',[ENDEXPR]='$'},
 }; //precedentTable
 
+// pom výpisy:
 
-TList LTmpVars;
-TList LInstr;
+void tiskniStack (TStack *s) {
+
+  printf("Stav zásobníku: top\n");
+  TSItem *pom = s->top;
+  while (pom != NULL) {
+    printf("\t%d\n",((TStackData*)(pom->data))->token);
+    pom = pom->next;
+  }
+  printf("_______bottom_________\n\n");
+}
+
+const char *iTable[]={
+   [I_ADD]="+",      // dst src src       vsechno TVar
+   [I_SUB]="-",      // dst src src
+   [I_MUL]="*",      // dst src src
+   [I_DIV]="/",      // dst src src
+   [I_POW]="^",      // dst src src
+   [I_CON]="..",      // dst src src
+
+   [I_CMP_L]="<",    // dst src src
+   [I_CMP_LE]="<=",   // dst src src
+   [I_CMP_G]=">",    // dst src src
+   [I_CMP_GE]=">=",   // dst src src
+   [I_CMP_E]="==",    // dst src src
+   [I_CMP_NE]="~=",   // dst src src
+};
+
+void tiskniList (TList *L) {
+
+  printf("Stav seznamu:\n");
+
+  TLItem *pom = L->First;
+  TInstr *i = NULL;
+
+  while (pom != NULL) {
+    i = (TInstr*)(pom->data);
+
+    if (((TVar*)i->dest)->name == NULL) printf("%d = ", (int)i->dest);
+    else printf("%s = ",((TVar*)i->dest)->name);
+    if (((TVar*)i->src1)->name == NULL) printf(" %d ", (int)i->src1);
+    else printf(" %s ",((TVar*)i->src1)->name);
+    printf(" %s ",iTable[i->type]);
+    if (((TVar*)i->src2)->name == NULL) printf(" %d", (int)i->src2);
+    else printf(" %s",((TVar*)i->src2)->name);
+    printf("\n");
+    pom = pom->next;
+  }
+  printf("________________\n\n");
+}
+
+void tiskniInst(){
+  printf("\n instrukce:\n");
+  for (int i = I_ADD; i<= I_CMP_NE; i++){ printf("%d\n",i);}
+  printf("\n");
+}
+
+
+
 TStack Stack;
 
 /////////////////////////////////////////////////////////////
-int parseExpression() {
+int parseExpression(TTable *table) {
   int err = EOK;
+
+  TList *LTmpVars = &table->lastAddedFunc->tmpVar;
+  TList *LInstr = &table->lastAddedFunc->instructions;
 
   // inicializace
   stackInit(&Stack);
-  listInit(&LTmpVars);
+  listFirst(LTmpVars);
+
 
   shift(&Stack, ENDEXPR, NULL);
+  tiskniStack(&Stack);
 
-  int a,b;
+  int a ,b;
   char c;
   TInstr instr = {NOINSTR, NULL, NULL, NULL};
 
   do {
+
     a = token;                       // aktuální token
     b = getTopTerminal(&Stack);      // najdeme nejvrchnìj¹í terminál
     c = precedentTable[b][a];        // podíváme se do tabulky
@@ -61,32 +124,37 @@ int parseExpression() {
     if (c == 0) {                    // chyba
       a = ENDEXPR;                   // token pova¾ujeme za konec výrazu
       c = precedentTable[b][a];      // znovu se podíváme do tabulky
-    } 
+    }
 
     switch(c) {
       case '=':
       case '<':  err = shift(&Stack, a, NULL);    // push(a)
                  if (err != EOK) break;
-                 //err = getNextToken(&attr);     // next token
+                 token = getNextToken(&attr);     // next token
+                 if (token < 0) err = token; 
                  break;
 
       case '>':  err = findRule(&Stack, &instr);  // najdi pravidlo
                  if (err != EOK) break;
                                                   // generuj instrukci
-                 err = generateInstr(&LInstr, &instr, &LTmpVars);
+                 err = generateInstr(LInstr, &instr, LTmpVars);
                  if (err != EOK) break;
                                                   // push(výsledek)
                  err = shift(&Stack, EXPRESSION, instr.dest); 
                  break;
 
+      case '$':  break;
       default :  err = SYN_ERR;                   // syntaktická chyba
     };
 
-  } while(0 && err == EOK);
+    printf("\n a = %d b = %d c=%c  err = %d \n\n",a, b, c,err);
+    tiskniStack(&Stack);
+  }while ((a != ENDEXPR || b != ENDEXPR) && err == EOK);
+
+  // kontrolni vypis:
+  tiskniList(LInstr);
 
   // uklid
-  listDataDelete(&LTmpVars);
-  listDispose(&LTmpVars);
   stackDataDelete(&Stack);
   stackDelete(&Stack);
   return err;
@@ -98,7 +166,7 @@ int shift (TStack *S, int token, TVar *pom) {
 
   // inicialiazce dat
   if (isId(token)) {
-/*  pom = functionSearchVar (table.lastAddedFunc, &attr);
+    pom = functionSearchVar(table.lastAddedFunc, attr);
     if (pom == NULL) err = SEM_ERR; // nedefinovaná promìnná */
     token = EXPRESSION; // pravidlo E->id
   }
@@ -111,12 +179,10 @@ int shift (TStack *S, int token, TVar *pom) {
     token = EXPRESSION; // pravidlo E->const
   }
 
-  // vytvoøení struktury pro data na zásobníku
-  TStackData *data = createStackData(token, pom, &err);
-
   // vlo¾íme data na zásobník
   if (err == EOK){
-    err = stackPush(S, data);
+    TStackData *data = createStackData(token, pom, &err);
+    if (err == EOK) err = stackPush(S, data);
   }
   else err = INTR_ERR; // nedostatek pamìti
 
@@ -161,7 +227,7 @@ int findRule(TStack *S, TInstr *instr) {
         top = (TStackData *) stackTopPop(S);
 
         if (isOperator(top->token)) {           // pop(operátor) 
-          instr->type = top->token;             // v tuto chvíli neodpovídá!!!!
+          instr->type = top->token + OFFSET;
           free(top);
           if (!stackEmpty(S)) {
             top = (TStackData *) stackTopPop(S);
@@ -178,7 +244,7 @@ int findRule(TStack *S, TInstr *instr) {
   }
 
   // pokud nìkde zhavarovalo
-  if (top != NULL) {
+  if (err != EOK && top != NULL) {
     free(top);
   }
 
@@ -256,6 +322,7 @@ TVar *createTmpVar(TList *L, int *err) {
        if ( (pom->var = (TVarData*)malloc(sizeof(TVarData))) != NULL ) {
 
          pom->varType = VT_TMP_VAR;             // inicializace
+         pom->name = NULL;
          pom->var->type = NIL;
          *err = listInsertLast(L, pom);    // vlo¾ení do seznamu
          listLast(L);                      // stane se aktivním
