@@ -1,0 +1,4 @@
+"ahoj" .. "hello";
+x+y - 78.9 / ((78) ^ z);
+x < z == true;
+nil ~= false;

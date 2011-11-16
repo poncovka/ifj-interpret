@@ -30,7 +30,7 @@ JMP_NZ lab src ---
 
 CALL fptr --- ---         // zvedne cnt o jedna a zintepretuje fptr(rekurzivne) pokud bude vse OK snizi index
 
-WRITE  --- src ---        // vypise co je v TVar src
+WRITE  src --- ---        // vypise co je v TVar src
 READ   dst --- ---
 
 TYPE   --- --- ---        // udela co se ceka + *

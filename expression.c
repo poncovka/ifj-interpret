@@ -6,6 +6,15 @@
  */
 
 #include "expression.h"
+#define TISK 0
+
+#if TISK
+  #define tisk(prikazy) prikazy
+#else
+  #define tisk(prikazy)
+#endif
+
+
 
 // precedenèní tabulka:
 const char precedentTable[MAXTAB][MAXTAB] = {
@@ -34,70 +43,11 @@ const char precedentTable[MAXTAB][MAXTAB] = {
 [ENDEXPR]          = {[KW_TRUE]='<','<','<','<','<','<','<', 0 ,'<','<','<','<','<','<','<','<','<','<','<','<',[ENDEXPR]='$'},
 }; //precedentTable
 
-// pom výpisy:
-
-void tiskniStack (TStack *s) {
-
-  printf("Stav zásobníku: top\n");
-  TSItem *pom = s->top;
-  while (pom != NULL) {
-    printf("\t%d\n",((TStackData*)(pom->data))->token);
-    pom = pom->next;
-  }
-  printf("_______bottom_________\n\n");
-}
-
-const char *iTable[]={
-   [I_ADD]="+",      // dst src src       vsechno TVar
-   [I_SUB]="-",      // dst src src
-   [I_MUL]="*",      // dst src src
-   [I_DIV]="/",      // dst src src
-   [I_POW]="^",      // dst src src
-   [I_CON]="..",      // dst src src
-
-   [I_CMP_L]="<",    // dst src src
-   [I_CMP_LE]="<=",   // dst src src
-   [I_CMP_G]=">",    // dst src src
-   [I_CMP_GE]=">=",   // dst src src
-   [I_CMP_E]="==",    // dst src src
-   [I_CMP_NE]="~=",   // dst src src
-};
-
-void tiskniList (TList *L) {
-
-  printf("Stav seznamu:\n");
-
-  TLItem *pom = L->First;
-  TInstr *i = NULL;
-
-  while (pom != NULL) {
-    i = (TInstr*)(pom->data);
-
-    if (((TVar*)i->dest)->name == NULL) printf("%d = ", (int)i->dest);
-    else printf("%s = ",((TVar*)i->dest)->name);
-    if (((TVar*)i->src1)->name == NULL) printf(" %d ", (int)i->src1);
-    else printf(" %s ",((TVar*)i->src1)->name);
-    printf(" %s ",iTable[i->type]);
-    if (((TVar*)i->src2)->name == NULL) printf(" %d", (int)i->src2);
-    else printf(" %s",((TVar*)i->src2)->name);
-    printf("\n");
-    pom = pom->next;
-  }
-  printf("________________\n\n");
-}
-
-void tiskniInst(){
-  printf("\n instrukce:\n");
-  for (int i = I_ADD; i<= I_CMP_NE; i++){ printf("%d\n",i);}
-  printf("\n");
-}
-
-
-
 TStack Stack;
 
+
 /////////////////////////////////////////////////////////////
-int parseExpression(TTable *table) {
+int parseExpression(TTable *table, TVar **ptrResult) {
   int err = EOK;
 
   TList *LTmpVars = &table->lastAddedFunc->tmpVar;
@@ -107,9 +57,7 @@ int parseExpression(TTable *table) {
   stackInit(&Stack);
   listFirst(LTmpVars);
 
-
   shift(&Stack, ENDEXPR, NULL);
-  tiskniStack(&Stack);
 
   int a ,b;
   char c;
@@ -136,23 +84,32 @@ int parseExpression(TTable *table) {
 
       case '>':  err = findRule(&Stack, &instr);  // najdi pravidlo
                  if (err != EOK) break;
-                                                  // generuj instrukci
-                 err = generateInstr(LInstr, &instr, LTmpVars);
+                                                  // vlo¾ instrukci
+                 err = insertInstruction(&instr, table);
                  if (err != EOK) break;
                                                   // push(výsledek)
                  err = shift(&Stack, EXPRESSION, instr.dest); 
                  break;
+                                                  // ukazatel na výsledek
+      case '$':  err = returnResult(&Stack, ptrResult);
+                 break;
 
-      case '$':  break;
       default :  err = SYN_ERR;                   // syntaktická chyba
     };
 
+    // kontrolni vypis:
+    tisk(
     printf("\n a = %d b = %d c=%c  err = %d \n\n",a, b, c,err);
     tiskniStack(&Stack);
+    )
+
   }while ((a != ENDEXPR || b != ENDEXPR) && err == EOK);
 
   // kontrolni vypis:
+  tisk(
   tiskniList(LInstr);
+  printf("vysledek = %d\n", (int) *ptrResult);
+  )
 
   // uklid
   stackDataDelete(&Stack);
@@ -166,16 +123,16 @@ int shift (TStack *S, int token, TVar *pom) {
 
   // inicialiazce dat
   if (isId(token)) {
-    pom = functionSearchVar(table.lastAddedFunc, attr);
-    if (pom == NULL) err = SEM_ERR; // nedefinovaná promìnná */
+    pom = functionSearchVar(table->lastAddedFunc, attr);
+    if (pom == NULL) err = SEM_ERR; // nedefinovaná promìnná
     token = EXPRESSION; // pravidlo E->id
   }
+
   else if (isConst(token)) {
-/*  err = functionInsertConstatnt(table.lastAddedFunc, &attr);
-    if (err == EOK) {
-      TVar *pom = getLastAddedConst(TFunction*);
+    if (functionInsertConstatnt(table->lastAddedFunc, attr, token) == INS_OK) {
+      pom = (TVar*) listCopyLast(&table->lastAddedFunc->constants);
     }
-    else err = INTR_ERR; // nedostatek pamìti */
+    else err = INTR_ERR; // nedostatek pamìti
     token = EXPRESSION; // pravidlo E->const
   }
 
@@ -184,9 +141,8 @@ int shift (TStack *S, int token, TVar *pom) {
     TStackData *data = createStackData(token, pom, &err);
     if (err == EOK) err = stackPush(S, data);
   }
-  else err = INTR_ERR; // nedostatek pamìti
 
-  return EOK;
+  return err;
 }
 //////////////////////////////////////////////////////////////////
 int findRule(TStack *S, TInstr *instr) {
@@ -251,30 +207,46 @@ int findRule(TStack *S, TInstr *instr) {
   return err;
 }
 //////////////////////////////////////////////////////////////////
-int generateInstr(TList *LInstr, TInstr *instr, TList *LTmpVars) {
+int insertInstruction(TInstr *instr, TTable *table) {
 
   // pravidlo E -> (E)
   if (instr->type == NOINSTR) return EOK;
 
   // pravidlo E -> E op E
   int err = EOK;
+  TList *LTmpVars = &table->lastAddedFunc->tmpVar;
+  TList *LInstr = &table->lastAddedFunc->instructions;
  
   // vytvoø pomocnou promìnnou pro výsledek operace
   TVar *var = createTmpVar(LTmpVars, &err);
   if (err == EOK) {
     instr->dest = var;
     
-    // vytvoø novou instrukci a zkopíruj do ní starou
-    TInstr *newInstr = NULL;
-    if ( (newInstr = (TInstr *)malloc(sizeof(TInstr))) != NULL) {
-      newInstr->type = instr->type;
-      newInstr->dest = instr->dest;
-      newInstr->src1 = instr->src1;
-      newInstr->src2 = instr->src2;
-
+    // vytvoø novou instrukci
+    TInstr *newInstr = genInstr(instr->type, instr->dest, instr->src1, instr->src2);
+    if (newInstr != NULL) {
+      // vlo¾ instrukci do seznamu
       err = listInsertLast(LInstr, newInstr);
     }
     else err = INTR_ERR; // nedostatek pamìti
+  }
+
+  return err;
+}
+//////////////////////////////////////////////////////////////////
+int returnResult(TStack *S, TVar **ptrResult) {
+
+  int err = SYN_ERR;
+  TStackData *top = NULL;
+
+  if (!stackEmpty(S)) {
+    top = (TStackData *) stackTopPop(S);
+    if (top->token == EXPRESSION) {
+
+      *ptrResult = top->var;
+       err = EOK;
+    }
+    free(top);
   }
 
   return err;
@@ -319,11 +291,11 @@ TVar *createTmpVar(TList *L, int *err) {
     // alokace promìnné a dat
     TVar *pom = NULL;
     if ( (pom = malloc(sizeof(TVar))) != NULL) {
-       if ( (pom->var = (TVarData*)malloc(sizeof(TVarData))) != NULL ) {
+       if ( (pom->varData = (TVarData*)malloc(sizeof(TVarData))) != NULL ) {
 
          pom->varType = VT_TMP_VAR;             // inicializace
          pom->name = NULL;
-         pom->var->type = NIL;
+         pom->varData->type = NIL;
          *err = listInsertLast(L, pom);    // vlo¾ení do seznamu
          listLast(L);                      // stane se aktivním
        }
@@ -348,7 +320,7 @@ void listDataDelete(TList *L) {
 
   listFirst(L);
   while(listActive(L)) {
-    free(((TVar*)listGetActive(L)->data)->var);
+    free(((TVar*)listGetActive(L)->data)->varData);
     free(((TVar*)listGetActive(L)->data));
     listSucc(L);
   }
@@ -363,6 +335,7 @@ void stackDataDelete(TStack *S) {
       free (pom->data);
       pom = pom->next;
     }
+
 }
 
 //////////////////////////////////////////////////////
@@ -377,5 +350,86 @@ void tiskniPrecTab() {
   printf("\n");
   }
 }
+
+///////////////////////////////////////////// funkce pro pomocné výpisy:
+
+void tiskniStack (TStack *s) {
+
+  printf("Stav zásobníku: top\n");
+  TSItem *pom = s->top;
+  while (pom != NULL) {
+    printf("\t%d\n",((TStackData*)(pom->data))->token);
+    pom = pom->next;
+  }
+  printf("_______bottom_________\n\n");
+}
+
+const char *iTable[]={
+   [I_ADD]="+",      // dst src src
+   [I_SUB]="-",      // dst src src
+   [I_MUL]="*",      // dst src src
+   [I_DIV]="/",      // dst src src
+   [I_POW]="^",      // dst src src
+   [I_CON]="..",      // dst src src
+
+   [I_CMP_L]="<",    // dst src src
+   [I_CMP_LE]="<=",   // dst src src
+   [I_CMP_G]=">",    // dst src src
+   [I_CMP_GE]=">=",   // dst src src
+   [I_CMP_E]="==",    // dst src src
+   [I_CMP_NE]="~=",   // dst src src
+};
+
+void tiskniList (TList *L) {
+
+  printf("\nStav seznamu:\n");
+
+  TLItem *pom = L->First;
+  TInstr *i = NULL;
+
+  while (pom != NULL) {
+    i = (TInstr*)(pom->data);
+
+    if (((TVar*)i->dest)->name == NULL) printf("%d = ", (int)i->dest);
+    else printf("%s = ",((TVar*)i->dest)->name);
+
+    TVar *var = ((TVar*)i->src1); 
+    if (var->varType == VT_CONST) {
+      switch(var->varData->type) {
+        case NIL:     printf("  nil  "); break;
+        case BOOL:    printf("  %s  ", (var->varData->value.b ? "TRUE":"FALSE")); break;
+        case STRING:  printf("  %s  ", var->varData->value.s.str); break;
+        case NUMBER:  printf("  %g  ",var->varData->value.n); break;
+      }
+    }
+    else if (var->name == NULL) printf(" %d ", (int)var);
+    else printf(" %s ",var->name);
+
+    printf(" %s ",iTable[i->type]);
+
+    var = ((TVar*)i->src2); 
+    if (var->varType == VT_CONST) {
+      switch(var->varData->type) {
+        case NIL:     printf("  nil  "); break;
+        case BOOL:    printf("  %s  ", (var->varData->value.b ? "TRUE":"FALSE")); break;
+        case STRING:  printf("  %s  ", var->varData->value.s.str); break;
+        case NUMBER:  printf("  %g  ",var->varData->value.n); break;
+      }
+    }
+    else if (var->name == NULL) printf(" %d ", (int)var);
+    else printf(" %s ",var->name);
+
+    printf("\n");
+    pom = pom->next;
+  }
+  printf("________________\n\n");
+}
+
+void tiskniInst(){
+  printf("\n instrukce:\n");
+  for (int i = I_ADD; i<= I_CMP_NE; i++){ printf("%d\n",i);}
+  printf("\n");
+}
+
 
 /* konec expression.c */

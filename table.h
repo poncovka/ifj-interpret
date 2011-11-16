@@ -58,7 +58,7 @@ typedef enum{
    I_LAB,      // --- --- ---
    I_RETURN,   // --- --- ---
 
-   I_POP,      // --- src ---       src je TVar ale na stacku je TVarData
+   I_POP,      // src --- ---       src je TVar ale na stacku je TVarData
    I_PUSH,     // dst --- ---       dst je TVar ale na stack se vlozi odpovidajici TVarData
    I_STACK_E,
 
@@ -85,7 +85,7 @@ typedef enum{
    I_JMP_Z,    // lab src ---       src je TVar
    I_JMP_NZ,   // lab src ---
 
-   I_WRITE,    // --- src ---       src TVar
+   I_WRITE,    // src --- ---       src TVar
    I_READ,     // dst prm ---       dst TVar, prm je parametr read
    I_CALL,     // fce --- ---       fce je TFunction
 
@@ -112,14 +112,11 @@ typedef struct{
  */
 TInstr *genInstr(EInstrType, void*, void*, void*);
 
-void tableInit(TTable*);
-
 /*
- * naposled vlozena promena do tabulky symbolu ve funkci
- * @param   funkce
- * @return  data promene(struct TVar)
+ * inicializace tabulky
+ * @param   tabulka
  */
-TVar *getLastAddedVar(TFunction*);
+void tableInit(TTable*);
 
 
 /*
@@ -137,11 +134,19 @@ int tableInsertFunction (TTable*, string);
 int functionInsertVar(TFunction*, string);
 
 /*
- * vlozi novou konstantu
- * @param   funkce (fce->constants)
- * @param   klic
+ * naposled vlozena promena do tabulky symbolu ve funkci
+ * @param   funkce
+ * @return  data promene(struct TVar)
  */
-int functionInsertConstatnt(TList*, string, int);
+TVar *getLastAddedVar(TFunction*);
+
+/*
+ * vlozi novou konstantu
+ * @param   funkce
+ * @param   to co nacetl scanner
+ * @param   co to bylo string,number atd..
+ */
+int functionInsertConstatnt(TFunction*, string, int);
 
 /*
  * vyhleda funci v tabulce funkci
@@ -179,7 +184,7 @@ int varRealloc(TVar*, int);
 /*
  * tiskne tabulku :)
  */
-void tablePrintOrder(TTable);
+void tablePrintOrder(TTable, FILE*);
 void printTreeNodeOrder(TBTree*);
 void printNode(TNode n, EBTreeDataType t, char *delim);
 

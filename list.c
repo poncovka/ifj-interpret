@@ -31,7 +31,7 @@ int listInit (TList *L) {
  * @return  kód chyby
  */
 int listDispose (TList *L) {
-  
+
   if (L != NULL) {
     TLItem *pom = NULL;
     L->Act = NULL;
@@ -65,7 +65,7 @@ int listInsertFirst  (TList *L, void *data) {
       pom->next = L->First;
       L->First = pom;
                                 // první prvek je i poslední
-      if (L->First->next == NULL) L->Last = pom; 
+      if (L->First->next == NULL) L->Last = pom;
     }
     else return LIST_EALLOC;    // nedostatek pamìti
   }
@@ -179,7 +179,7 @@ void *listCopyLast (TList *L) {
  * @return  kód chyby
  */
 int listDeleteFirst (TList *L) {
-  
+
   if (L != NULL) {
     if (L->First != NULL) {     // seznam není prázdný
 
@@ -271,11 +271,11 @@ void *listCopy (TList *L) {
  * @return  kód chyby
  */
 int listActualize (TList *L, void *data ) {
-  
-  if (L != NULL) {
+
+  if (L != NULL || data == NULL) {
 
     if (L->Act != NULL) {
-      L->Act->data = data; // pøepí¹e uk na data 
+      L->Act->data = data; // pøepí¹e uk na data
     }
   }
   else return LIST_ERR;    // neplatný ukazatel
