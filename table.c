@@ -317,7 +317,7 @@ void listInstrPrint(TList *l){
          case I_LAB: break;
          case I_RETURN: break;
          case I_POP: {
-               printf("POP", dst->name);
+               printf("POP");
                printVar(dst);
             }break;
          case I_PUSH: {
@@ -333,23 +333,99 @@ void listInstrPrint(TList *l){
                printVar(dst);
                printVar(src1);
             }break;
-         case I_ADD: ;
-         case I_SUB: ;
-         case I_MUL: ;
-         case I_DIV: ;
-         case I_POW: ;
-         case I_CON: ;
-         case I_CMP_L:;
-         case I_CMP_LE:;
-         case I_CMP_G:;
-         case I_CMP_GE:;
-         case I_CMP_E:;
-         case I_CMP_NE:;
-         case I_JMP: break;
-         case I_JMP_Z: break;
-         case I_JMP_NZ: break;
-         case I_WRITE: break;
-         case I_READ: break;
+         case I_ADD: {
+               printf("ADD");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_SUB:{
+               printf("SUB");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_MUL: {
+               printf("MUL");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_DIV:{
+               printf("DIV");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_POW: {
+               printf("POW");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_CON: {
+               printf("CON");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_CMP_L:{
+               printf("CMP_L");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_CMP_LE:{
+               printf("CMP_LE");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_CMP_G:{
+               printf("CMP_G");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_CMP_GE:{
+               printf("CMP_GE");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_CMP_E:{
+               printf("CMP_E");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_CMP_NE:{
+               printf("CMP_NE");
+               printVar(dst);
+               printVar(src1);
+               printVar(src2);
+            }break;
+         case I_JMP: {
+               printf("JMP %d", tmp->dest);
+            }break;
+         case I_JMP_Z: {
+               printf("JMP_Z");
+               printVar(dst);
+               printf(" %d", tmp->dest);
+            }break;
+         case I_JMP_NZ: {
+               printf("JMP_NZ");
+               printVar(dst);
+               printf(" %d", tmp->dest);
+            }break;
+         case I_WRITE: {
+               printf("WRITE");
+               printVar(dst);
+            }break;
+         case I_READ: {
+               printf("READ");
+               printVar(dst);
+            }break;
 
          case I_CALL: {
                printf("CALL");
