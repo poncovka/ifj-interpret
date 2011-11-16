@@ -184,7 +184,7 @@ int varRealloc(TVar*, int);
 /*
  * tiskne tabulku :)
  */
-void tablePrintOrder(TTable);
+void tablePrintOrder(TTable, FILE*);
 void printTreeNodeOrder(TBTree*);
 void printNode(TNode n, EBTreeDataType t, char *delim);
 
