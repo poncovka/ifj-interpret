@@ -12,41 +12,49 @@
 #include <string.h>
 #include "stack.h"
 #include "list.h"
+#include "parser.h"
 #include "expression.h"
-
 
 int main()
 {
-  tableInit(&table);
+  TTable mujTable;
+  table = &mujTable;
+  tableInit(table);
 
-  tableInsertFunction(&table, strCreateString("fce"));
-  functionInsertVar(table.lastAddedFunc, strCreateString("x"));
-  functionInsertVar(table.lastAddedFunc, strCreateString("y"));
-  functionInsertVar(table.lastAddedFunc, strCreateString("z"));
+  tableInsertFunction(table, strCreateString("fce"));
+  functionInsertVar(table->lastAddedFunc, strCreateString("x"));
+  functionInsertVar(table->lastAddedFunc, strCreateString("y"));
+  functionInsertVar(table->lastAddedFunc, strCreateString("z"));
 
    printf("\nJedna funkce: \n");
-   tablePrintOrder(table);
+   tablePrintOrder(*table);
    printf("\n----------------------------\n");
 
 
  //tiskniPrecTab();
- FILE *f = fopen("testy/test-expr.txt","r");
+ FILE *f = fopen("testy/test-expr2.txt","r");
  setSourceFile(f);
  strInit(&attr);
- listInit(&table.lastAddedFunc->tmpVar);
+ listInit(&table->lastAddedFunc->tmpVar);
 
  int err = EOK;
+ TVar *x;
+ int test = 1;
 
  while((token = getNextToken(&attr)) != END_OF_FILE)
  {
-  err = parseExpression(&table);
-  printf("Test skonèil s chybou: %d\n\n", err);
+  err = parseExpression(table, &x);
+  printf("Test %d skoncil s chybou: %d a vysledkem: %d \n", test,err, (int)x);
+  test++;
+  err = EOK;
  }
- listDataDelete(&table.lastAddedFunc->tmpVar);
- listDispose(&table.lastAddedFunc->tmpVar);
+ tiskniList(&table->lastAddedFunc->instructions);
+
+ listDataDelete(&table->lastAddedFunc->tmpVar);
+ listDispose(&table->lastAddedFunc->tmpVar);
 
  fclose(f);
- tableClear(&table);
+ tableClear(table);
  strFree(&attr);
  return EXIT_SUCCESS;
 }

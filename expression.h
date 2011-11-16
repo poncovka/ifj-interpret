@@ -17,11 +17,6 @@
 #include "scanner.h"
 #include "parser.h"
 
-TTable table;
-int token;
-string attr;
-
-
 #define EOK       0
 #define ENDEXPR   END_OF_FILE + 1    // ukonèovaè øetìzce a dno zásobníku
 #define MAXTAB    ENDEXPR + 1        // rozmìr precedenèní tabulky
@@ -35,7 +30,6 @@ string attr;
 #define isConst(t)    (t >= KW_TRUE        && t <= L_STRING)
 #define isOperator(t) (t >= L_ADDITION     && t <= L_UNEQUAL)
 
-
 // pomocná struktura pro data na zásobníku:
 
 typedef struct {
@@ -46,12 +40,13 @@ typedef struct {
 
 // funkce pro vyhodnocování výrazù:
 
-int parseExpression(TTable *t);
+int parseExpression(TTable *t, TVar **ptrResult);
 
 int shift           (TStack *S, int token, TVar *pom);
 int getTopTerminal  (TStack *S);
 int findRule        (TStack *S, TInstr *instr);
-int generateInstr   (TList *LInstr, TInstr *instr, TList *LTmpVars);
+int insertInstruction(TInstr *instr, TTable *table);
+int returnResult    (TStack *S, TVar **ptrResult);
 
 TStackData *createStackData(int token, TVar *var, int *err);
 TVar       *createTmpVar(TList *L, int *err);
@@ -59,6 +54,11 @@ TVar       *createTmpVar(TList *L, int *err);
 void listDataDelete (TList *L);
 void stackDataDelete(TStack *S);
 
+// pomocné výpisy:
+
+void tiskniStack (TStack *s);
+void tiskniList (TList *L);
+void tiskniInst();
 void tiskniPrecTab();
 
 #endif // EXPRESSION_H_INCLUDED
