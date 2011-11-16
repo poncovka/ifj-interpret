@@ -15,10 +15,12 @@ enum ESource {DEST, SRC1, SRC2};
 TVarData *giveMeData(int what, TInstr *instr, TFunction *fce) {
 	TVar *tempVar;
 
-	if (what == DEST) tempVar = (TVar *) instr->dest;
-	else if (what == SRC1) tempVar = (TVar *) instr->src1;
-	else if (what == SRC2) tempVar = (TVar *) instr->src2;
-	else return NULL;
+	switch (what) {
+		case DEST: tempVar = (TVar *) instr->dest; break;
+		case SRC1: tempVar = (TVar *) instr->src1; break;
+	  case SRC2: tempVar = (TVar *) instr->src2; break;
+		default: return NULL; break;
+	}
 
   if (tempVar->varType == VT_VAR)
    	return &tempVar->varData[fce->cnt];
@@ -78,6 +80,7 @@ int interpret(TFunction *fce) {
 						printf("TRUE");
 					else printf("FALSE");
 				}
+
 				else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
 					if (data1->value.n < data2->value.n) 
 						printf("TRUE");
