@@ -57,7 +57,7 @@ int listDispose (TList *L) {
  */
 int listInsertFirst  (TList *L, void *data) {
 
-  if (L != NULL || data == NULL) {
+  if (L != NULL || data != NULL) {
     TLItem *pom = NULL;        // alokace nového prvku
 
     if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
@@ -83,7 +83,7 @@ int listInsertFirst  (TList *L, void *data) {
  */
 int listInsertLast  (TList *L, void *data) {
 
-  if (L != NULL || data == NULL) {
+  if (L != NULL || data != NULL) {
     TLItem *pom = NULL;        // alokace nového prvku
 
     if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
@@ -210,7 +210,7 @@ int listDeleteFirst (TList *L) {
  */
 int listPostInsert (TList *L, void *data) {
 
-  if (L != NULL || data == NULL) {
+  if (L != NULL || data != NULL) {
     if (L->Act != NULL) {        // nìjaký prvek je aktivní
 
       TLItem *pom = NULL;       // alokace
