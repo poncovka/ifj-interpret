@@ -16,29 +16,6 @@
 #define RUN_ERR  -4
 #define INTR_ERR -5
 
-#define NEXT_TOKEN lex = getNextToken(&token); if(lex < 0) return lex;
-
-string token;
-int    lex;
-TTable *table;
-
 int parser(TTable*);
-
-int prsProgram();
-int prsDefFunc();
-int prsStat();
-int prsParams();
-int prsParamsN();
-int prsDefVar();
-int prsStatList();
-int prsInit();
-int prsLit();
-int prsCommand();
-int prsExpN();
-int prsAssign();
-int prsVarParams();
-int prsVar();
-int prsVarN();
-
 
 #endif // PARSER_H_INCLUDED

@@ -1,5 +1,19 @@
 #include "table.h"
 
+#define VAR_ALLOC_SIZE 8
+
+TInstr *genInstr(EInstrType t, void *d, void *s1, void *s2){
+   TInstr *i = malloc(sizeof(TInstr));
+   if(i == NULL)
+      return NULL;
+   i->type = t;
+   i->dest = d;
+   i->src1 = s1;
+   i->src2 = s2;
+
+   return i;
+}
+
 int varRealloc(TVar *v, int cnt){
    if((cnt = v->alloc - cnt) >= 1)
       return INS_OK;
@@ -7,7 +21,7 @@ int varRealloc(TVar *v, int cnt){
    cnt = cnt / VAR_ALLOC_SIZE + 1;
 
    v->alloc += cnt*VAR_ALLOC_SIZE;
-   if( ( v->var = realloc(v->var, v->alloc) ) == NULL)
+   if( ( v->varData = realloc(v->varData, v->alloc) ) == NULL)
       return INS_MALLOC;
    return INS_OK;
 }
@@ -44,38 +58,105 @@ int tableInsertFunction (TTable *T, string s){
    f->cnt = -1;
 
    int err = BTreeInsert(&(T->functions), newName, f);
-   if(err)  // probehl insert v poradku?
-      T->lastAddedFunc = f;
-   // T->lastAddedFunc = ((TFunction *)T->functions.lastAdded->data);
-   else{
+   if(err <= 0){  // neprobehl insert v poradku?
       free(f);
       free(newName);
+      return INS_MALLOC;
    }
 
-   return err;
+   T->lastAddedFunc = f;
+   // T->lastAddedFunc = ((TFunction *)T->functions.lastAdded->data);
+   return INS_OK;
 }
 
 //----------------------------------------------------------------------
 
 int functionInsertVar(TFunction *F, string s){
    TVar     *v   = malloc(sizeof(TVar));
-   TVarData *vd  = malloc(sizeof(TVarData)*VAR_ALLOC_SIZE);
-   char *newName = strCopyChar(&s);
-
-   if(v == NULL || vd == NULL || newName == NULL)
+   if(v == NULL)
       return INS_MALLOC;
+
+   TVarData *vd  = malloc(sizeof(TVarData)*VAR_ALLOC_SIZE);
+   if(vd == NULL){
+      free(v);
+      return INS_MALLOC;
+   }
+
+   char *newName = strCopyChar(&s);
+   if(newName == NULL){
+      free(v);
+      free(vd);
+      return INS_MALLOC;
+   }
 
    v->name  = newName;
    v->alloc = VAR_ALLOC_SIZE;
-   v->var   = vd;
+   v->varData  = vd;
    v->varType  = VT_VAR;
    int err = BTreeInsert(&(F->variables), newName, v);
-   if(!err){
+   if(err <= 0){
       free(v);
       free(vd);
       free(newName);
+      return INS_MALLOC;
    }
-   return err;
+   return INS_OK;
+}
+
+//----------------------------------------------------------------------
+
+int functionInsertConstatnt(TList *l, string token, int lex){
+   TVar     *v   = malloc(sizeof(TVar));
+   if(v == NULL)
+      return INS_MALLOC;
+
+   TVarData *vd  = malloc(sizeof(TVarData));
+   if(vd == NULL){
+      free(v);
+      return INS_MALLOC;
+   }
+
+   int err = INS_OK;
+   switch(lex){
+      case L_NUMBER:{
+            vd->type = NUMBER;
+            vd->value.n = atof ( token.str );
+         }break;
+      case L_STRING:{
+            vd->type = STRING;
+            strInit( &(vd->value.s) );
+            if( strCopyString( &token, &(vd->value.s) ) == STR_ERROR)
+               err = INS_MALLOC;
+         }break;
+      case KW_TRUE:{
+            vd->type = BOOL;
+            vd->value.b = 1;
+         }break;
+      case KW_FALSE:{
+            vd->type = BOOL;
+            vd->value.b = 0;
+         }break;
+      case KW_NIL:{
+            vd->type = NIL;
+         }break;
+   }
+
+   v->name  = NULL;
+   v->alloc = 1;
+   v->varType = VT_CONST;
+   v->varData = vd;
+
+   if(listInsertLast(l, v) != LIST_EOK || err != INS_OK){
+      // kdyz se nepovedlo vlozit nebo pokud predtim u vytdareni dat
+      // doslo k chybe musim vechno smazat
+      free(v);
+      if(vd->type == STRING)
+         strFree(&(vd->value.s));
+      free(vd);
+      return INS_MALLOC;
+   }
+
+   return INS_OK;
 }
 
 //----------------------------------------------------------------------
@@ -100,23 +181,23 @@ void freeConstTmpVarList(TList *l){
       TVar *tmp = (TVar *)l->Act->data;
 
       if(tmp->varType == VT_VAR){
-      // jestli to byla promena tak musim projit cele pole a smazat vsechny stringy
+         // jestli to byla promena tak musim projit cele pole a smazat vsechny stringy + jmeno
          for(int i = 0; i < tmp->alloc; i++){
-            if(tmp->var[i].type == STRING)
-               free(tmp->var[i].value.s.str);
+            if(tmp->varData[i].type == STRING)
+               free(tmp->varData[i].value.s.str);
          }
-         // protoze sem musel pole alokovat tak ho musim smazat
-         free(tmp->var );
+         // jmeno jsem taky alokoval
+         free(tmp->name);
       }
       else if(tmp->varType == VT_CONST || tmp->varType == VT_TMP_VAR){
-      // jestlize je to konstanta nebo pomocna promena tak overim jestli je string a pripadne smazu
-         if(tmp->var->type == STRING)
-            free(tmp->var->value.s.str);
-         // tmp->var nemazu protoze sem ho nealokoval (teda spon ja :D )
+         // jestlize je to konstanta nebo pomocna promena tak overim jestli je string a pripadne smazu
+         if(tmp->varData->type == STRING)
+            free(tmp->varData->value.s.str);
+         // tmp->varData nemazu protoze sem ho nealokoval (teda spon ja :D )
       }
-
-      free(tmp->name);
-      free( l->Act->data ); // data jsem asi zrejmne taky alokoval tak je mazu
+      // protoze sem musel pole alokovat tak ho musim smazat
+      free(tmp->varData );
+      free(tmp); // data jsem asi zrejmne taky alokoval tak je mazu
 
       listDeleteFirst(l);
       listFirst(l);
@@ -159,7 +240,7 @@ void clearNode(TNode n, EBTreeDataType type){
          // predpis jak smazat data poku jsou typu TVar *
          case VAR:{
             TVar *temp = ((TVar *)n->data);
-            free(temp->var);
+            free(temp->varData);
             free(n->data);
          }break;
          // nic nedelam

@@ -4,10 +4,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "binaryTree.h"
+#include "scanner.h"
 #include "str.h"
 #include "list.h"
-
-#define VAR_ALLOC_SIZE 8
 
 typedef struct{
    TBTree variables;       // tabulka promenych
@@ -50,8 +49,8 @@ typedef struct{
 typedef struct{
    char      *name;
    EVarType   varType;  // CONST nebo VAR
-   TVarData  *var;   // pole! bude se alokovat po 8  var[f->cnt]->type =
-   int        alloc; // kolik je alokovano
+   TVarData  *varData;  // pole! bude se alokovat po 8  var[f->cnt]->type =
+   int        alloc;    // kolik je alokovano
 }TVar;
 
 // Instrukce
@@ -100,8 +99,18 @@ typedef struct{
    EInstrType type;
    void *dest;
    void *src1;   // ((TVar *)L->act->data)->var[f->cnt]->type --- VAR CONST TMP_VAR
-   void *scr2;
+   void *src2;
 }TInstr;
+
+/*
+ * generuje instrukci
+ * @param   typ instrukce
+ * @param   dst
+ * @param   src1
+ * @param   src2
+ * @return  ukazatel na instrukci
+ */
+TInstr *genInstr(EInstrType, void*, void*, void*);
 
 void tableInit(TTable*);
 
@@ -111,6 +120,7 @@ void tableInit(TTable*);
  * @return  data promene(struct TVar)
  */
 TVar *getLastAddedVar(TFunction*);
+
 
 /*
  * vlozi novou funci do tabulky funkci
@@ -127,12 +137,11 @@ int tableInsertFunction (TTable*, string);
 int functionInsertVar(TFunction*, string);
 
 /*
- * NENI IMPLEMENTOVANO !!!
  * vlozi novou konstantu
  * @param   funkce (fce->constants)
  * @param   klic
  */
-int functionInsertConstatnt(/*TList*/);
+int functionInsertConstatnt(TList*, string, int);
 
 /*
  * vyhleda funci v tabulce funkci

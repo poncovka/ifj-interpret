@@ -1,8 +1,4 @@
 #include "parser.h"
-#include "table.h"
-#include "list.h"
-#include "scanner.h"
-#include "str.h"
 
 #define NEXT_TOKEN lex = getNextToken(&token); if(lex < 0) return lex;
 
@@ -21,7 +17,7 @@ int prsInit();
 int prsLit();
 int prsCommand();
 int prsExpN();
-int prsAssign(TVar*);
+int prsAssign(TVar*); // promenou predavam kvuli generovani instrukci
 int prsVarParams();
 int prsVar();
 int prsVarN();
