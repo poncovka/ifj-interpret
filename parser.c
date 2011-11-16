@@ -2,9 +2,10 @@
 
 #define NEXT_TOKEN token = getNextToken(&attr); if(token < 0) return token;
 
-string attr;
-int    token;
+string  attr;
+int     token;
 TTable *table;
+TList  *instr; // zde je ulozen seznam instrukci naposled vlozene funkce
 
 int prsProgram();
 int prsDefFunc();
@@ -40,7 +41,6 @@ int prsProgram(){
    return prsDefFunc();
 }
 
-TList *instr; // zde je ulozen seznam instrukci naposled vlozene funkce
 // <def_func>
 int prsDefFunc(){
    int err;

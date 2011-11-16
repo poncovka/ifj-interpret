@@ -263,29 +263,30 @@ void  tableClear(TTable *T){
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 // PRO DEBUG!!
+FILE *out;
 
 void listConstTmpPrint(TList *l){
    listFirst(l);
    while(listActive(l)){
       TVarData *tmp = ((TVar *)l->Act->data)->varData;
-      printf("         ");
+      fprintf(out,"         ");
 
       switch( tmp->type ){
          case STRING:{
-               printf("string \"%s\"", tmp->value.s.str);
+               fprintf(out,"string \"%s\"", tmp->value.s.str);
             }break;
          case NUMBER:{
-               printf("number %g", tmp->value.n);
+               fprintf(out,"number %g", tmp->value.n);
             }break;
          case BOOL:{
-               printf("bool %s", tmp->value.b == 1 ? "true" : "false");
+               fprintf(out,"bool %s", tmp->value.b == 1 ? "true" : "false");
             }break;
          case NIL:{
-               printf("nil");
+               fprintf(out,"nil");
             }break;
-         default: printf("unknow const");
+         default: fprintf(out,"unknow const");
       }
-      printf("\n");
+      fprintf(out,"\n");
       listSucc(l);
    }
 }
@@ -293,13 +294,13 @@ void listConstTmpPrint(TList *l){
 void printVar(TVar *src){
    if(src != NULL){
       if(src->varType == VT_VAR)
-         printf(" %s",src->name);
+         fprintf(out," %s",src->name);
       else{
          switch(src->varData->type){
-         case STRING: printf(" \"%s\"", src->varData->value.s.str);break;
-         case NUMBER: printf(" %g", src->varData->value.n);break;
-         case BOOL:   printf(" %s", src->varData->value.b == 1 ? "true" : "false");break;
-         case NIL:    printf(" nil");break;
+         case STRING: fprintf(out," \"%s\"", src->varData->value.s.str);break;
+         case NUMBER: fprintf(out," %g", src->varData->value.n);break;
+         case BOOL:   fprintf(out," %s", src->varData->value.b == 1 ? "true" : "false");break;
+         case NIL:    fprintf(out," nil");break;
       }
       }
    }
@@ -311,141 +312,141 @@ void listInstrPrint(TList *l){
       TVar *dst  = ((TVar *)tmp->dest);
       TVar *src1 = ((TVar *)tmp->src1);
       TVar *src2 = ((TVar *)tmp->src2);
-      printf("         ");
+      fprintf(out,"         ");
 
       switch (tmp->type) {
          case I_LAB: break;
          case I_RETURN: break;
          case I_POP: {
-               printf("POP");
+               fprintf(out,"POP");
                printVar(dst);
             }break;
          case I_PUSH: {
-               printf("PUSH");
+               fprintf(out,"PUSH");
                printVar(dst);
             }break;
          case I_STACK_E: {
-               printf("STACK_E");
+               fprintf(out,"STACK_E");
             }break;
          case I_MOV: break;
          case I_SET: {
-               printf("SET");
+               fprintf(out,"SET");
                printVar(dst);
                printVar(src1);
             }break;
          case I_ADD: {
-               printf("ADD");
+               fprintf(out,"ADD");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_SUB:{
-               printf("SUB");
+               fprintf(out,"SUB");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_MUL: {
-               printf("MUL");
+               fprintf(out,"MUL");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_DIV:{
-               printf("DIV");
+               fprintf(out,"DIV");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_POW: {
-               printf("POW");
+               fprintf(out,"POW");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_CON: {
-               printf("CON");
+               fprintf(out,"CON");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_CMP_L:{
-               printf("CMP_L");
+               fprintf(out,"CMP_L");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_CMP_LE:{
-               printf("CMP_LE");
+               fprintf(out,"CMP_LE");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_CMP_G:{
-               printf("CMP_G");
+               fprintf(out,"CMP_G");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_CMP_GE:{
-               printf("CMP_GE");
+               fprintf(out,"CMP_GE");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_CMP_E:{
-               printf("CMP_E");
+               fprintf(out,"CMP_E");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_CMP_NE:{
-               printf("CMP_NE");
+               fprintf(out,"CMP_NE");
                printVar(dst);
                printVar(src1);
                printVar(src2);
             }break;
          case I_JMP: {
-               printf("JMP %d", tmp->dest);
+               fprintf(out,"JMP %d", tmp->dest);
             }break;
          case I_JMP_Z: {
-               printf("JMP_Z");
+               fprintf(out,"JMP_Z");
                printVar(dst);
-               printf(" %d", tmp->dest);
+               fprintf(out," %d", tmp->dest);
             }break;
          case I_JMP_NZ: {
-               printf("JMP_NZ");
+               fprintf(out,"JMP_NZ");
                printVar(dst);
-               printf(" %d", tmp->dest);
+               fprintf(out," %d", tmp->dest);
             }break;
          case I_WRITE: {
-               printf("WRITE");
+               fprintf(out,"WRITE");
                printVar(dst);
             }break;
          case I_READ: {
-               printf("READ");
+               fprintf(out,"READ");
                printVar(dst);
             }break;
 
          case I_CALL: {
-               printf("CALL");
-               printf(" %s", ((TFunction *)tmp->dest)->name );
+               fprintf(out,"CALL");
+               fprintf(out," %s", ((TFunction *)tmp->dest)->name );
             }break;
          case I_TYPE:{
-               printf("TYPE");
+               fprintf(out,"TYPE");
             }break;
          case I_SUBSTR:{
-               printf("SUBSTR");
+               fprintf(out,"SUBSTR");
             }break;
          case I_FIND: {
-               printf("FIND");
+               fprintf(out,"FIND");
             }break;
          case I_SORT: {
-               printf("SORT");
+               fprintf(out,"SORT");
             }break;
       }
 
-      printf("\n");
+      fprintf(out,"\n");
       listSucc(l);
    }
 }
@@ -457,22 +458,22 @@ void printNode(TNode n, EBTreeDataType t, char *delim){
 
       switch(t){
          case FUNCIONS:{
-               printf("\n %s%s\n    {\n", delim, n->key);
+               fprintf(out,"\n %s%s\n    {\n", delim, n->key);
 
                TFunction *tmp   = n->data;
-               printf("     variables:\n");
+               fprintf(out, "     variables:\n");
                   printNode( tmp->variables.root, tmp->variables.type /*VAR*/, "         " );
-               printf("     constants:\n");
+               fprintf(out,"\n     constants:\n");
                   listConstTmpPrint(&tmp->constants);
-               printf("     tmp_var:\n");
+               fprintf(out,"\n     tmp_var:\n");
                   listConstTmpPrint(&tmp->tmpVar);
-               printf("     instruction:\n");
+               fprintf(out,"\n     instruction:\n");
                   listInstrPrint(&tmp->instructions);
 
-               printf("    }\n");
+               fprintf(out,"    }\n");
          }break;
          case VAR:{
-            printf("%s%s\n", delim, n->key);
+            fprintf(out,"%s%s\n", delim, n->key);
          }break;
          case DEFAULT:
          default : break;
@@ -486,6 +487,7 @@ void printTreeNodeOrder(TBTree *T){
    printNode(T->root, T->type, "   ");
 }
 
-void tablePrintOrder(TTable table){
+void tablePrintOrder(TTable table, FILE *f){
+   out = f;
    printTreeNodeOrder(&(table.functions)) ;
 }
