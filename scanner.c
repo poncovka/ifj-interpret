@@ -2,11 +2,11 @@
 //-------------------------------------LEXIKALNI ANALYZATOR---------------------------------------->
 //=================================================================================================>
 /* @author: Tomas Trkal, xtrkal00@stud.fit.vutbr.cz
+ * @correction: Vendula Poncova
  * @date: 	11.11.2011
  */
 
 #include "scanner.h"
-
 
 /*nastavi pocitadlo radku na jedna*/
 int countOfRows = 1;

@@ -17,13 +17,13 @@
 #define STACK_EEMPTY -2
 #define STACK_EALLOC -5
 
-typedef struct TSElem {   // struktura pro polo¾ku v zásobníku
-  struct TSElem *next;     // ukazatel na dal¹í polo¾ku
+typedef struct tSItem {   // struktura pro polo¾ku v zásobníku
+  struct tSItem *next;     // ukazatel na dal¹í polo¾ku
   void *data;             // ukazatel na data
-} *TSElemPtr;
+} TSItem;
 
 typedef struct {          // struktura pro zásobník
-  TSElemPtr top;          // ukazatel na vrchol zásobníku
+  TSItem *top;          // ukazatel na vrchol zásobníku
 } TStack;
 
 
