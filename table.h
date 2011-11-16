@@ -58,7 +58,7 @@ typedef enum{
    I_LAB,      // --- --- ---
    I_RETURN,   // --- --- ---
 
-   I_POP,      // --- src ---       src je TVar ale na stacku je TVarData
+   I_POP,      // src --- ---       src je TVar ale na stacku je TVarData
    I_PUSH,     // dst --- ---       dst je TVar ale na stack se vlozi odpovidajici TVarData
    I_STACK_E,
 
@@ -85,7 +85,7 @@ typedef enum{
    I_JMP_Z,    // lab src ---       src je TVar
    I_JMP_NZ,   // lab src ---
 
-   I_WRITE,    // --- src ---       src TVar
+   I_WRITE,    // src --- ---       src TVar
    I_READ,     // dst prm ---       dst TVar, prm je parametr read
    I_CALL,     // fce --- ---       fce je TFunction
 

@@ -290,13 +290,84 @@ void listConstTmpPrint(TList *l){
    }
 }
 
+void printVar(TVar *src){
+   if(src != NULL){
+      if(src->varType == VT_VAR)
+         printf(" %s",src->name);
+      else{
+         switch(src->varData->type){
+         case STRING: printf(" \"%s\"", src->varData->value.s.str);break;
+         case NUMBER: printf(" %g", src->varData->value.n);break;
+         case BOOL:   printf(" %s", src->varData->value.b == 1 ? "true" : "false");break;
+         case NIL:    printf(" nil");break;
+      }
+      }
+   }
+}
 void listInstrPrint(TList *l){
    listFirst(l);
    while(listActive(l)){
       TInstr *tmp = ((TInstr *)l->Act->data);
+      TVar *dst  = ((TVar *)tmp->dest);
+      TVar *src1 = ((TVar *)tmp->src1);
+      TVar *src2 = ((TVar *)tmp->src2);
       printf("         ");
 
-      printf("%d", tmp->type);
+      switch (tmp->type) {
+         case I_LAB: break;
+         case I_RETURN: break;
+         case I_POP: {
+               printf("POP", dst->name);
+               printVar(dst);
+            }break;
+         case I_PUSH: {
+               printf("PUSH");
+               printVar(dst);
+            }break;
+         case I_STACK_E: {
+               printf("STACK_E");
+            }break;
+         case I_MOV: break;
+         case I_SET: {
+               printf("SET");
+               printVar(dst);
+               printVar(src1);
+            }break;
+         case I_ADD: ;
+         case I_SUB: ;
+         case I_MUL: ;
+         case I_DIV: ;
+         case I_POW: ;
+         case I_CON: ;
+         case I_CMP_L:;
+         case I_CMP_LE:;
+         case I_CMP_G:;
+         case I_CMP_GE:;
+         case I_CMP_E:;
+         case I_CMP_NE:;
+         case I_JMP: break;
+         case I_JMP_Z: break;
+         case I_JMP_NZ: break;
+         case I_WRITE: break;
+         case I_READ: break;
+
+         case I_CALL: {
+               printf("CALL");
+               printf(" %s", ((TFunction *)tmp->dest)->name );
+            }break;
+         case I_TYPE:{
+               printf("TYPE");
+            }break;
+         case I_SUBSTR:{
+               printf("SUBSTR");
+            }break;
+         case I_FIND: {
+               printf("FIND");
+            }break;
+         case I_SORT: {
+               printf("SORT");
+            }break;
+      }
 
       printf("\n");
       listSucc(l);

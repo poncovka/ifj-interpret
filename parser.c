@@ -40,6 +40,7 @@ int prsProgram(){
    return prsDefFunc();
 }
 
+TList *instr; // zde je ulozen seznam instrukci naposled vlozene funkce
 // <def_func>
 int prsDefFunc(){
    int err;
@@ -53,17 +54,18 @@ int prsDefFunc(){
          else if(err != INS_OK)
             return INTR_ERR;  // nepodarilo se vlozit
 
-         // DEBUG
-         printf("Instrukce \"%s\"\n", table->lastAddedFunc->name);
-
          // povedlo vlozit
+         instr = &(table->lastAddedFunc->instructions);
          NEXT_TOKEN
          if(token != L_LEFT_BRACKET) return SYN_ERR;
 
          NEXT_TOKEN
          if(token != L_RIGHT_BRACKET) return SYN_ERR;
 
-         printf("\tSTACK_E\n");
+         // vlozim instrukci na vyprazdeni zasobniku protoze main muze byt volany rekuzivne
+         // a nejaky sikula by mainu mohl dta parametry
+         if( listInsertLast( instr, genInstr(I_STACK_E, NULL, NULL, NULL) ) != LIST_EOK)
+            return INTR_ERR;
 
          err = prsStat();
          if(err != PRS_OK) return err;
@@ -86,17 +88,18 @@ int prsDefFunc(){
          else if(err != INS_OK)
             return INTR_ERR;  // nepodarilo se vlozit
 
-         // DEBUG
-         printf("Instrukce \"%s\"\n", table->lastAddedFunc->name);
-
          // povedlo vlozit
+         instr = &(table->lastAddedFunc->instructions);
+
          NEXT_TOKEN
          if(token != L_LEFT_BRACKET) return SYN_ERR;
 
          err = prsParams();
          if(err != PRS_OK) return err;
 
-         printf("\tSTACK_E\n");
+         // vyprazdnim zasobnim kdyby mi nahodou nekdo predal funkci vic parametru nez ocekava
+         if( listInsertLast( instr, genInstr(I_STACK_E, NULL, NULL, NULL) ) != LIST_EOK)
+            return INTR_ERR;
 
          // dalsi attr uz nacetl prsParams
          if(token != L_RIGHT_BRACKET) return SYN_ERR;
@@ -129,8 +132,11 @@ int prsParams(){
    if(err == INS_NODE_EXIST) return SEM_ERR;
    if(err != INS_OK) return INTR_ERR;
 
-   printf("\tSET %s\n", attr.str);
-   printf("\tPOP %s\n", attr.str);
+   if( listInsertLast( instr, genInstr(I_SET, getLastAddedVar(table->lastAddedFunc), NULL, NULL) ) != LIST_EOK)
+      return INTR_ERR;
+
+   if( listInsertLast( instr, genInstr(I_POP, getLastAddedVar(table->lastAddedFunc), NULL, NULL) ) != LIST_EOK)
+      return INTR_ERR;
 
    err = prsParamsN();
    if(err != PRS_OK) return err;
@@ -158,8 +164,11 @@ int prsParamsN(){
    if(err == INS_NODE_EXIST) return SEM_ERR;
    if(err != INS_OK) return INTR_ERR;
 
-   printf("\tSET %s\n", attr.str);
-   printf("\tPOP %s\n", attr.str);
+   if( listInsertLast( instr, genInstr(I_SET, getLastAddedVar(table->lastAddedFunc), NULL, NULL) ) != LIST_EOK)
+      return INTR_ERR;
+
+   if( listInsertLast( instr, genInstr(I_POP, getLastAddedVar(table->lastAddedFunc), NULL, NULL) ) != LIST_EOK)
+      return INTR_ERR;
 
    return prsParamsN();
 }
@@ -213,7 +222,8 @@ int prsInit(){
       // inicializuji promenou na nil
       // ve skutecnosti ji inicializuju pomoci konstanty ktera bude ulozena
       // jako prvni v tabulce konstant a bude NIL
-      printf("\tSET %s\n", getLastAddedVar(table->lastAddedFunc)->name );
+      if( listInsertLast( instr, genInstr(I_SET, getLastAddedVar(table->lastAddedFunc), NULL, NULL) ) != LIST_EOK)
+         return INTR_ERR;
       return PRS_OK;
    }
    // 12. <init> -> = <lit>
@@ -223,10 +233,14 @@ int prsInit(){
    err = prsLit();
    if(err != PRS_OK) return err;
 
-      if(token == L_STRING)
-         printf("\tSET %s \"%s\"\n", getLastAddedVar(table->lastAddedFunc)->name, attr.str);
-      else
-         printf("\tSET %s %s\n", getLastAddedVar(table->lastAddedFunc)->name, attr.str);
+   // vytvorim konstantu
+   if(functionInsertConstatnt(table->lastAddedFunc, attr, token) != INS_OK)
+      return INTR_ERR;
+
+   // vlozim instrukci
+   TVar *src = table->lastAddedFunc->constants.Last->data;
+   if( listInsertLast( instr, genInstr(I_SET, getLastAddedVar(table->lastAddedFunc), src, NULL) ) != LIST_EOK)
+      return INTR_ERR;
 
    // musim nacist dalsi attr protoze prsDefVar pocita ze je nacteny
    NEXT_TOKEN
@@ -386,6 +400,8 @@ int prsAssign(TVar *var){
       if(token != L_STRING && token != L_NUMBER ) return SYN_ERR;
 
       printf("\tREAD %s \"%s\"\n",var->name, attr.str);
+      /*if( listInsertLast( instr, genInstr(I_READ, var, NULL, NULL) ) != LIST_EOK)
+         return INTR_ERR;*/
 
       NEXT_TOKEN
       if(token != L_RIGHT_BRACKET) return SYN_ERR;
@@ -405,10 +421,6 @@ int prsAssign(TVar *var){
    }
 
    // 25. <assign> -> idFunc ( <params> )
-   char *tmp = NULL;
-   if(token == L_ID)
-      tmp = Ftmp->name;
-
    NEXT_TOKEN
    if(token != L_LEFT_BRACKET) return SYN_ERR;
 
@@ -419,23 +431,26 @@ int prsAssign(TVar *var){
 
    switch(tokenTmp){
       case L_ID:{
-            printf("\tCALL %s\n", tmp);
+            err = listInsertLast( instr, genInstr(I_CALL, Ftmp, NULL, NULL) );
          }break;
       case KW_TYPE:{
-            printf("\tTYPE\n");
+            err = listInsertLast( instr, genInstr(I_TYPE, NULL, NULL, NULL) );
          }break;
       case KW_SUBSTR:{
-            printf("\tSUBSTR\n");
+            err = listInsertLast( instr, genInstr(I_SUBSTR, NULL, NULL, NULL) );
          }break;
       case KW_FIND:{
-            printf("\tFIND\n");
+            err = listInsertLast( instr, genInstr(I_FIND, NULL, NULL, NULL) );
          }break;
       case KW_SORT:{
-            printf("\tSORT\n");
+            err = listInsertLast( instr, genInstr(I_SORT, NULL, NULL, NULL) );
          }break;
    }
+   if(err != LIST_EOK)
+      return INTR_ERR;
 
-   printf("\tPOP %s\n", var->name);
+   if( listInsertLast( instr, genInstr(I_POP, var, NULL, NULL) ) != LIST_EOK)
+      return INTR_ERR;
 
    NEXT_TOKEN
    return PRS_OK;
@@ -447,14 +462,16 @@ int prsVarParams(){
    if(token == L_RIGHT_BRACKET) return PRS_OK;
 
    // 27. <var_params> -> <var> <var_n>
-   printf("\t---\n");
+   // parametry musim dat v opacnem poradi
+   // nastavim aktivitu na posledni prvek seznamu instrukci
+   listLast(instr);
+   // vsechny dalsi instrukce dava za aktivni prvek!!!
+
    int err = prsVar();
    if(err != PRS_OK) return err;
 
    err = prsVarN();
    if(err != PRS_OK) return err;
-
-   printf("\t---\n");
 
    if(token == L_RIGHT_BRACKET) return PRS_OK;
 
@@ -466,18 +483,23 @@ int prsVar(){
    int err = prsLit();
    if(err == PRS_OK){
       // konstantka
-      if(token == L_STRING)
-         printf("\tPUSH \"%s\"\n", attr.str);
-      else
-         printf("\tPUSH %s\n", attr.str);
-      return PRS_OK;
+      // vztvorim konstantu
+      if(functionInsertConstatnt(table->lastAddedFunc, attr, token ) != INS_OK )
+         return INTR_ERR;
+      // vytvorim instrukci
+      TVar *con = table->lastAddedFunc->constants.Last->data;
+      if( listPostInsert ( instr, genInstr(I_PUSH, con, NULL, NULL) ) != LIST_EOK)
+         return INTR_ERR;
+
    }
    if(err == SYN_ERR){
       // 29. <var> -> id
       if(token != L_ID) return SYN_ERR;
       TVar *tmp = functionSearchVar(table->lastAddedFunc, attr);
       if(tmp == NULL)   return SEM_ERR;
-      printf("\tPUSH %s\n", tmp->name);
+
+      if( listPostInsert( instr, genInstr(I_PUSH, tmp, NULL, NULL) ) != LIST_EOK)
+         return INTR_ERR;
 
       return PRS_OK;
    }
