@@ -21,7 +21,7 @@ enum ESource {DEST, SRC1, SRC2};
  */
 int saveData(TVarData *data, TInstr *instr, TFunction *fce) {
   TVar *tempVar = (TVar *) instr->dest; 
-
+	
 	/*pokud prepisovana hodnota je retezec, uvolni*/
 	if (tempVar->varData->type == STRING)
 		strFree(&tempVar->varData[fce->cnt].value.s);
@@ -45,23 +45,11 @@ int saveData(TVarData *data, TInstr *instr, TFunction *fce) {
 //=================================================================================================>
 /* @description vytahne data ze struktur
  * @param dest/src1/src2
- * @param vykonavana instrukce
  * @param aktualni funkce
  * @return ukazatel na data
  */
-TVarData *giveMeData(int what, TInstr *instr, TFunction *fce) {
-	TVar *tempVar;
-
-	switch (what) {
-		case DEST: tempVar = (TVar *) instr->dest; break;
-		case SRC1: tempVar = (TVar *) instr->src1; break;
-	  case SRC2: tempVar = (TVar *) instr->src2; break;
-		default: return NULL; break;
-	}
-
-  if (tempVar->varType == VT_VAR)
-   	return &tempVar->varData[fce->cnt];
-  else return tempVar->varData;
+TVarData *giveMeData(void *data, TFunction *fce) {  
+  return &(((TVar *)data)->varData[(((TVar *)data)->varType == VT_VAR) ? fce->cnt : 0]);
 }
 
 //=================================================================================================>
@@ -124,20 +112,17 @@ int interpret(TFunction *fce) {
 			/*===============================I_CMP_L================================*/
 			case I_CMP_L:	
 				newData.type = BOOL;
-				data1 = giveMeData(SRC1,instr,fce);
-				data2 = giveMeData(SRC2,instr,fce);
+				data1 = giveMeData(instr->src1,fce);
+				data2 = giveMeData(instr->src2,fce);
 
-				if ((data1->type == STRING) && (data2->type == STRING)) {
-					if (strcmp(data1->value.s.str,data2->value.s.str) < 0) 
-					  newData.value.b = TRUE;
-					else newData.value.b = FALSE;
+				if (data1->type == data2->type) { 
+					switch (data1->type) {
+						case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) < 0) ? TRUE : FALSE;	break;
+						case NUMBER: newData.value.b = (data1->value.n < data2->value.n) ? TRUE : FALSE; break;
+						case BOOL: break;
+						case NIL: break;
+					} 
 				}
-
-				else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
-					if (data1->value.n < data2->value.n) 
-						newData.value.b = TRUE;
-					else newData.value.b = FALSE;
-				} 
 
 				else newData.value.b = FALSE;
 				if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
@@ -146,21 +131,18 @@ int interpret(TFunction *fce) {
 			/*==============================I_CMP_LE================================*/
 			case I_CMP_LE: 
 			  newData.type = BOOL;
-				data1 = giveMeData(SRC1,instr,fce);
-				data2 = giveMeData(SRC2,instr,fce);		
+				data1 = giveMeData(instr->src1,fce);
+				data2 = giveMeData(instr->src2,fce);		
 
-			  if ((data1->type == STRING) && (data2->type == STRING)) {
-				  if (strcmp(data1->value.s.str,data2->value.s.str) <= 0)
-				    newData.value.b = TRUE;
-			    else newData.value.b = FALSE;
-				}
-
-		    else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
-		      if (data1->value.n <= data2->value.n)
-	          newData.value.b = TRUE;
-          else newData.value.b = FALSE;
+        if (data1->type == data2->type) {
+          switch (data1->type) {
+            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) <= 0) ? TRUE : FALSE; break;
+            case NUMBER: newData.value.b = (data1->value.n <= data2->value.n) ? TRUE : FALSE; break;
+						case BOOL: break;
+						case NIL: break;
+          }
         }
-        
+
 				else newData.value.b = FALSE;
         if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
 			break;
@@ -168,43 +150,37 @@ int interpret(TFunction *fce) {
 			/*==============================I_CMP_G=================================*/
 			case I_CMP_G: 
         newData.type = BOOL;
-				data1 = giveMeData(SRC1,instr,fce);
-				data2 = giveMeData(SRC2,instr,fce);
+				data1 = giveMeData(instr->src1,fce);
+				data2 = giveMeData(instr->src2,fce);
 
-      	if ((data1->type == STRING) && (data2->type == STRING)) {
-				  if (strcmp(data1->value.s.str,data2->value.s.str) > 0)
-				    newData.value.b = TRUE;
-				  else newData.value.b = FALSE;
-				}
-
-       else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
-         if (data1->value.n > data2->value.n)
-            newData.value.b = TRUE;
-          else newData.value.b = FALSE;
+        if (data1->type == data2->type) {
+          switch (data1->type) {
+            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) > 0) ? TRUE : FALSE; break;
+            case NUMBER: newData.value.b = (data1->value.n > data2->value.n) ? TRUE : FALSE; break;
+						case BOOL: break;
+						case NIL: break;
+          }
         }
- 
-        else newData.value.b = FALSE;
+
+				else newData.value.b = FALSE;
 				if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
 			break;
 
 			/*==============================I_CMP_GE================================*/
 			case I_CMP_GE: 
         newData.type = BOOL;
-				data1 = giveMeData(SRC1,instr,fce);
-				data2 = giveMeData(SRC2,instr,fce);
+				data1 = giveMeData(instr->src1,fce);
+				data2 = giveMeData(instr->src2,fce);
 
-        if ((data1->type == STRING) && (data2->type == STRING)) {
-          if (strcmp(data1->value.s.str,data2->value.s.str) >= 0)
-            newData.value.b = TRUE;
-          else newData.value.b = FALSE;
-        }
+				if (data1->type == data2->type) {
+          switch (data1->type) {
+            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) >= 0) ? TRUE : FALSE; break;
+            case NUMBER: newData.value.b = (data1->value.n >= data2->value.n) ? TRUE : FALSE; break;
+						case BOOL: break;
+						case NIL: break;
+          }          
+				}
 
-        else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
-          if (data1->value.n >= data2->value.n)
-            newData.value.b = TRUE;
-          else newData.value.b = FALSE;
-        }
- 
 				else newData.value.b = FALSE;
 				if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
 			break;
@@ -212,59 +188,37 @@ int interpret(TFunction *fce) {
 			/*==============================I_CMP_E=================================*/
 			case I_CMP_E: 
         newData.type = BOOL;
-				data1 = giveMeData(SRC1,instr,fce);
-        data2 = giveMeData(SRC2,instr,fce);
+				data1 = giveMeData(instr->src1,fce);
+        data2 = giveMeData(instr->src2,fce);
 
-        if ((data1->type == STRING) && (data2->type == STRING)) {
-          if (strcmp(data1->value.s.str,data2->value.s.str) == 0)
-            newData.value.b = TRUE;
-          else newData.value.b = FALSE;
+        if (data1->type == data2->type) {
+          switch (data1->type) {
+            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) == 0) ? TRUE : FALSE; break;
+            case NUMBER: newData.value.b = (data1->value.n == data2->value.n) ? TRUE : FALSE; break;
+						case BOOL: newData.value.b = (data1->value.b == data2->value.b) ? TRUE : FALSE; break;
+						case NIL: newData.value.b = TRUE;
+          }
         }
 
-        else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
-          if (data1->value.n == data2->value.n)
-            newData.value.b = TRUE;
-          else newData.value.b = FALSE;
-        }
-
-        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
-          if (data1->value.b == data2->value.b)
-            newData.value.b = TRUE;
-          else newData.value.b = FALSE;
-        }
-
-        else if ((data1->type == NIL) && (data2->type == NIL))
-          newData.value.b = TRUE;
-        else newData.value.b = FALSE;
+				else newData.value.b = FALSE;
         if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
 			break;
 
 			/*=============================I_CMP_NE=================================*/
 			case I_CMP_NE: 
         newData.type = BOOL;
-				data1 = giveMeData(SRC1,instr,fce);
-        data2 = giveMeData(SRC2,instr,fce);
+				data1 = giveMeData(instr->src1,fce);
+        data2 = giveMeData(instr->src2,fce);
 
-        if ((data1->type == STRING) && (data2->type == STRING)) {
-          if (strcmp(data1->value.s.str,data2->value.s.str) != 0)
-            newData.value.b = TRUE;
-          else newData.value.b = FALSE;
-        }
+        if (data1->type == data2->type) {
+          switch (data1->type) {
+            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) != 0) ? TRUE : FALSE; break;
+            case NUMBER: newData.value.b = (data1->value.n != data2->value.n) ? TRUE : FALSE; break;
+            case BOOL: newData.value.b = (data1->value.b != data2->value.b) ? TRUE : FALSE; break;
+            case NIL: newData.value.b = FALSE;
+	        }
+				}
 
-        else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
-          if (data1->value.n != data2->value.n)
-             newData.value.b = TRUE;
-          else newData.value.b = FALSE;
-        }
-
-        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
-          if (data1->value.b != data2->value.b)
-            newData.value.b = TRUE;
-          else newData.value.b = FALSE;
-        }
-
-        else if ((data1->type == NIL) && (data2->type == NIL))
-           newData.value.b = FALSE;
         else newData.value.b = TRUE;
 				if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
 			break;
