@@ -7,11 +7,43 @@
 
 #include "interpret.h"
 
+//enum ETruth {FALSE, TRUE}
 enum ESource {DEST, SRC1, SRC2};
+
+//=================================================================================================>
+//------------------void saveData(TVarData *data, TInstr *instr, TFunction *fce);------------------>
+//=================================================================================================>
+/* ulozi data do struktury
+ * @param nova data
+ * @param vykonavana instrukce
+ * @param aktualni funkce
+ */
+void saveData(TVarData *data, TInstr *instr, TFunction *fce) {
+  TVar *tempVar = (TVar *) instr->dest; 
+
+	/*pokud prepisovana hodnota je retezec, uvolni*/
+	if (tempVar->varData->type == STRING)
+		strFree(&tempVar->varData[fce->cnt].value.s);
+
+	/*nastavi typ a data promenne*/
+	tempVar->varData[fce->cnt].type = data->type;
+	switch (data->type) {
+		case BOOL: tempVar->varData[fce->cnt].value.b = data->value.b; break;
+		case NUMBER: tempVar->varData[fce->cnt].value.n = data->value.n; break;
+		case STRING: tempVar->varData[fce->cnt].value.s = data->value.s; break;
+		case NIL: break;
+	} 
+}
 
 //=================================================================================================>
 //-------------------------TVarData *giveMeData(TInstr *instr, TFunction *fce);-------------------->
 //=================================================================================================>
+/* vytahne data ze struktur
+ * @param dest/src1/src2
+ * @param vykonavana instrukce
+ * @param aktualni funkce
+ * @return ukazatel na data
+ */
 TVarData *giveMeData(int what, TInstr *instr, TFunction *fce) {
 	TVar *tempVar;
 
@@ -30,13 +62,17 @@ TVarData *giveMeData(int what, TInstr *instr, TFunction *fce) {
 //=================================================================================================>
 //------------------------------------int interpret(TFunction *fce);------------------------------->
 //=================================================================================================>
-/*vykona interpretaci funkce*/
+/* vykona interpretaci funkce
+ * @param aktualni funkce
+ * @return 0/chybovy kod 
+ */
 int interpret(TFunction *fce) {
 
 	fce->cnt++;
 	TInstr *instr; 
 	TVarData *data1;
 	TVarData *data2;
+	TVarData *newData = NULL;
   if (listFirst(&fce->instructions) == LIST_ERR) 
 		return ERR_INTERNAL;
 
@@ -70,43 +106,180 @@ int interpret(TFunction *fce) {
 			case I_CON: break;
 
 		/*instrukce pro porovnani vyrazu*/
-			/*I_CMP_L*/
+			/*===============================I_CMP_L================================*/
 			case I_CMP_L:	
+				newData->type = BOOL;
 				data1 = giveMeData(SRC1,instr,fce);
 				data2 = giveMeData(SRC2,instr,fce);
 
 				if ((data1->type == STRING) && (data2->type == STRING)) {
 					if (strcmp(data1->value.s.str,data2->value.s.str) < 0) 
-						printf("TRUE");
-					else printf("FALSE");
+					  newData->value.b = TRUE;
+					else newData->value.b = FALSE;
 				}
 
 				else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
 					if (data1->value.n < data2->value.n) 
-						printf("TRUE");
-					else printf("FALSE");
+						newData->value.b = TRUE;
+					else newData->value.b = FALSE;
 				} 
-				else printf("FALSE");
+
+				else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+					if (data1->value.b < data2->value.b)
+						newData->value.b = TRUE;
+					else newData->value.b = FALSE;
+				}
+
+				else newData->value.b = FALSE;
+				saveData(newData,instr,fce);
 			break; 
 
-			/*I_CMP_LE*/
+			/*==============================I_CMP_LE================================*/
 			case I_CMP_LE: 
+			  newData->type = BOOL;
+				data1 = giveMeData(SRC1,instr,fce);
+				data2 = giveMeData(SRC2,instr,fce);		
+
+			  if ((data1->type == STRING) && (data2->type == STRING)) {
+				  if (strcmp(data1->value.s.str,data2->value.s.str) <= 0)
+				    newData->value.b = TRUE;
+			    else newData->value.b = FALSE;
+				}
+
+		    else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+		      if (data1->value.n <= data2->value.n)
+	          newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+          if (data1->value.b <= data2->value.b)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+        
+				else if ((data1->type == NIL) && (data2->type == NIL))
+					newData->value.b = TRUE;
+				else newData->value.b = FALSE;
+				saveData(newData,instr,fce);
 			break;
 
-			/*I_CMP_G*/
+			/*==============================I_CMP_G=================================*/
 			case I_CMP_G: 
+        newData->type = BOOL;
+				data1 = giveMeData(SRC1,instr,fce);
+				data2 = giveMeData(SRC2,instr,fce);
+
+      	if ((data1->type == STRING) && (data2->type == STRING)) {
+				  if (strcmp(data1->value.s.str,data2->value.s.str) > 0)
+				    newData->value.b = TRUE;
+				  else newData->value.b = FALSE;
+				}
+
+       else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+         if (data1->value.n > data2->value.n)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+ 
+        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+          if (data1->value.b > data2->value.b)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else newData->value.b = FALSE;
+        saveData(newData,instr,fce);
 			break;
 
-			/*I_CMP_GE*/
+			/*==============================I_CMP_GE================================*/
 			case I_CMP_GE: 
+        newData->type = BOOL;
+				data1 = giveMeData(SRC1,instr,fce);
+				data2 = giveMeData(SRC2,instr,fce);
+
+        if ((data1->type == STRING) && (data2->type == STRING)) {
+          if (strcmp(data1->value.s.str,data2->value.s.str) >= 0)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+          if (data1->value.n >= data2->value.n)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+ 
+        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+          if (data1->value.b >= data2->value.b)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NIL) && (data2->type == NIL))
+           newData->value.b = TRUE;
+				else newData->value.b = FALSE;
+				saveData(newData,instr,fce);
 			break;
 
-			/*I_CMP_E*/
+			/*==============================I_CMP_E=================================*/
 			case I_CMP_E: 
+        newData->type = BOOL;
+				data1 = giveMeData(SRC1,instr,fce);
+        data2 = giveMeData(SRC2,instr,fce);
+
+        if ((data1->type == STRING) && (data2->type == STRING)) {
+          if (strcmp(data1->value.s.str,data2->value.s.str) == 0)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+          if (data1->value.n == data2->value.n)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+          if (data1->value.b == data2->value.b)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NIL) && (data2->type == NIL))
+          newData->value.b = TRUE;
+        else newData->value.b = FALSE;
+        saveData(newData,instr,fce);
 			break;
 
-			/*I_CMP_NE*/
+			/*=============================I_CMP_NE=================================*/
 			case I_CMP_NE: 
+        newData->type = BOOL;
+				data1 = giveMeData(SRC1,instr,fce);
+        data2 = giveMeData(SRC2,instr,fce);
+
+        if ((data1->type == STRING) && (data2->type == STRING)) {
+          if (strcmp(data1->value.s.str,data2->value.s.str) != 0)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+          if (data1->value.n != data2->value.n)
+             newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+          if (data1->value.b != data2->value.b)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NIL) && (data2->type == NIL))
+           newData->value.b = FALSE;
+        else newData->value.b = TRUE;
+        saveData(newData,instr,fce);
 			break;
 
 		/*instrukce pro skoky*/

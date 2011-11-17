@@ -43,6 +43,26 @@ const char precedentTable[MAXTAB][MAXTAB] = {
 [ENDEXPR]          = {[KW_TRUE]='<','<','<','<','<','<','<', 0 ,'<','<','<','<','<','<','<','<','<','<','<','<',[ENDEXPR]='$'},
 }; //precedentTable
 
+// tabulka pro kontrolu semantiky
+
+const int semTable[][DATTYPE] = {
+  // NIL,BOOL,NUMBER,STRING,
+  // 7
+  [I_ADD]   ={0,0,1,0},
+  [I_SUB]   ={0,0,1,0},
+  [I_MUL]   ={0,0,1,0},
+  [I_DIV]   ={0,0,1,0},
+  [I_POW]   ={0,0,1,0},
+  [I_CON]   ={0,0,0,1},
+  [I_CMP_L] ={0,0,1,1},
+  [I_CMP_LE]={0,0,1,1},
+  [I_CMP_G] ={0,0,1,1},
+  [I_CMP_G] ={0,0,1,1},
+  [I_CMP_E] ={1,1,1,1},
+  [I_CMP_NE]={1,1,1,1},
+  // 18
+}; // semTable
+
 TStack Stack;
 
 
@@ -86,6 +106,9 @@ int parseExpression(TTable *table, TVar **ptrResult) {
                  break;
 
       case '>':  err = findRule(&Stack, &instr);  // najdi pravidlo
+                 if (err != EOK) break;
+
+                 err = checkRule(&instr);         // kontrola sémantiky
                  if (err != EOK) break;
                                                   // vlo¾ instrukci
                  err = insertInstruction(&instr, table);
@@ -209,6 +232,40 @@ int findRule(TStack *S, TInstr *instr) {
 
   return err;
 }
+//////////////////////////////////////////////////////////////////
+int checkRule (TInstr *instr) {
+
+  // pravidlo E -> (E)
+  if (instr->type == NOINSTR) return EOK;
+
+  // pravidlo E -> E op E
+  int err = EOK;
+
+  if (((TVar*)instr->src1)->varType == VT_CONST) {
+    err = checkSemErr(instr, (TVar*)instr->src1);
+  }
+
+  if (err == EOK && ((TVar*)instr->src2)->varType == VT_CONST) {
+    err = checkSemErr(instr, (TVar*)instr->src2);
+  }
+
+  return err;
+}
+
+//////////////////////////////////////////////////////////////////
+int checkSemErr(TInstr *instr, TVar *var) {
+
+ //printf("sem kontrola: %d %d %d\n",instr->type, var->varData->type, semTable[instr->type][var->varData->type]);
+
+  if (isMathOperation(instr->type)){
+    if (semTable[instr->type][var->varData->type] != 1) {
+      return SEM_ERR;
+    }
+  }
+
+  return EOK;
+}
+
 //////////////////////////////////////////////////////////////////
 int insertInstruction(TInstr *instr, TTable *table) {
 
