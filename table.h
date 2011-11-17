@@ -1,3 +1,10 @@
+/*
+ * @description   Pomocna knihovna pro praci s tabulkou
+ * @author        Marek Salat - xsalat00
+ * @projekt       IFJ11
+ * @date
+ */
+
 #ifndef TABLE_H_INCLUDED
 #define TABLE_H_INCLUDED
 

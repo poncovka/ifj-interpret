@@ -1,3 +1,10 @@
+/*
+ * @description   Hlavni program - intepretace jazyka IFJ11
+ * @author        Marek Salat - xsalat00
+ * @projekt       IFJ11
+ * @date
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 

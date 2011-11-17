@@ -1,3 +1,45 @@
+/*
+ * @description   Syntakticka analyza shora dolu (rekurzivnim sestupem)
+ * @author        Marek Salat - xsalat00
+ * @projekt       IFJ11
+ * @date
+ */
+
+ /*
+  * PRAVIDLA
+      1.  <program> -> function <def_func>
+      2.  <def_func> -> main ( ) <stat> end ; <EOF>
+      3.  <def_func> -> idFunc ( <params> ) <stat> end <program>
+      4.  <params> -> eps
+      5.  <params> -> id <params_n>
+      6.  <params_n> -> eps
+      7.  <params_n> -> , id <params_n>
+      8.  <stat> -> <def_var> <stat_list>
+      9.  <def_var> -> eps
+      10. <def_var> -> local id <INIT> ; <def_var>
+      11. <init> -> eps
+      12. <init> -> = <lit>
+      13. <lit> -> literal
+      14. <stat_list> -> eps
+      15. <stat_list> -> <commad> ; <stat_list>
+      16. <command> -> if expression then <stat_list> else <stat_list> end
+      17. <command> -> while expression then <stat_list> end
+      18. <command> -> return expression
+      19. <command> -> write ( expression <expression_n> )
+      20. <expression_n> -> eps
+      21. <expression_n> -> , expression <expression_n>
+      22. <command> -> id = <assign>
+      23. <assign> -> expression
+      24. <assign> -> read ( <lit> )
+      25. <assign> -> idFunc ( <params> )
+      26. <var_params> -> eps
+      27. <var_params> -> <var> <var_n>
+      28. <var> -> <lit>
+      29. <var> -> id
+      30. <var_n> -> eps
+      31. <var_n> -> , <var> <var_n>
+ */
+
 #include "parser.h"
 
 #define NEXT_TOKEN token = getNextToken(&attr); if(token < 0) return token;
@@ -27,7 +69,6 @@ int parser(TTable *t){
    return err;
 }
 
-// <program>
 int prsProgram(){
    // 1. <program> -> function <def_func>
    NEXT_TOKEN
@@ -36,7 +77,6 @@ int prsProgram(){
    return prsDefFunc();
 }
 
-// <def_func>
 int prsDefFunc(){
    int err;
    TInstr *i;
@@ -292,17 +332,6 @@ int prsStatList(){
 
    NEXT_TOKEN // <stat_list> ceka uz nacteny attr
    return prsStatList();
-}
-
-int expJump(){
-   //int i = 1;
-   printf("\t---\n\texp magic\n\t---\n");
-   while(token != END_OF_FILE){
-      if(token == L_COMMA  || token == L_SEMICOLON || token == L_RIGHT_BRACKET || token == KW_THEN)
-         break;
-      NEXT_TOKEN
-   }
-   return 1;
 }
 
 int prsCommand(){

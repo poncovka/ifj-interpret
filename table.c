@@ -1,3 +1,10 @@
+/*
+ * @description   Pomocna knihovna pro praci s tabulkou
+ * @author        Marek Salat - xsalat00
+ * @projekt       IFJ11
+ * @date
+ */
+
 #include "table.h"
 
 #define VAR_ALLOC_SIZE 8

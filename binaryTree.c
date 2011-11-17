@@ -1,5 +1,5 @@
 /*
- * @description   Prace s binarnim vyheldavacim stromem (AVL strom)
+ * @description   Prace s binarnim vyheldavacim stromem (AVL strom) 16.11.2011 uz neni AVL :(
  * @author        Marek Salat - xsalat00
  * @projekt       IFJ11
  * @date
