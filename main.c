@@ -12,6 +12,7 @@
 #include "str.h"
 #include "scanner.h"
 #include "parser.h"
+#include "interpret.h"
 
 int main(){
    FILE *f = fopen("../ifj-projekt/testy/test.ifj11", "r");

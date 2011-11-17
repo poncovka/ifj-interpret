@@ -281,13 +281,13 @@ void listConstTmpPrint(TList *l){
       if(tmpV->varType == VT_CONST){
          switch( tmp->type ){
             case STRING:{
-                  fprintf(out,"string \"%s\"", tmp->value.s.str);
+                  fprintf(out,"string \"%s\"", tmp[0].value.s.str);
                }break;
             case NUMBER:{
-                  fprintf(out,"number %g", tmp->value.n);
+                  fprintf(out,"number %g", tmp[0].value.n);
                }break;
             case BOOL:{
-                  fprintf(out,"bool %s", tmp->value.b == 1 ? "true" : "false");
+                  fprintf(out,"bool %s", tmp[0].value.b == 1 ? "true" : "false");
                }break;
             case NIL:{
                   fprintf(out,"nil");
@@ -296,7 +296,7 @@ void listConstTmpPrint(TList *l){
          }
       }
       else
-         fprintf(out,"$%d", tmpV);
+         fprintf(out,"$%d",  (int)tmpV);
       fprintf(out,"\n");
       listSucc(l);
    }
@@ -315,7 +315,7 @@ void printVar(TVar *src){
          }
       }
       else{
-         fprintf(out," $%d", src);
+         fprintf(out," $%d",  (int)src);
       }
    }
 }
@@ -330,7 +330,7 @@ void listInstrPrint(TList *l){
 
       switch (tmp->type) {
          case I_LAB: {
-               fprintf(out,"LAB %d", tmp);
+               fprintf(out,"LAB %d", (int)tmp);
             }break;
          case I_RETURN: fprintf(out,"RETURN");break;
          case I_POP: {
@@ -427,17 +427,17 @@ void listInstrPrint(TList *l){
                printVar(src2);
             }break;
          case I_JMP: {
-               fprintf(out,"JMP %d", tmp->dest);
+               fprintf(out,"JMP %d",  (int)tmp->dest);
             }break;
          case I_JMP_Z: {
                fprintf(out,"JMP_Z");
                printVar(dst);
-               fprintf(out," %d", tmp->src1);
+               fprintf(out," %d",  (int)tmp->src1);
             }break;
          case I_JMP_NZ: {
                fprintf(out,"JMP_NZ");
                printVar(dst);
-               fprintf(out," %d", tmp->src1);
+               fprintf(out," %d",  (int)tmp->src1);
             }break;
          case I_WRITE: {
                fprintf(out,"WRITE");
