@@ -51,7 +51,6 @@ int parseExpression(TTable *table, TVar **ptrResult) {
   int err = EOK;
 
   TList *LTmpVars = &table->lastAddedFunc->tmpVar;
-  TList *LInstr = &table->lastAddedFunc->instructions;
 
   // inicializace
   stackInit(&Stack);
@@ -68,6 +67,10 @@ int parseExpression(TTable *table, TVar **ptrResult) {
     a = token;                       // aktuální token
     b = getTopTerminal(&Stack);      // najdeme nejvrchnìj¹í terminál
     c = precedentTable[b][a];        // podíváme se do tabulky
+
+    if (isConst(a)) {                // pokud je to konstanta
+      c = precedentTable[b][L_ID];   // kontrolujeme syntaxi podle identifikátoru
+    }
 
     if (c == 0) {                    // chyba
       a = ENDEXPR;                   // token pova¾ujeme za konec výrazu
@@ -107,7 +110,7 @@ int parseExpression(TTable *table, TVar **ptrResult) {
 
   // kontrolni vypis:
   tisk(
-  tiskniList(LInstr);
+  tiskniList(&table->lastAddedFunc->instructions);
   printf("vysledek = %d\n", (int) *ptrResult);
   )
 
