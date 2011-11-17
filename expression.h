@@ -17,22 +17,30 @@
 #include "scanner.h"
 #include "parser.h"
 
-#define EOK       0
-#define ENDEXPR   END_OF_FILE + 1    // ukonèovaè øetìzce a dno zásobníku
-#define MAXTAB    ENDEXPR + 1        // rozmìr precedenèní tabulky
-#define EXPRESSION  -1               // není token
-#define NOINSTR   100                // negenerovat instrukci
-#define OFFSET    I_ADD - L_ADDITION // posun pro generování instrukcí
+// pomocné konstanty:
+
+#define EOK        0                  // chybový kód pro úspìch
+#define ENDEXPR    END_OF_FILE + 1    // ukonèovaè øetìzce a dno zásobníku
+#define MAXTAB     ENDEXPR + 1        // rozmìr precedenèní tabulky
+#define EXPRESSION -1                 // není token
+#define NOINSTR    -1                 // negenerovat instrukci
+#define OFFSET     I_ADD - L_ADDITION // posun pro generování instrukcí
+#define DATTYPE     4                 // pocet datovych typu
+
+// pomocná makra pro tokeny:
 
 #define isId(t)       (t == L_ID)
 #define isBracket(t)  (t == L_LEFT_BRACKET || t == L_RIGHT_BRACKET)
 #define isConst(t)    (t >= KW_TRUE        && t <= L_STRING)
 #define isOperator(t) (t >= L_ADDITION     && t <= L_UNEQUAL)
 
-#define isMathOperation(i) (i >= I_ADD && i <= I_CMP_NE)
-#define DATTYPE   4                  // pocet datovych typu
+// pomocná makra pro typy instrukcí:
 
-// tabulka pro kontrolu semantiky
+#define isMathOperation(i) (i >= I_ADD   && i <= I_CMP_NE)
+#define isLGEOperation(i)  (i >= I_CMP_L && i <= I_CMP_GE)
+
+// tabulka pro kontrolu semantiky:
+
 extern const int semTable[][DATTYPE];
 
 // pomocná struktura pro data na zásobníku:
@@ -43,9 +51,9 @@ typedef struct {
 } TStackData;
 
 
-// funkce pro vyhodnocování výrazù:
+// funkce pro parsování výrazu:
 
-int parseExpression(TTable *t, TVar **ptrResult);
+int parseExpression (TTable *t, TVar **ptrResult);
 
 int shift           (TStack *S, int token, TVar *pom);
 int getTopTerminal  (TStack *S);
@@ -57,17 +65,17 @@ int checkSemErr     (TInstr *instr, TVar *var);
 int insertInstruction(TInstr *instr, TTable *table);
 int returnResult    (TStack *S, TVar **ptrResult);
 
-TStackData *createStackData(int token, TVar *var, int *err);
-TVar       *createTmpVar(TList *L, int *err);
+// funkce pro vytváøení a mazání pomocných struktur:
 
-void listDataDelete (TList *L);
-void stackDataDelete(TStack *S);
+TVar       *createTmpVar    (TList *L, int *err);
+TStackData *createStackData (int token, TVar *var, int *err);
+
+void stackDataDelete (TStack *S);
 
 // pomocné výpisy:
 
 void tiskniStack (TStack *s);
 void tiskniList (TList *L);
-void tiskniInst();
 void tiskniPrecTab();
 
 #endif // EXPRESSION_H_INCLUDED
