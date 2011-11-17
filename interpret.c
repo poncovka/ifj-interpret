@@ -138,7 +138,30 @@ int interpret(TFunction *fce) {
 			case I_CMP_LE: 
 			  newData->type = BOOL;
 				data1 = giveMeData(SRC1,instr,fce);
-				data2 = giveMeData(SRC2,instr,fce);			
+				data2 = giveMeData(SRC2,instr,fce);		
+
+			  if ((data1->type == STRING) && (data2->type == STRING)) {
+				  if (strcmp(data1->value.s.str,data2->value.s.str) <= 0)
+				    newData->value.b = TRUE;
+			    else newData->value.b = FALSE;
+				}
+
+		    else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+		      if (data1->value.n <= data2->value.n)
+	          newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+          if (data1->value.b <= data2->value.b)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+        
+				else if ((data1->type == NIL) && (data2->type == NIL))
+					newData->value.b = TRUE;
+				else newData->value.b = FALSE;
+				saveData(newData,instr,fce);
 			break;
 
 			/*==============================I_CMP_G=================================*/
@@ -146,6 +169,27 @@ int interpret(TFunction *fce) {
         newData->type = BOOL;
 				data1 = giveMeData(SRC1,instr,fce);
 				data2 = giveMeData(SRC2,instr,fce);
+
+      	if ((data1->type == STRING) && (data2->type == STRING)) {
+				  if (strcmp(data1->value.s.str,data2->value.s.str) > 0)
+				    newData->value.b = TRUE;
+				  else newData->value.b = FALSE;
+				}
+
+       else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+         if (data1->value.n > data2->value.n)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+ 
+        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+          if (data1->value.b > data2->value.b)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else newData->value.b = FALSE;
+        saveData(newData,instr,fce);
 			break;
 
 			/*==============================I_CMP_GE================================*/
@@ -153,6 +197,29 @@ int interpret(TFunction *fce) {
         newData->type = BOOL;
 				data1 = giveMeData(SRC1,instr,fce);
 				data2 = giveMeData(SRC2,instr,fce);
+
+        if ((data1->type == STRING) && (data2->type == STRING)) {
+          if (strcmp(data1->value.s.str,data2->value.s.str) >= 0)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+          if (data1->value.n >= data2->value.n)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+ 
+        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+          if (data1->value.b >= data2->value.b)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NIL) && (data2->type == NIL))
+           newData->value.b = TRUE;
+				else newData->value.b = FALSE;
+				saveData(newData,instr,fce);
 			break;
 
 			/*==============================I_CMP_E=================================*/
@@ -160,6 +227,29 @@ int interpret(TFunction *fce) {
         newData->type = BOOL;
 				data1 = giveMeData(SRC1,instr,fce);
         data2 = giveMeData(SRC2,instr,fce);
+
+        if ((data1->type == STRING) && (data2->type == STRING)) {
+          if (strcmp(data1->value.s.str,data2->value.s.str) == 0)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+          if (data1->value.n == data2->value.n)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+          if (data1->value.b == data2->value.b)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NIL) && (data2->type == NIL))
+          newData->value.b = TRUE;
+        else newData->value.b = FALSE;
+        saveData(newData,instr,fce);
 			break;
 
 			/*=============================I_CMP_NE=================================*/
@@ -167,6 +257,29 @@ int interpret(TFunction *fce) {
         newData->type = BOOL;
 				data1 = giveMeData(SRC1,instr,fce);
         data2 = giveMeData(SRC2,instr,fce);
+
+        if ((data1->type == STRING) && (data2->type == STRING)) {
+          if (strcmp(data1->value.s.str,data2->value.s.str) != 0)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+          if (data1->value.n != data2->value.n)
+             newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == BOOL) && (data2->type == BOOL)) {
+          if (data1->value.b != data2->value.b)
+            newData->value.b = TRUE;
+          else newData->value.b = FALSE;
+        }
+
+        else if ((data1->type == NIL) && (data2->type == NIL))
+           newData->value.b = FALSE;
+        else newData->value.b = TRUE;
+        saveData(newData,instr,fce);
 			break;
 
 		/*instrukce pro skoky*/
