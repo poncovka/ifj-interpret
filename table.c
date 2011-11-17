@@ -268,24 +268,28 @@ FILE *out;
 void listConstTmpPrint(TList *l){
    listFirst(l);
    while(listActive(l)){
-      TVarData *tmp = ((TVar *)l->Act->data)->varData;
+      TVar *tmpV = ((TVar *)l->Act->data);
+      TVarData *tmp = tmpV->varData;
       fprintf(out,"         ");
-
-      switch( tmp->type ){
-         case STRING:{
-               fprintf(out,"string \"%s\"", tmp->value.s.str);
-            }break;
-         case NUMBER:{
-               fprintf(out,"number %g", tmp->value.n);
-            }break;
-         case BOOL:{
-               fprintf(out,"bool %s", tmp->value.b == 1 ? "true" : "false");
-            }break;
-         case NIL:{
-               fprintf(out,"nil");
-            }break;
-         default: fprintf(out,"unknow const");
+      if(tmpV->varType == VT_CONST){
+         switch( tmp->type ){
+            case STRING:{
+                  fprintf(out,"string \"%s\"", tmp->value.s.str);
+               }break;
+            case NUMBER:{
+                  fprintf(out,"number %g", tmp->value.n);
+               }break;
+            case BOOL:{
+                  fprintf(out,"bool %s", tmp->value.b == 1 ? "true" : "false");
+               }break;
+            case NIL:{
+                  fprintf(out,"nil");
+               }break;
+            default: fprintf(out,"unknow const");
+         }
       }
+      else
+         fprintf(out,"$%d", tmpV);
       fprintf(out,"\n");
       listSucc(l);
    }
@@ -295,13 +299,16 @@ void printVar(TVar *src){
    if(src != NULL){
       if(src->varType == VT_VAR)
          fprintf(out," %s",src->name);
-      else{
+      else if( src->varType == VT_CONST){
          switch(src->varData->type){
-         case STRING: fprintf(out," \"%s\"", src->varData->value.s.str);break;
-         case NUMBER: fprintf(out," %g", src->varData->value.n);break;
-         case BOOL:   fprintf(out," %s", src->varData->value.b == 1 ? "true" : "false");break;
-         case NIL:    fprintf(out," nil");break;
+            case STRING: fprintf(out," \"%s\"", src->varData->value.s.str);break;
+            case NUMBER: fprintf(out," %g", src->varData->value.n);break;
+            case BOOL:   fprintf(out," %s", src->varData->value.b == 1 ? "true" : "false");break;
+            case NIL:    fprintf(out," nil");break;
+         }
       }
+      else{
+         fprintf(out," $%d", src);
       }
    }
 }
@@ -315,8 +322,10 @@ void listInstrPrint(TList *l){
       fprintf(out,"         ");
 
       switch (tmp->type) {
-         case I_LAB: break;
-         case I_RETURN: break;
+         case I_LAB: {
+               fprintf(out,"LAB %d", tmp);
+            }break;
+         case I_RETURN: fprintf(out,"RETURN");break;
          case I_POP: {
                fprintf(out,"POP");
                printVar(dst);
@@ -328,7 +337,11 @@ void listInstrPrint(TList *l){
          case I_STACK_E: {
                fprintf(out,"STACK_E");
             }break;
-         case I_MOV: break;
+         case I_MOV: {
+               fprintf(out,"MOV");
+               printVar(dst);
+               printVar(src1);
+            }break;
          case I_SET: {
                fprintf(out,"SET");
                printVar(dst);
@@ -412,12 +425,12 @@ void listInstrPrint(TList *l){
          case I_JMP_Z: {
                fprintf(out,"JMP_Z");
                printVar(dst);
-               fprintf(out," %d", tmp->dest);
+               fprintf(out," %d", tmp->src1);
             }break;
          case I_JMP_NZ: {
                fprintf(out,"JMP_NZ");
                printVar(dst);
-               fprintf(out," %d", tmp->dest);
+               fprintf(out," %d", tmp->src1);
             }break;
          case I_WRITE: {
                fprintf(out,"WRITE");
@@ -426,6 +439,7 @@ void listInstrPrint(TList *l){
          case I_READ: {
                fprintf(out,"READ");
                printVar(dst);
+               printVar(src1);
             }break;
 
          case I_CALL: {

@@ -54,7 +54,7 @@ typedef struct{
 }TVar;
 
 // Instrukce
-typedef enum{
+typedef enum{ // dest src1 sec3
    I_LAB,      // --- --- ---
    I_RETURN,   // --- --- ---
 
