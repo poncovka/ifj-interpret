@@ -7,11 +7,11 @@
 
 #include "interpret.h"
 
-enum ETruth {FALSE, TRUE}
+//enum ETruth {FALSE, TRUE}
 enum ESource {DEST, SRC1, SRC2};
 
 //=================================================================================================>
-//
+//------------------void saveData(TVarData *data, TInstr *instr, TFunction *fce);------------------>
 //=================================================================================================>
 /* ulozi data do struktury
  * @param nova data
@@ -23,14 +23,16 @@ void saveData(TVarData *data, TInstr *instr, TFunction *fce) {
 
 	/*pokud prepisovana hodnota je retezec, uvolni*/
 	if (tempVar->varData->type == STRING)
-		strFree(tempVar->varData[fce->cnt]->value->s);
+		strFree(&tempVar->varData[fce->cnt].value.s);
 
-	tempVar->varData[fce->cnt]->type = data->type;
+	/*nastavi typ a data promenne*/
+	tempVar->varData[fce->cnt].type = data->type;
 	switch (data->type) {
-		case BOOL: tempVar->varData[fce->cnt]->value->b = data->value->b;
-		case NUMBER: tempVar->varData[fce->cnt]->value->d = data->value->d;
-		case STRING: tempVar->varData[fce->cnt]->value->s = data->value->s;
-	}
+		case BOOL: tempVar->varData[fce->cnt].value.b = data->value.b; break;
+		case NUMBER: tempVar->varData[fce->cnt].value.n = data->value.n; break;
+		case STRING: tempVar->varData[fce->cnt].value.s = data->value.s; break;
+		case NIL: break;
+	} 
 }
 
 //=================================================================================================>
@@ -70,7 +72,7 @@ int interpret(TFunction *fce) {
 	TInstr *instr; 
 	TVarData *data1;
 	TVarData *data2;
-	TVarData *newData;
+	TVarData *newData = NULL;
   if (listFirst(&fce->instructions) == LIST_ERR) 
 		return ERR_INTERNAL;
 
@@ -112,23 +114,23 @@ int interpret(TFunction *fce) {
 
 				if ((data1->type == STRING) && (data2->type == STRING)) {
 					if (strcmp(data1->value.s.str,data2->value.s.str) < 0) 
-					  newData->value->b = TRUE;
-					else newData->value->b = FALSE;
+					  newData->value.b = TRUE;
+					else newData->value.b = FALSE;
 				}
 
 				else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
 					if (data1->value.n < data2->value.n) 
-						newData->value->b = TRUE;
-					else newData->value->b = FALSE;
+						newData->value.b = TRUE;
+					else newData->value.b = FALSE;
 				} 
 
 				else if ((data1->type == BOOL) && (data2->type == BOOL)) {
 					if (data1->value.b < data2->value.b)
-						newData->value->b = TRUE;
-					else newData->value->b = FALSE;
+						newData->value.b = TRUE;
+					else newData->value.b = FALSE;
 				}
 
-				else newData->value->b = FALSE;
+				else newData->value.b = FALSE;
 				saveData(newData,instr,fce);
 			break; 
 
