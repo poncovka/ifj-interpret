@@ -24,11 +24,16 @@
 #define NOINSTR   100                // negenerovat instrukci
 #define OFFSET    I_ADD - L_ADDITION // posun pro generování instrukcí
 
-
 #define isId(t)       (t == L_ID)
 #define isBracket(t)  (t == L_LEFT_BRACKET || t == L_RIGHT_BRACKET)
 #define isConst(t)    (t >= KW_TRUE        && t <= L_STRING)
 #define isOperator(t) (t >= L_ADDITION     && t <= L_UNEQUAL)
+
+#define isMathOperation(i) (i >= I_ADD && i <= I_CMP_NE)
+#define DATTYPE   4                  // pocet datovych typu
+
+// tabulka pro kontrolu semantiky
+extern const int semTable[][DATTYPE];
 
 // pomocná struktura pro data na zásobníku:
 
@@ -44,7 +49,11 @@ int parseExpression(TTable *t, TVar **ptrResult);
 
 int shift           (TStack *S, int token, TVar *pom);
 int getTopTerminal  (TStack *S);
+
 int findRule        (TStack *S, TInstr *instr);
+int checkRule       (TInstr *instr);
+int checkSemErr     (TInstr *instr, TVar *var);
+
 int insertInstruction(TInstr *instr, TTable *table);
 int returnResult    (TStack *S, TVar **ptrResult);
 
