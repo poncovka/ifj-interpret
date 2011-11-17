@@ -10,8 +10,37 @@
 enum ESource {DEST, SRC1, SRC2};
 
 //=================================================================================================>
+//
+//=================================================================================================>
+/* ulozi data do struktury
+ * @param nova data
+ * @param vykonavana instrukce
+ * @param aktualni funkce
+ */
+void saveData(TVarData *data, TInstr *instr, TFunction *fce) {
+  TVar *tempVar = (TVar *) instr->dest; 
+
+	/*pokud prepisovana hodnota je retezec, uvolni*/
+	if (tempVar->varData->type == STRING)
+		strFree(tempVar->varData[fce->cnt]->value->s);
+
+	tempVar->varData[fce->cnt]->type = data->type;
+	switch (data->type) {
+		case BOOL: tempVar->varData[fce->cnt]->value->b = data->value->b;
+		case NUMBER: tempVar->varData[fce->cnt]->value->d = data->value->d;
+		case STRING: tempVar->varData[fce->cnt]->value->s = data->value->s;
+	}
+}
+
+//=================================================================================================>
 //-------------------------TVarData *giveMeData(TInstr *instr, TFunction *fce);-------------------->
 //=================================================================================================>
+/* vytahne data ze struktur
+ * @param dest/src1/src2
+ * @param vykonavana instrukce
+ * @param aktualni funkce
+ * @return ukazatel na data
+ */
 TVarData *giveMeData(int what, TInstr *instr, TFunction *fce) {
 	TVar *tempVar;
 
@@ -30,13 +59,17 @@ TVarData *giveMeData(int what, TInstr *instr, TFunction *fce) {
 //=================================================================================================>
 //------------------------------------int interpret(TFunction *fce);------------------------------->
 //=================================================================================================>
-/*vykona interpretaci funkce*/
+/* vykona interpretaci funkce
+ * @param aktualni funkce
+ * @return 0/chybovy kod 
+ */
 int interpret(TFunction *fce) {
 
 	fce->cnt++;
 	TInstr *instr; 
 	TVarData *data1;
 	TVarData *data2;
+	TVarData *newData;
   if (listFirst(&fce->instructions) == LIST_ERR) 
 		return ERR_INTERNAL;
 
