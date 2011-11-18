@@ -1,12 +1,4 @@
 function main()
-  local a = "Ahoj svete!!!";
-  local b = 10;
-  local c = "xxx";
-
-  write(a, "\n\n", c, "\n");
-  while b > 0 then
-    write(b, "\n");
-    b = b - 1;
-  end;
-  
+  local a = "Hello world!!!"; 
+  write(a, "- !!");
 end;  

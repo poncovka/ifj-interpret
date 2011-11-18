@@ -24,23 +24,28 @@ int main(int argc, char *argv[]){
 
    int err = parser(&table);
 
-   switch(err){
-      case PRS_OK: break;
-      case LEX_ERR: printf("Lexikalni chyba, radek: %d\n", countOfRows);break;
-      case SYN_ERR: printf("Syntakticka chyba, radek: %d\n", countOfRows);break;
-      case SEM_ERR: printf("Semanticka chyba, radek: %d\n", countOfRows);break;
-      case RUN_ERR: printf("Interpretacni chyba,  radek: %d\n", countOfRows);break;
-      case INTR_ERR:printf("Interni chyba, radek: %d\n", countOfRows);break;
+   if(err == PRS_OK)
+      err = interpret(table.lastAddedFunc);
+
+   if(err != PRS_OK){
+     fprintf(stderr,"\n\n----------------------------------------------------------------------\n\n");
+      switch(err){
+         case LEX_ERR: fprintf(stderr,"Lexikalni chyba, radek: %d\n", countOfRows);break;
+         case SYN_ERR: fprintf(stderr,"Syntakticka chyba, radek: %d\n", countOfRows);break;
+         case SEM_ERR: fprintf(stderr,"Semanticka chyba, radek: %d\n", countOfRows);break;
+         case RUN_ERR: fprintf(stderr,"Interpretacni chyba,  radek: %d\n", countOfRows);break;
+         case INTR_ERR:fprintf(stderr,"Interni chyba, radek: %d\n", countOfRows);break;
+      }
+      fprintf(stderr,"\n----------------------------------------------------------------------\n");
    }
+
    // ---- DEBUG ----
-   FILE *log = fopen("debug.log", "w");
-   tablePrintOrder(table, log);
-   fclose(log);
+      FILE *log = fopen("debug.log", "w");
+      tablePrintOrder(table, log);
+      fclose(log);
    // -- END DEBUG --
 
    fclose(f);
-
-   err = interpret(table.lastAddedFunc);
 
    tableClear(&table);
    return -err;
