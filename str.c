@@ -93,6 +93,24 @@ int strGetLength(string *s)
    return s->length;
 }
 
+string strConcatenation (string *s1, string *s2) {
+// vrací konkatenaci dvou stringů
+
+  string s;
+  s.length = s1->length + s2->length;
+  s.allocSize = s.length + 1;
+
+  if ( (s.str = (char*)malloc(sizeof(char)*s.allocSize)) != NULL ) {
+
+    strcpy(s.str, s1->str);
+    strcpy(&s.str[s1->length], s2->str);
+
+  }
+  else s.str = NULL;
+
+  return s;
+}
+
 string strCreateString (char *str)
 // vrati naplnenou strukturu string
 {
