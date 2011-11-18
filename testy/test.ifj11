@@ -1,4 +1,4 @@
-
+--[[
 function my_while()
   local v;
   v = 5+53*85;
@@ -16,11 +16,13 @@ function hello(a,b,c)
   v = hello(x,a, "nejaky text" );  -- v poradku "a" je parametr
   return 23*z;
 end
-
+]]
 
 function main()
   local xxx = "aaa";
-  xxx = hello(xxx, "aaa", true); 
-  xxx = read("*n");
-  xxx = read(333);
+  if xxx then
+    write("haoj");
+  else
+    write(xxx);
+  end;
 end;  

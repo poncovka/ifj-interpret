@@ -357,14 +357,17 @@ int prsCommand(){
          NEXT_TOKEN
          // naparsuju vyraz
          if( (err = parseExpression(table, &tmpV)) != EOK) return err;
-         //cekam then
+         // ocekavam then
          if(token != KW_THEN) return SYN_ERR;
          // pomocna navesti
          TInstr *labElse  = genInstr(I_LAB, NULL, NULL, NULL);
          TInstr *labEndIf = genInstr(I_LAB, NULL, NULL, NULL);
-         // potrebne instrukce
-         TInstr *jmpz = genInstr(I_JMP_Z, tmpV, labElse, NULL);
-         TInstr *jmp  = genInstr(I_JMP, labEndIf, NULL, NULL);
+         // potrebne instrukce, navesti doplnim pozdeji
+         TInstr *jmpz = genInstr(I_JMP_Z, NULL, tmpV, NULL);
+         TInstr *jmp  = genInstr(I_JMP, NULL , NULL, NULL);
+
+         TLItem *itmElse = NULL;
+         TLItem *itmEnd  = NULL;
 
          if(labElse == NULL || labEndIf == NULL || jmpz == NULL || jmp == NULL )
             return INTR_ERR;
@@ -384,6 +387,7 @@ int prsCommand(){
          // LAB labElse
          if( listInsertLast(instr, labElse) != LIST_EOK)
             return INTR_ERR;
+         itmElse = instr->Last;
 
          err = prsStat();
          if(err != PRS_OK) return err;
@@ -392,6 +396,10 @@ int prsCommand(){
          // LAB labEndIf
          if( listInsertLast(instr, labEndIf) != LIST_EOK)
             return INTR_ERR;
+         itmEnd = instr->Last;
+
+         jmp->dest  = itmEnd;
+         jmpz->dest = itmElse;
 
          NEXT_TOKEN
          return PRS_OK;
@@ -400,20 +408,30 @@ int prsCommand(){
       case KW_WHILE:{
          TInstr *labWhile = genInstr(I_LAB, NULL, NULL, NULL);
          TInstr *labEnd   = genInstr(I_LAB, NULL, NULL, NULL);
-         TInstr *jmp      = genInstr(I_JMP, labWhile, NULL, NULL);
 
-         if(labWhile == NULL || labEnd == NULL || jmp == NULL)
+         TLItem *jmpToWhile = NULL;
+         TLItem *jmpToEnd   = NULL;
+
+         if(labWhile == NULL || labEnd == NULL)
             return INTR_ERR;
          // navesti zacatku cyklu
          if(listInsertLast(instr, labWhile) != LIST_EOK)
             return INTR_ERR;
+
+         // ulozim si adresu vygenerovaneho navesti
+         jmpToWhile = instr->Last;
+
          // vypocet
          NEXT_TOKEN
          if( (err = parseExpression(table, &tmpV)) != EOK ) return err;
+
          // porovani pripadny skok na konec cyklu
-         TInstr *jmpz = genInstr(I_JMP_Z, tmpV, labEnd, NULL);
+         // misto kam se bude skakat se doplni pozdeji
+         TInstr *jmpz = genInstr(I_JMP_Z, NULL, tmpV, NULL);
+
          if(jmpz == NULL) return INTR_ERR;
          if(listInsertLast(instr, jmpz) != LIST_EOK) return INTR_ERR;
+
          // ocekavam then
          if(token != KW_THEN) return SYN_ERR;
          // naparsuju vnitrek cyklu
@@ -421,12 +439,19 @@ int prsCommand(){
          if(err != PRS_OK) return err;
          // mel by byt nacten end
          if(token != KW_END) return SYN_ERR;
-         // skok na zacatek cyklu
+
+
+         TInstr *jmp = genInstr(I_JMP, jmpToWhile, NULL, NULL);
+         if(jmp == NULL) return INTR_ERR;
          if(listInsertLast(instr, jmp) != LIST_EOK)
             return INTR_ERR;
+
          // navesti konce cyklu
          if(listInsertLast(instr, labEnd) != LIST_EOK)
             return INTR_ERR;
+         jmpToEnd = instr->Last;
+
+         jmpz->dest = jmpToEnd;
 
          NEXT_TOKEN
          return PRS_OK;

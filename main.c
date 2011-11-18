@@ -14,8 +14,9 @@
 #include "parser.h"
 #include "interpret.h"
 
-int main(){
-   FILE *f = fopen("../ifj-projekt/testy/test.ifj11", "r");
+int main(int argc, char *argv[]){
+
+   FILE *f = fopen(argv[1], "r");
    TTable table;
    tableInit(&table);
 
@@ -31,7 +32,7 @@ int main(){
       case RUN_ERR: printf("Interpretacni chyba,  radek: %d\n", countOfRows);break;
       case INTR_ERR:printf("Interni chyba, radek: %d\n", countOfRows);break;
    }
-   FILE *log = fopen("log", "w");
+   FILE *log = fopen("debug.log", "w");
    tablePrintOrder(table, log);
    fclose(log);
 

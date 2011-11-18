@@ -330,7 +330,7 @@ void listInstrPrint(TList *l){
 
       switch (tmp->type) {
          case I_LAB: {
-               fprintf(out,"LAB %d", (int)tmp);
+               fprintf(out,"LAB %d", (int)l->Act);
             }break;
          case I_RETURN: fprintf(out,"RETURN");break;
          case I_POP: {
@@ -431,13 +431,13 @@ void listInstrPrint(TList *l){
             }break;
          case I_JMP_Z: {
                fprintf(out,"JMP_Z");
-               printVar(dst);
-               fprintf(out," %d",  (int)tmp->src1);
+               fprintf(out," %d",  (int)tmp->dest);
+               printVar(src1);
             }break;
          case I_JMP_NZ: {
                fprintf(out,"JMP_NZ");
-               printVar(dst);
-               fprintf(out," %d",  (int)tmp->src1);
+               fprintf(out," %d",  (int)tmp->dest);
+               printVar(src1);
             }break;
          case I_WRITE: {
                fprintf(out,"WRITE");

@@ -10,7 +10,7 @@ function main() --Hlavni telo programu
 		write("Faktorial nelze spocitat");
 	else 
 		vysl = 1;
-		while a > 0 d 
+		while a > 0 then 
 			vysl = vysl * a;
 			a = a - 1;
 		end;
