@@ -42,9 +42,9 @@ int saveData(TVarData *data, void *dest, TFunction *fce) {
 }
 
 //=================================================================================================>
-//-------------------------TVarData *giveMeData(TInstr *instr, TFunction *fce);-------------------->
+//-------------------------TVarData *giveMeData(void *data, TFunction *fce);----------------------->
 //=================================================================================================>
-/* @description vytahne data ze struktur
+/* @description vrati ukazatel na data
  * @correction Marek Salat
  * @param dest/src1/src2
  * @param aktualni funkce
@@ -87,10 +87,18 @@ int interpret(TFunction *fce) {
 			case I_LAB: break;
 			case I_RETURN: break;
 
-		/*instrukce pro praci se zasobnikem*/								 
-			case I_POP: break;
-			case I_PUSH: break;
-			case I_STACK_E: break;
+		/*instrukce pro praci se zasobnikem*/
+			/*===========================================I_POP==========================================*/
+			case I_POP: 
+			break;
+
+			/*==========================================I_PUSH==========================================*/
+			case I_PUSH: 
+			break;
+
+			/*=========================================I_STACK_E========================================*/
+			case I_STACK_E: 
+			break;
 
 		/*instrukce pro inicializace, presuny*/
 			case I_MOV: break;
@@ -236,7 +244,7 @@ int interpret(TFunction *fce) {
 
 				else newData.value.b = FALSE;
 				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
-					return ERR_INTERNAL;
+					return ERR_INTERNAL; break;
 			break;
 
 			/*=========================================I_CMP_E==========================================*/
@@ -250,7 +258,7 @@ int interpret(TFunction *fce) {
             case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) == 0) ? TRUE : FALSE; break;
             case NUMBER: newData.value.b = (data1->value.n == data2->value.n) ? TRUE : FALSE; break;
 						case BOOL: newData.value.b = (data1->value.b == data2->value.b) ? TRUE : FALSE; break;
-						case NIL: newData.value.b = TRUE;
+						case NIL: newData.value.b = TRUE; break;
           }
         }
 
@@ -270,7 +278,7 @@ int interpret(TFunction *fce) {
             case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) != 0) ? TRUE : FALSE; break;
             case NUMBER: newData.value.b = (data1->value.n != data2->value.n) ? TRUE : FALSE; break;
             case BOOL: newData.value.b = (data1->value.b != data2->value.b) ? TRUE : FALSE; break;
-            case NIL: newData.value.b = FALSE;
+            case NIL: newData.value.b = FALSE; break;
 	        }
 				}
 
@@ -280,14 +288,47 @@ int interpret(TFunction *fce) {
 			break;
 
 		/*instrukce pro skoky*/
-			case I_JMP: break;
-			case I_JMP_Z: break;
-			case I_JMP_NZ: break;
+			/*=========================================I_JMP============================================*/
+			case I_JMP: 
+			  listSetActive(&fce->instructions,(TLItem *)instr->dest);
+			break;
+
+			/*========================================I_JMP_Z===========================================*/
+			case I_JMP_Z: 
+				data1 = giveMeData(instr->src1,fce);
+			  if (((data1->type == BOOL) && (data1->value.b == FALSE)) || (data1->type == NIL)) {
+					listSetActive(&fce->instructions,(TLItem *)instr->dest);	
+				}
+			break;
+
+			/*========================================I_JMP_NZ==========================================*/
+			case I_JMP_NZ: 
+			  data1 = giveMeData(instr->src1,fce);
+			  if (((data1->type == BOOL) && (data1->value.b == TRUE)) || 
+						 (data1->type == STRING) || (data1->type == NUMBER)) {	
+					listSetActive(&fce->instructions,(TLItem *)instr->dest);
+				}
+			break;
 
 		/*instrukce write, read, call*/
-			case I_WRITE: break;
-			case I_READ: break;
-			case I_CALL: break;
+			/*========================================I_WRITE===========================================*/
+			case I_WRITE:
+        data1 = giveMeData(instr->dest,fce);
+				switch (data1->type) {
+				  case STRING: printf("%s",data1->value.s.str); break;
+					case NUMBER: printf("%g",data1->value.n); break;
+					case BOOL: return ERR_SEM; break;
+					case NIL: return ERR_SEM; break;
+				}
+			break;
+
+			/*========================================I_READ============================================*/
+			case I_READ: 
+			break;
+
+			/*========================================I_CALL============================================*/
+			case I_CALL: 
+			break;
 
 		/*instrukce pro vestavene funkce*/
 			case I_TYPE: break;
