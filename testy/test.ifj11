@@ -1,28 +1,14 @@
---[[
-function my_while()
-  local v;
-  v = 5+53*85;
-  while v < 5 then
-    write(v);
-  end ;
-end
 
 function hello(a,b,c)
-  local x;
-  local y = "ahoj svete";
-  local z = 30;
-  local t = true;
-  local v = nil;
-  v = hello(x,a, "nejaky text" );  -- v poradku "a" je parametr
-  return 23*z;
+
 end
-]]
+
 
 function main()
-  local xxx = "aaa";
-  if xxx then
-    write("haoj");
-  else
-    write(xxx);
-  end;
+local a;
+ a = hello(a,a,a);
+ a = type(a);
+ a = substr(a);
+ a = find(a);
+ a = sort(a);
 end;  

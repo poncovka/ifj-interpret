@@ -570,26 +570,33 @@ int prsAssign(TVar *var){
    switch(tokenTmp){
       case L_ID:{
             tmpInstr = genInstr(I_CALL, Ftmp, NULL, NULL);
+            if(tmpInstr == NULL) return INTR_ERR;
+
+            if( listInsertLast( instr,  tmpInstr) != LIST_EOK)
+               return INTR_ERR;
+
+            tmpInstr = genInstr(I_POP, var, NULL, NULL);
+            if(tmpInstr == NULL) return INTR_ERR;
+
+            if( listInsertLast( instr,  tmpInstr) != LIST_EOK)
+               return INTR_ERR;
+            NEXT_TOKEN
+            return PRS_OK;
          }break;
       case KW_TYPE:{
-            tmpInstr = genInstr(I_TYPE, NULL, NULL, NULL);
+            tmpInstr = genInstr(I_TYPE, var, NULL, NULL);
          }break;
       case KW_SUBSTR:{
-            tmpInstr = genInstr(I_SUBSTR, NULL, NULL, NULL);
+            tmpInstr = genInstr(I_SUBSTR, var, NULL, NULL);
          }break;
       case KW_FIND:{
-            tmpInstr = genInstr(I_FIND, NULL, NULL, NULL);
+            tmpInstr = genInstr(I_FIND, var, NULL, NULL);
          }break;
       case KW_SORT:{
-            tmpInstr = genInstr(I_SORT, NULL, NULL, NULL);
+            tmpInstr = genInstr(I_SORT, var, NULL, NULL);
          }break;
    }
 
-   if(tmpInstr == NULL) return INTR_ERR;
-
-   if(listInsertLast( instr, tmpInstr) != EOK) return INTR_ERR;
-
-   tmpInstr = genInstr(I_POP, var, NULL, NULL);
    if(tmpInstr == NULL) return INTR_ERR;
 
    if( listInsertLast( instr,  tmpInstr) != LIST_EOK)
