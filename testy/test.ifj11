@@ -5,10 +5,6 @@ end
 
 
 function main()
-local a;
- a = hello(a,a,a);
- a = type(a);
- a = substr(a);
- a = find(a);
- a = sort(a);
+local a = "xxx";
+write("a: ", a);
 end;  

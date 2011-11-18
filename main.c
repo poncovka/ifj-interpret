@@ -40,7 +40,7 @@ int main(int argc, char *argv[]){
 
    fclose(f);
 
-   //err = interpret(table.lastAddedFunc);
+   err = interpret(table.lastAddedFunc);
 
    tableClear(&table);
    return -err;

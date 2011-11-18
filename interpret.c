@@ -3,7 +3,7 @@
 //=================================================================================================>
 /* @author: Tomas Trkal, xtrkal00@stud.fit.vutbr.cz
  * @date:   14.11.2011
- */						
+ */
 
 #include "interpret.h"
 
@@ -22,22 +22,22 @@ enum ESource {DEST, SRC1, SRC2};
 int saveData(TVarData *data, void *dest, TFunction *fce) {
 	int index = (((TVar *)dest)->varType == VT_VAR) ? fce->cnt : 0;
 	TVarData *tempVar = &((TVar *)dest)->varData[index];
-	
+
 	/*pokud prepisovana hodnota je retezec, uvolni*/
 	if (tempVar->type == STRING)
-		strFree(&tempVar->value.s); 
+		strFree(&tempVar->value.s);
 
-	/*nastavi typ a data promenne*/ 
+	/*nastavi typ a data promenne*/
 	tempVar->type = data->type;
 	switch (data->type) {
 		case BOOL: tempVar->value.b = data->value.b; break;
 		case NUMBER: tempVar->value.n = data->value.n; break;
-		case STRING: 
+		case STRING:
 	    if (strCopyString(&data->value.s,&tempVar->value.s) == STR_ERROR)
-				return EXIT_FAILURE;				
+				return EXIT_FAILURE;
 	  break;
 		case NIL: break;
-	} 
+	}
 	return EXIT_SUCCESS;
 }
 
@@ -50,7 +50,7 @@ int saveData(TVarData *data, void *dest, TFunction *fce) {
  * @param aktualni funkce
  * @return ukazatel na data
  */
-TVarData *giveMeData(void *data, TFunction *fce) {  
+TVarData *giveMeData(void *data, TFunction *fce) {
   return &(((TVar *)data)->varData[(((TVar *)data)->varType == VT_VAR) ? fce->cnt : 0]);
 }
 
@@ -59,19 +59,19 @@ TVarData *giveMeData(void *data, TFunction *fce) {
 //=================================================================================================>
 /* @description vykona interpretaci funkce
  * @param aktualni funkce
- * @return chybovy kod 
+ * @return chybovy kod
  */
 int interpret(TFunction *fce) {
 
 	/*pomocne promenne*/
-	TInstr *instr; 
+	TInstr *instr;
 	TVarData *data1;
 	TVarData *data2;
 	TVarData newData;
 
 	/*nastavi ukazatel na prvni instrukci*/
 	fce->cnt++;
-  if (listFirst(&fce->instructions) == LIST_ERR) 
+  if (listFirst(&fce->instructions) == LIST_ERR)
 		return ERR_INTERNAL;
 
   /*cyklus provede vykonani vsech fci ze seznamu*/
@@ -96,16 +96,16 @@ int interpret(TFunction *fce) {
 			break;
 
 			/*==========================================I_PUSH==========================================*/
-			case I_PUSH: 
+			case I_PUSH:
 			break;
 
 			/*=========================================I_STACK_E========================================*/
-			case I_STACK_E: 
+			case I_STACK_E:
 			break;
 
 		/*instrukce pro inicializace, presuny*/
 			/*===========================================I_MOV==========================================*/
-			case I_MOV: 
+			case I_MOV:
 			  data1 = giveMeData(instr->src1,fce);
 				if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
@@ -125,58 +125,58 @@ int interpret(TFunction *fce) {
 
 		/*instrukce pro aritmeticke operace*/
 			/*===========================================I_ADD==========================================*/
-			case I_ADD: 
+			case I_ADD:
 				newData.type = NUMBER;
 				data1 = giveMeData(instr->src1,fce);
 				data2 = giveMeData(instr->src2,fce);
 				newData.value.n = data1->value.n + data2->value.n;
-        if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+        if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
 
 			/*===========================================I_SUB==========================================*/
-			case I_SUB: 
+			case I_SUB:
         newData.type = NUMBER;
         data1 = giveMeData(instr->src1,fce);
         data2 = giveMeData(instr->src2,fce);
 				newData.value.n = data1->value.n - data2->value.n;
-				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
 
 			/*===========================================I_MUL==========================================*/
-			case I_MUL: 
+			case I_MUL:
         newData.type = NUMBER;
         data1 = giveMeData(instr->src1,fce);
         data2 = giveMeData(instr->src2,fce);
 				newData.value.n = data1->value.n * data2->value.n;
-				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
 
 			/*===========================================I_DIV==========================================*/
-			case I_DIV: 
+			case I_DIV:
         newData.type = NUMBER;
         data1 = giveMeData(instr->src1,fce);
         data2 = giveMeData(instr->src2,fce);
-				if (data2->value.n == 0) return ERR_INTERPRET; // deleni nulou 
+				if (data2->value.n == 0) return ERR_INTERPRET; // deleni nulou
 			  else newData.value.n = data1->value.n / data2->value.n;
-				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
 
 			/*===========================================I_POW==========================================*/
-			case I_POW: 
+			case I_POW:
         newData.type = NUMBER;
         data1 = giveMeData(instr->src1,fce);
         data2 = giveMeData(instr->src2,fce);
 				newData.value.n = pow(data1->value.n,data2->value.n);
-				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
 
 			/*===========================================I_CON==========================================*/
-			case I_CON: 
+			case I_CON:
         newData.type = STRING;
         data1 = giveMeData(instr->src1,fce);
         data2 = giveMeData(instr->src2,fce);
@@ -187,30 +187,30 @@ int interpret(TFunction *fce) {
 
 		/*instrukce pro porovnani vyrazu*/
 			/*==========================================I_CMP_L=========================================*/
-			case I_CMP_L:	
+			case I_CMP_L:
 				newData.type = BOOL;
 				data1 = giveMeData(instr->src1,fce);
 				data2 = giveMeData(instr->src2,fce);
 
-				if (data1->type == data2->type) { 
+				if (data1->type == data2->type) {
 					switch (data1->type) {
 						case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) < 0) ? TRUE : FALSE;	break;
 						case NUMBER: newData.value.b = (data1->value.n < data2->value.n) ? TRUE : FALSE; break;
 						case BOOL: break;
 						case NIL: break;
-					} 
+					}
 				}
 
 				else newData.value.b = FALSE;
-				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
-			break; 
+			break;
 
 			/*=========================================I_CMP_LE=========================================*/
-			case I_CMP_LE: 
+			case I_CMP_LE:
 			  newData.type = BOOL;
 				data1 = giveMeData(instr->src1,fce);
-				data2 = giveMeData(instr->src2,fce);		
+				data2 = giveMeData(instr->src2,fce);
 
         if (data1->type == data2->type) {
           switch (data1->type) {
@@ -222,12 +222,12 @@ int interpret(TFunction *fce) {
         }
 
 				else newData.value.b = FALSE;
-        if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+        if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
 
 			/*==========================================I_CMP_G=========================================*/
-			case I_CMP_G: 
+			case I_CMP_G:
         newData.type = BOOL;
 				data1 = giveMeData(instr->src1,fce);
 				data2 = giveMeData(instr->src2,fce);
@@ -242,12 +242,12 @@ int interpret(TFunction *fce) {
         }
 
 				else newData.value.b = FALSE;
-				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
 
 			/*=========================================I_CMP_GE=========================================*/
-			case I_CMP_GE: 
+			case I_CMP_GE:
         newData.type = BOOL;
 				data1 = giveMeData(instr->src1,fce);
 				data2 = giveMeData(instr->src2,fce);
@@ -258,16 +258,16 @@ int interpret(TFunction *fce) {
             case NUMBER: newData.value.b = (data1->value.n >= data2->value.n) ? TRUE : FALSE; break;
 						case BOOL: break;
 						case NIL: break;
-          }          
+          }
 				}
 
 				else newData.value.b = FALSE;
-				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL; break;
 			break;
 
 			/*=========================================I_CMP_E==========================================*/
-			case I_CMP_E: 
+			case I_CMP_E:
         newData.type = BOOL;
 				data1 = giveMeData(instr->src1,fce);
         data2 = giveMeData(instr->src2,fce);
@@ -282,12 +282,12 @@ int interpret(TFunction *fce) {
         }
 
 				else newData.value.b = FALSE;
-        if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+        if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
 
 			/*========================================I_CMP_NE==========================================*/
-			case I_CMP_NE: 
+			case I_CMP_NE:
         newData.type = BOOL;
 				data1 = giveMeData(instr->src1,fce);
         data2 = giveMeData(instr->src2,fce);
@@ -302,29 +302,29 @@ int interpret(TFunction *fce) {
 				}
 
         else newData.value.b = TRUE;
-				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
 
 		/*instrukce pro skoky*/
 			/*=========================================I_JMP============================================*/
-			case I_JMP: 
+			case I_JMP:
 			  listSetActive(&fce->instructions,(TLItem *)instr->dest);
 			break;
 
 			/*========================================I_JMP_Z===========================================*/
-			case I_JMP_Z: 
+			case I_JMP_Z:
 				data1 = giveMeData(instr->src1,fce);
 			  if (((data1->type == BOOL) && (data1->value.b == FALSE)) || (data1->type == NIL)) {
-					listSetActive(&fce->instructions,(TLItem *)instr->dest);	
+					listSetActive(&fce->instructions,(TLItem *)instr->dest);
 				}
 			break;
 
 			/*========================================I_JMP_NZ==========================================*/
-			case I_JMP_NZ: 
+			case I_JMP_NZ:
 			  data1 = giveMeData(instr->src1,fce);
-			  if (((data1->type == BOOL) && (data1->value.b == TRUE)) || 
-						 (data1->type == STRING) || (data1->type == NUMBER)) {	
+			  if (((data1->type == BOOL) && (data1->value.b == TRUE)) ||
+						 (data1->type == STRING) || (data1->type == NUMBER)) {
 					listSetActive(&fce->instructions,(TLItem *)instr->dest);
 				}
 			break;
@@ -342,11 +342,11 @@ int interpret(TFunction *fce) {
 			break;
 
 			/*========================================I_READ============================================*/
-			case I_READ: 
+			case I_READ:
 			break;
 
 			/*========================================I_CALL============================================*/
-			case I_CALL: 
+			case I_CALL:
 				switch (interpret((TFunction *)instr->dest)) {
 				  case ERR_INTERPRET: return ERR_INTERPRET; break;
 					case ERR_INTERNAL: return ERR_INTERNAL; break;
@@ -362,7 +362,7 @@ int interpret(TFunction *fce) {
 			case I_SORT: break;
 
 			/*v pripade jineho typu chyba*/
-			default: 
+			default:
 				return ERR_INTERNAL;
 			break;
 
