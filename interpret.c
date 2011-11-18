@@ -63,11 +63,14 @@ TVarData *giveMeData(void *data, TFunction *fce) {
  */
 int interpret(TFunction *fce) {
 
-	fce->cnt++;
+	/*pomocne promenne*/
 	TInstr *instr; 
 	TVarData *data1;
 	TVarData *data2;
 	TVarData newData;
+
+	/*nastavi ukazatel na prvni instrukci*/
+	fce->cnt++;
   if (listFirst(&fce->instructions) == LIST_ERR) 
 		return ERR_INTERNAL;
 
@@ -89,7 +92,7 @@ int interpret(TFunction *fce) {
 
 		/*instrukce pro praci se zasobnikem*/
 			/*===========================================I_POP==========================================*/
-			case I_POP: 
+			case I_POP:
 			break;
 
 			/*==========================================I_PUSH==========================================*/
@@ -101,8 +104,24 @@ int interpret(TFunction *fce) {
 			break;
 
 		/*instrukce pro inicializace, presuny*/
-			case I_MOV: break;
-			case I_SET: break;
+			/*===========================================I_MOV==========================================*/
+			case I_MOV: 
+			  data1 = giveMeData(instr->src1,fce);
+				if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
+					return ERR_INTERNAL;
+			break;
+
+			/*===========================================I_SET==========================================*/
+			case I_SET:
+				if (varRealloc(instr->dest,fce->cnt) == INS_MALLOC)
+			  	return ERR_INTERNAL;
+				if (instr->src1 != NULL) {
+					data1 = giveMeData(instr->src1,fce);
+					if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
+					  return ERR_INTERNAL;
+				}
+				else ((TVar *)instr->dest)->varData->type = NIL;
+			break;
 
 		/*instrukce pro aritmeticke operace*/
 			/*===========================================I_ADD==========================================*/
@@ -328,6 +347,12 @@ int interpret(TFunction *fce) {
 
 			/*========================================I_CALL============================================*/
 			case I_CALL: 
+				switch (interpret((TFunction *)instr->dest)) {
+				  case ERR_INTERPRET: return ERR_INTERPRET; break;
+					case ERR_INTERNAL: return ERR_INTERNAL; break;
+					case ERR_SEM: return ERR_SEM; break;
+					case INTERPRET_OK: break;
+				}
 			break;
 
 		/*instrukce pro vestavene funkce*/
