@@ -123,12 +123,12 @@ int executor(TFunction *fce) {
 			case I_SET:
 				if (varRealloc(instr->dest,fce->cnt) != INS_OK)
 			  	return ERR_INTERNAL;
+				((TVar *)instr->dest)->varData->type = NIL;
 				if (instr->src1 != NULL) {
 					data1 = giveMeData(instr->src1,fce);
 					if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
 					  return ERR_INTERNAL;
 				}
-				else ((TVar *)instr->dest)->varData->type = NIL;
 			break;
 
 		/*instrukce pro aritmeticke operace*/
@@ -352,7 +352,14 @@ int executor(TFunction *fce) {
 			break;
 
 			/*========================================I_READ============================================*/
-			case I_READ: 
+			case I_READ:
+		    data1 = giveMeData(instr->src1,fce);
+			  switch (data1->type)	{
+					case STRING: printf("%s",data1->value.s.str); break;
+					case NUMBER: printf("%g",data1->value.n); break;
+					case BOOL: break;
+					case NIL: break;
+				}
 			break;
 
 			/*========================================I_CALL============================================*/
@@ -396,6 +403,7 @@ int executor(TFunction *fce) {
  * @return chybovy kod 
  */
 int interpret(TFunction *fce) {
+	printf("----ZACATEK INTERPRETACE----\n");
 	int result;								
   stackInit(&stack);				// inicializace zasobniku
 	result = executor(fce);		// vykonani interpretace
