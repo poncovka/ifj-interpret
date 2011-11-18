@@ -13,26 +13,27 @@ enum ESource {DEST, SRC1, SRC2};
 //=================================================================================================>
 //------------------void saveData(TVarData *data, TInstr *instr, TFunction *fce);------------------>
 //=================================================================================================>
-/* @description ulozi data do struktury
+/* @description ulozi data do struktury /co, kam, fce/
  * @param nova data
- * @param vykonavana instrukce
+ * @param uloziste
  * @param aktualni funkce
  * @return chybovy kod
  */
-int saveData(TVarData *data, TInstr *instr, TFunction *fce) {
-  TVar *tempVar = (TVar *) instr->dest; 
+int saveData(TVarData *data, void *dest, TFunction *fce) {
+	int index = (((TVar *)dest)->varType == VT_VAR) ? fce->cnt : 0;
+	TVarData *tempVar = &((TVar *)dest)->varData[index];
 	
 	/*pokud prepisovana hodnota je retezec, uvolni*/
-	if (tempVar->varData->type == STRING)
-		strFree(&tempVar->varData[fce->cnt].value.s);
+	if (tempVar->type == STRING)
+		strFree(&tempVar->value.s); 
 
-	/*nastavi typ a data promenne*/
-	tempVar->varData[fce->cnt].type = data->type;
+	/*nastavi typ a data promenne*/ 
+	tempVar->type = data->type;
 	switch (data->type) {
-		case BOOL: tempVar->varData[fce->cnt].value.b = data->value.b; break;
-		case NUMBER: tempVar->varData[fce->cnt].value.n = data->value.n; break;
+		case BOOL: tempVar->value.b = data->value.b; break;
+		case NUMBER: tempVar->value.n = data->value.n; break;
 		case STRING: 
-	    if (strCopyString(&data->value.s,&tempVar->varData[fce->cnt].value.s) == STR_ERROR)
+	    if (strCopyString(&data->value.s,&tempVar->value.s) == STR_ERROR)
 				return EXIT_FAILURE;				
 	  break;
 		case NIL: break;
@@ -44,6 +45,7 @@ int saveData(TVarData *data, TInstr *instr, TFunction *fce) {
 //-------------------------TVarData *giveMeData(TInstr *instr, TFunction *fce);-------------------->
 //=================================================================================================>
 /* @description vytahne data ze struktur
+ * @correction Marek Salat
  * @param dest/src1/src2
  * @param aktualni funkce
  * @return ukazatel na data
@@ -96,17 +98,65 @@ int interpret(TFunction *fce) {
 
 		/*instrukce pro aritmeticke operace*/
 			/*===========================================I_ADD==========================================*/
-			case I_ADD: break;
+			case I_ADD: 
+				newData.type = NUMBER;
+				data1 = giveMeData(instr->src1,fce);
+				data2 = giveMeData(instr->src2,fce);
+				newData.value.n = data1->value.n + data2->value.n;
+        if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
+			break;
+
 			/*===========================================I_SUB==========================================*/
-			case I_SUB: break;
+			case I_SUB: 
+        newData.type = NUMBER;
+        data1 = giveMeData(instr->src1,fce);
+        data2 = giveMeData(instr->src2,fce);
+				newData.value.n = data1->value.n - data2->value.n;
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
+			break;
+
 			/*===========================================I_MUL==========================================*/
-			case I_MUL: break;
+			case I_MUL: 
+        newData.type = NUMBER;
+        data1 = giveMeData(instr->src1,fce);
+        data2 = giveMeData(instr->src2,fce);
+				newData.value.n = data1->value.n * data2->value.n;
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
+			break;
+
 			/*===========================================I_DIV==========================================*/
-			case I_DIV: break;
+			case I_DIV: 
+        newData.type = NUMBER;
+        data1 = giveMeData(instr->src1,fce);
+        data2 = giveMeData(instr->src2,fce);
+				if (data2->value.n == 0) return ERR_INTERPRET; // deleni nulou 
+			  else newData.value.n = data1->value.n / data2->value.n;
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
+			break;
+
 			/*===========================================I_POW==========================================*/
-			case I_POW: break;
-			/*===========================================I_COW==========================================*/
-			case I_CON: break;
+			case I_POW: 
+        newData.type = NUMBER;
+        data1 = giveMeData(instr->src1,fce);
+        data2 = giveMeData(instr->src2,fce);
+				newData.value.n = pow(data1->value.n,data2->value.n);
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
+			break;
+
+			/*===========================================I_CON==========================================*/
+			case I_CON: 
+        newData.type = STRING;
+        data1 = giveMeData(instr->src1,fce);
+        data2 = giveMeData(instr->src2,fce);
+				/*??? jak spojit retezce ???*/
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
+					return ERR_INTERNAL;
+			break;
 
 		/*instrukce pro porovnani vyrazu*/
 			/*==========================================I_CMP_L=========================================*/
@@ -125,7 +175,8 @@ int interpret(TFunction *fce) {
 				}
 
 				else newData.value.b = FALSE;
-				if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
 			break; 
 
 			/*=========================================I_CMP_LE=========================================*/
@@ -144,7 +195,8 @@ int interpret(TFunction *fce) {
         }
 
 				else newData.value.b = FALSE;
-        if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
+        if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
 			break;
 
 			/*==========================================I_CMP_G=========================================*/
@@ -163,7 +215,8 @@ int interpret(TFunction *fce) {
         }
 
 				else newData.value.b = FALSE;
-				if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
 			break;
 
 			/*=========================================I_CMP_GE=========================================*/
@@ -182,7 +235,8 @@ int interpret(TFunction *fce) {
 				}
 
 				else newData.value.b = FALSE;
-				if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
 			break;
 
 			/*=========================================I_CMP_E==========================================*/
@@ -201,7 +255,8 @@ int interpret(TFunction *fce) {
         }
 
 				else newData.value.b = FALSE;
-        if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
+        if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
 			break;
 
 			/*========================================I_CMP_NE==========================================*/
@@ -220,7 +275,8 @@ int interpret(TFunction *fce) {
 				}
 
         else newData.value.b = TRUE;
-				if (saveData(&newData,instr,fce) == EXIT_FAILURE) return ERR_INTERNAL;
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
+					return ERR_INTERNAL;
 			break;
 
 		/*instrukce pro skoky*/

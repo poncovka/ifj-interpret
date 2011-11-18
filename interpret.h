@@ -4,15 +4,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "str.h"
 #include "list.h"
 #include "table.h"
 #include "stack.h"
 #include "expression.h"
 
-#define ERR_SEM				3
-#define ERR_INTERNAL	5
-#define ERR_INTERPRET 4
+#define ERR_SEM				-3
+#define ERR_INTERNAL	-5
+#define ERR_INTERPRET -4
 #define INTERPRET_OK 	0
 
 /*definice funkci*/
