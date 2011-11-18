@@ -22,6 +22,7 @@ typedef struct
 
 
 int strInit(string *s);
+int strInitLen(string *s, int len);
 void strFree(string *s);
 
 void strClear(string *s);
@@ -36,6 +37,5 @@ int strGetLength(string *s);
 char *strCopyChar(string *s);
 string strConcatenation (string *s1, string *s2);
 string strCreateString (char *str);
-//int strConcatString(string *dst, string *src1, string *src2);
 
 #endif //STR_H_INCLUDED

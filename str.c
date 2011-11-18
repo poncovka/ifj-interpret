@@ -24,6 +24,27 @@ int strInit(string *s)
    return STR_SUCCESS;
 }
 
+int strInitLen(string *s, int len)
+// funkce vytvori novy retezec o dané velikosti
+{
+   if (len > 0){
+     if ((s->str = (char*) malloc(len + 1)) == NULL)
+        return STR_ERROR;
+
+     s->allocSize = len + 1;
+     s->str[len] = '\0';
+   }
+   else {
+    s->allocSize = 0;
+    s->str = NULL;
+   }
+
+   s->length = len;   
+
+   return STR_SUCCESS;
+}
+
+
 void strFree(string *s)
 // funkce uvolni retezec z pameti
 {
@@ -94,7 +115,7 @@ int strGetLength(string *s)
 }
 
 string strConcatenation (string *s1, string *s2) {
-// vracÃ­ konkatenaci dvou stringÅ¯
+// vrací konkatenaci dvou stringù
 
   string s;
   s.length = s1->length + s2->length;
