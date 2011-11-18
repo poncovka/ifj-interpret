@@ -455,15 +455,19 @@ void listInstrPrint(TList *l){
             }break;
          case I_TYPE:{
                fprintf(out,"TYPE");
+               printVar(dst);
             }break;
          case I_SUBSTR:{
                fprintf(out,"SUBSTR");
+               printVar(dst);
             }break;
          case I_FIND: {
                fprintf(out,"FIND");
+               printVar(dst);
             }break;
          case I_SORT: {
                fprintf(out,"SORT");
+               printVar(dst);
             }break;
       }
 

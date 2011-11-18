@@ -32,12 +32,16 @@ int main(int argc, char *argv[]){
       case RUN_ERR: printf("Interpretacni chyba,  radek: %d\n", countOfRows);break;
       case INTR_ERR:printf("Interni chyba, radek: %d\n", countOfRows);break;
    }
+   // ---- DEBUG ----
    FILE *log = fopen("debug.log", "w");
    tablePrintOrder(table, log);
    fclose(log);
+   // -- END DEBUG --
 
-   tableClear(&table);
    fclose(f);
 
+   //err = interpret(table.lastAddedFunc);
+
+   tableClear(&table);
    return -err;
 }

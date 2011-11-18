@@ -35,5 +35,6 @@ int strGetLength(string *s);
 
 char *strCopyChar(string *s);
 string strCreateString (char *str);
+//int strConcatString(string *dst, string *src1, string *src2);
 
 #endif //STR_H_INCLUDED
