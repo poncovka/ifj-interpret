@@ -34,7 +34,7 @@ int saveData(TVarData *data, void *dest, TFunction *fce) {
                 case NUMBER: tempVar->value.n = data->value.n; break;
                 case STRING:
                         strInit(&tempVar->value.s);
-            if (strCopyString(&data->value.s,&tempVar->value.s) == STR_ERROR)
+            if (strCopyString(&tempVar->value.s,&data->value.s) == STR_ERROR)
                                 return EXIT_FAILURE;
           break;
                 case NIL: break;
@@ -96,11 +96,14 @@ int interpret(TFunction *fce) {
                 /*instrukce pro praci se zasobnikem*/
                         /*===========================================I_POP==========================================*/
                         case I_POP:
+
                         break;
 
                         /*==========================================I_PUSH==========================================*/
                         case I_PUSH:
-
+                                data1 = giveMeData(instr->dest,fce);
+                                if (stackPush(&stack,data1) != STACK_EOK)
+                                        return ERR_INTERNAL;
                         break;
 
                         /*=========================================I_STACK_E========================================*/
