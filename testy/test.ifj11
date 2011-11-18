@@ -1,14 +1,4 @@
-
-function hello(a,b,c)
-
-end
-
-
 function main()
-local a;
- a = hello(a,a,a);
- a = type(a);
- a = substr(a);
- a = find(a);
- a = sort(a);
+  local a = "Hello world!!!"; 
+  write(a, "- !!");
 end;  
