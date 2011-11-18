@@ -7,8 +7,8 @@
 
 #include "interpret.h"
 
-//enum ETruth {FALSE, TRUE}
-enum ESource {DEST, SRC1, SRC2};
+/*globalni promenna zasobnik*/
+TStack stack;
 
 //=================================================================================================>
 //------------------void saveData(TVarData *data, TInstr *instr, TFunction *fce);------------------>
@@ -56,21 +56,17 @@ TVarData *giveMeData(void *data, TFunction *fce) {
 }
 
 //=================================================================================================>
-//------------------------------------int interpret(TFunction *fce);------------------------------->
+//-------------------------------------int executor(TFunction *fce);------------------------------->
 //=================================================================================================>
 /* @description vykona interpretaci funkce
  * @param aktualni funkce
  * @return chybovy kod 
  */
-int interpret(TFunction *fce) {
+int executor(TFunction *fce) {
 	TInstr *instr; 
 	TVarData *data1;
 	TVarData *data2;
 	TVarData newData;
-
-	/*vytvoreni a inicializace zasobniku*/
-	TStack stack;
-	stackInit(&stack);	
 
 	/*nastavi ukazatel na prvni instrukci*/
 	fce->cnt++;
@@ -192,7 +188,9 @@ int interpret(TFunction *fce) {
         newData.type = STRING;
         data1 = giveMeData(instr->src1,fce);
         data2 = giveMeData(instr->src2,fce);
-				/*??? jak spojit retezce ???*/
+		//	  string str;
+		//	  if (strConcatenation(&str,&data1->value.s,&data2->value.s) == NULL)
+		//			return ERR_INTERNAL;
 				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
@@ -359,7 +357,7 @@ int interpret(TFunction *fce) {
 
 			/*========================================I_CALL============================================*/
 			case I_CALL: 
-				switch (interpret((TFunction *)instr->dest)) {
+				switch (executor((TFunction *)instr->dest)) {
 				  case ERR_INTERPRET: return ERR_INTERPRET; break;
 					case ERR_INTERNAL: return ERR_INTERNAL; break;
 					case ERR_SEM: return ERR_SEM; break;
@@ -388,4 +386,19 @@ int interpret(TFunction *fce) {
 
 	fce->cnt--;
 	return INTERPRET_OK;
-} //konec interpret
+} //konec executor
+
+//=================================================================================================>
+//------------------------------------int interpret(TFunction *fce);------------------------------->
+//=================================================================================================>
+/* @description vykona interpretaci funkce
+ * @param aktualni funkce
+ * @return chybovy kod 
+ */
+int interpret(TFunction *fce) {
+	int result;								
+  stackInit(&stack);				// inicializace zasobniku
+	result = executor(fce);		// vykonani interpretace
+  stackDelete(&stack);			// uvolneni zasobniku
+	return result;  
+} 
