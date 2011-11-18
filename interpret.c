@@ -32,7 +32,8 @@ int saveData(TVarData *data, void *dest, TFunction *fce) {
 	switch (data->type) {
 		case BOOL: tempVar->value.b = data->value.b; break;
 		case NUMBER: tempVar->value.n = data->value.n; break;
-		case STRING: 
+		case STRING:
+			strInit(&tempVar->value.s); 
 	    if (strCopyString(&data->value.s,&tempVar->value.s) == STR_ERROR)
 				return EXIT_FAILURE;				
 	  break;
@@ -62,12 +63,14 @@ TVarData *giveMeData(void *data, TFunction *fce) {
  * @return chybovy kod 
  */
 int interpret(TFunction *fce) {
-
-	/*pomocne promenne*/
 	TInstr *instr; 
 	TVarData *data1;
 	TVarData *data2;
 	TVarData newData;
+
+	/*vytvoreni a inicializace zasobniku*/
+	TStack stack;
+	stackInit(&stack);	
 
 	/*nastavi ukazatel na prvni instrukci*/
 	fce->cnt++;
@@ -85,7 +88,7 @@ int interpret(TFunction *fce) {
 		if (checkSemErr(instr, (TVar *) instr->src1)) return ERR_SEM;
 		if (checkSemErr(instr, (TVar *) instr->src2)) return ERR_SEM;
 
-		/*rozpozna typ instrukce*/
+		/*rozpozna typ instrukce a vykona ji*/
 		switch (instr->type) {
 			case I_LAB: break;
 			case I_RETURN: break;
@@ -97,10 +100,13 @@ int interpret(TFunction *fce) {
 
 			/*==========================================I_PUSH==========================================*/
 			case I_PUSH: 
+				
 			break;
 
 			/*=========================================I_STACK_E========================================*/
-			case I_STACK_E: 
+			case I_STACK_E:
+		 		if (stackDelete(&stack) != STACK_EOK)
+					return ERR_INTERNAL;
 			break;
 
 		/*instrukce pro inicializace, presuny*/
@@ -113,7 +119,7 @@ int interpret(TFunction *fce) {
 
 			/*===========================================I_SET==========================================*/
 			case I_SET:
-				if (varRealloc(instr->dest,fce->cnt) == INS_MALLOC)
+				if (varRealloc(instr->dest,fce->cnt) != INS_OK)
 			  	return ERR_INTERNAL;
 				if (instr->src1 != NULL) {
 					data1 = giveMeData(instr->src1,fce);
