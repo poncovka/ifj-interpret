@@ -1,0 +1,43 @@
+#!/bin/sh
+if [ "$#" -eq 0 ]; then
+  echo ""
+  echo "USE: ./tester3 PROG SRC_DIR"
+  echo "PROG - testovany program(musi byt o jednu uroven vyssie nez zdrojaky)"
+  echo "SRC_DIR - priecinok so zdrojakmi"
+  echo "-zdrojaky musia mat format #_name, kde # je ocakavany navratovy kod"
+  echo "-kazdy zdrojak #_name musi mat vlastny subor output_#_name"
+  echo "-output_#_name obsahuje ocakavany vystup programu so zdrojakom #_name"
+  exit 0
+fi
+if [ $# -lt 2 ]; then
+  echo ""
+  echo "Ziaden zdrojovy priecinok!"
+  exit 1
+fi
+program=$1 #spustany program
+src_dir=$2 #priecinok so zdrojakmi
+(cd $src_dir
+for i in `ls | grep -v output`; do #vyber subory ktore nezacinaju "output"
+  expected=`echo "$i" | awk -F _ '{print $1}'` #ocakavany navratovy kod
+  ../$program $i >output #output - realny vystup programu
+  err=$?
+  echo ""
+  echo "program: $program"
+  echo "source: $i"
+  if [ "$err" -eq "$expected" ]; then
+    echo "ret_val OK"
+  else
+    echo "ret_val MISMATCH"
+  fi
+  diff -q output output_$i >/dev/null #porovnanie ocakavaneho vystupu s realnym
+  diff_ret=$?
+  if [ "$diff_ret" -eq 0 ]; then
+    echo "output OK"
+  else
+    echo "output MISMATCH"
+  fi
+  rm output #zmaz docasny subor realneho vystupu
+  valgrind --leak-check=full --leak-resolution=high -q ../$program $i 
+done
+)
+exit 0

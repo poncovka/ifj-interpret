@@ -1,5 +1,5 @@
 function main()
 local a;
-a=-1;
-local b;
+whille a>0 do
+end;
 end;

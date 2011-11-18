@@ -1,6 +1,5 @@
 function main()
 local a;
-whille a>0 do
-end;
-local b;
+a=5;
+local b=a;
 end;
