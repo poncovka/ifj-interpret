@@ -125,26 +125,23 @@ char *strCopyChar(string *s) {
 /*
  * Funkce pøekopíruje do stringu s1 obsah stringu s2
  * Pokud pamì» nestaèí, provede realokaci.
- * @author  Vendula Poncová
  * @param   ukazatel na string, KAM kopírujeme
  * @param   ukazatel na string, ODKUD kopírujeme
  * @param   chybový kód
  */
 int strCopyString(string *s1, string *s2) {
 
-   // uvolní pùvodní øetìzec
-   strFree(s1);
-
-   // inicializuje a alokuje na novou délku
-   if (strInitLen(s1, s2->length) == STR_SUCCESS){
-
-     // zkopíruje obsah druhého stringu
-     strcpy(s1->str, s2->str);
-     s1->length = s2->length;
-
-     return STR_SUCCESS;
+   int newLength = s2->length;
+   if (newLength >= s1->allocSize)
+   {
+      // pamet nestaci, je potreba provest realokaci
+      if ((s1->str = (char*) realloc(s1->str, newLength + 1)) == NULL)
+         return STR_ERROR;
+      s1->allocSize = newLength + 1;
    }
-   else return STR_ERROR;
+   strcpy(s1->str, s2->str);
+   s1->length = newLength;
+   return STR_SUCCESS;
 }
 
 /*
@@ -222,17 +219,20 @@ string strCreateConstString (char *str) {
 
 int strCopyString(string *s1, string *s2) {
 
-   int newLength = s2->length;
-   if (newLength >= s1->allocSize)
-   {
-      // pamet nestaci, je potreba provest realokaci
-      if ((s1->str = (char*) realloc(s1->str, newLength + 1)) == NULL)
-         return STR_ERROR;
-      s1->allocSize = newLength + 1;
+      // uvolní pùvodní øetìzec
+   strFree(s1);
+
+   // inicializuje a alokuje na novou délku
+   if (strInitLen(s1, s2->length) == STR_SUCCESS){
+
+     // zkopíruje obsah druhého stringu
+     strcpy(s1->str, s2->str);
+     s1->length = s2->length;
+
+     return STR_SUCCESS;
    }
-   strcpy(s1->str, s2->str);
-   s1->length = newLength;
-   return STR_SUCCESS;
+   else return STR_ERROR;
+
 }
 */
 
