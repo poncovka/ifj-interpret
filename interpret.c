@@ -355,7 +355,12 @@ int executor(TFunction *fce) {
 			case I_READ:
 		    data1 = giveMeData(instr->src1,fce);
 			  switch (data1->type)	{
-					case STRING: printf("%s",data1->value.s.str); break;
+					case STRING: 
+					  if (strcmp(data1->value.s.str,"*n") == 0) return INTERPRET_OK;
+						else if (strcmp(data1->value.s.str,"*l") == 0) return INTERPRET_OK;
+						else if (strcmp(data1->value.s.str,"*a") == 0) return INTERPRET_OK;
+						else return ERR_SEM;	
+					break;
 					case NUMBER: printf("%g",data1->value.n); break;
 					case BOOL: break;
 					case NIL: break;
@@ -403,7 +408,6 @@ int executor(TFunction *fce) {
  * @return chybovy kod 
  */
 int interpret(TFunction *fce) {
-	printf("----ZACATEK INTERPRETACE----\n");
 	int result;								
   stackInit(&stack);				// inicializace zasobniku
 	result = executor(fce);		// vykonani interpretace
