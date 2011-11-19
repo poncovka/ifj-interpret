@@ -10,7 +10,12 @@
 /*globalni promenna zasobnik*/
 TStack stack;
 
-/*void printTVarData(TVarData *data);*/
+//=================================================================================================>
+//-----------------------------void printTVarData(TVarData *data);--------------------------------->
+//=================================================================================================>
+/* @desciption vypise typ dat a hodnotu (pozn.: debug)
+ * @param data
+ */
 void printTVarData(TVarData *data) {
   printf("========printTVarData()=======\n");
   switch (data->type) {
@@ -22,7 +27,12 @@ void printTVarData(TVarData *data) {
 	printf("==============================\n");
 }
 
-/*TVarData stackPopVarData(TStack *stack);*/
+//=================================================================================================>
+//----------------------------TVarData stackPopVarData(TStack *stack);----------------------------->
+//=================================================================================================>
+/* @description
+ * @param zasobnik
+ */
 TVarData stackPopVarData(TStack *stack) {
   TVarData data;
   if (!stackEmpty(stack)) {
@@ -429,6 +439,7 @@ int executor(TFunction *fce) {
       break;
 
     /*instrukce pro vestavene funkce*/
+      /*========================================I_TYPE============================================*/
       case I_TYPE:
         dest = giveMeData(instr->dest,fce);
         param = stackPopVarData(&stack);
@@ -436,6 +447,7 @@ int executor(TFunction *fce) {
           return ERR_INTERNAL;
       break;
 
+      /*========================================I_SUBSTR==========================================*/
       case I_SUBSTR:
         dest = giveMeData(instr->dest,fce);
         param = stackPopVarData(&stack);
@@ -445,6 +457,7 @@ int executor(TFunction *fce) {
           return ERR_INTERNAL;
       break;
 
+			/*=========================================I_FIND===========================================*/
       case I_FIND:
         dest = giveMeData(instr->dest,fce);
         param = stackPopVarData(&stack);
@@ -453,6 +466,7 @@ int executor(TFunction *fce) {
           return ERR_INTERNAL;
       break;
 
+			/*=========================================I_SORT===========================================*/
       case I_SORT:
         dest = giveMeData(instr->dest,fce);
         param = stackPopVarData(&stack);
