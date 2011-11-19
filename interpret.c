@@ -10,6 +10,21 @@
 /*globalni promenna zasobnik*/
 TStack stack;
 
+TVarData stackPopVarData (TStack *stack) {
+
+  TVarData data;
+  if (!stackEmpty(stack)) {
+    // zásobník není prázdný, vyber data
+    data = *((TVarData *) stackTopPop(stack));
+  }
+  else {
+    // zásobník je prázdný, vyber NIL    
+    data.type = NIL;
+  }
+  return data;
+}
+
+
 //=================================================================================================>
 //----------------int cmpData(TVarData *data1, TVarData *data2, EInstrType instr);----------------->
 //=================================================================================================>
@@ -107,6 +122,9 @@ int executor(TFunction *fce) {
 	TVarData *data2;
 	TVarData newData;
 
+  TVarData *dest;
+  TVarData param, param2, param3;
+
 	/*nastavi ukazatel na prvni instrukci*/
 	fce->cnt++;
   if (listFirst(&fce->instructions) == LIST_ERR) 
@@ -133,9 +151,10 @@ int executor(TFunction *fce) {
 		/*instrukce pro praci se zasobnikem*/
 			/*===========================================I_POP==========================================*/
 			case I_POP:
-        data1 = (TVarData *) stackTopPop(&stack);
-				if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
+        newData = stackPopVarData(&stack);
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
+
 			break;
 
 			/*==========================================I_PUSH==========================================*/
@@ -228,11 +247,15 @@ int executor(TFunction *fce) {
         newData.type = STRING;
         data1 = giveMeData(instr->src1,fce);
         data2 = giveMeData(instr->src2,fce);
-		//	  string str;
-		//	  if (strConcatenation(&str,&data1->value.s,&data2->value.s) == NULL)
-		//			return ERR_INTERNAL;
-				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
+        newData.value.s = strConcatenation(&data1->value.s,&data2->value.s);
+
+		    if (strIsNull(&newData.value.s))
+				  return ERR_INTERNAL;
+				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) {
+          strFree(&newData.value.s);
 					return ERR_INTERNAL;
+          }
+        strFree(&newData.value.s);
 			break;
 
 		/*instrukce pro porovnani vyrazu*/
@@ -394,10 +417,36 @@ int executor(TFunction *fce) {
 			break;
 
 		/*instrukce pro vestavene funkce*/
-			case I_TYPE: break;
-			case I_SUBSTR: break;
-			case I_FIND: break;
-			case I_SORT: break;
+			case I_TYPE:
+          dest = giveMeData(instr->dest,fce);
+          param = stackPopVarData(&stack);
+          if (type(dest, &param) == ERR)
+            return ERR_INTERNAL;
+      break;
+
+			case I_SUBSTR:
+          dest = giveMeData(instr->dest,fce);
+          param = stackPopVarData(&stack);
+          param2 = stackPopVarData(&stack);
+          param3 = stackPopVarData(&stack);
+          if (substr(dest, &param, &param2, &param3 ) == ERR)
+            return ERR_INTERNAL;
+      break;
+
+			case I_FIND:
+          dest = giveMeData(instr->dest,fce);
+          param = stackPopVarData(&stack);
+          param2 = stackPopVarData(&stack);
+          if (find(dest, &param, &param2) == ERR)
+            return ERR_INTERNAL;
+      break;
+
+			case I_SORT:
+          dest = giveMeData(instr->dest,fce);
+          param = stackPopVarData(&stack);
+          if (sort(dest, &param) == ERR)
+            return ERR_INTERNAL;
+      break;
 
 			/*v pripade jineho typu chyba*/
 			default: 

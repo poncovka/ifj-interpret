@@ -10,6 +10,7 @@
 #include "table.h"
 #include "stack.h"
 #include "expression.h"
+#include "library.h"
 
 #define ERR_SEM				-3
 #define ERR_INTERNAL	-5
