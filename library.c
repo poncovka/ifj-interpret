@@ -46,31 +46,44 @@ int type(TVarData *dest, TVarData *param) {
  * @param   ukazatel na data NUMBER
  * @return  chybový kód
  */
-int substr(TVarData *dest, TVarData *dataS, TVarData *dataFrom, TVarData *dataTo) {
+int substr(TVarData *dest, TVarData *src, TVarData *dataFrom, TVarData *dataTo) {
 
   freeVarData(dest);
 
   // kotrola parametrù:
-  if (dataS->type == STRING && dataFrom->type == NUMBER && dataTo->type == NUMBER) {
+  if (src->type == STRING && dataFrom->type == NUMBER && dataTo->type == NUMBER) {
 
-    int from = dataFrom->value.n;
-    int to   = dataTo->value.n;
-    char *s  = dataS->value.s.str;
-    //int srcLen = dataS->value.s.length;
+    int from   = dataFrom->value.n;
+    int to     = dataTo->value.n;
+    char *s    = src->value.s.str;
+    int srcLen = src->value.s.length;
+    int destLen = 0;
 
-    // pøepoèítání indexù - DOKONÈIT
-    int destLen = to - from + 1;
+    // pøepoèítání indexù - pøevzato ze zdrojákù Lea :
 
-    // alokace nového øetìzce
+    // pøepoèítání záporných indexù a kontrola rozsahu
+    if (from < 0) from = srcLen + from + 1;
+    if (from < 1) from = 1;
+
+    if (to < 0)   to = srcLen + to + 1;
+    if (to > srcLen) to = srcLen;
+   
+    // kontrola platnosti indexù
+    if (from <= to)
+       destLen = to - from + 1;
+    else destLen = 0;
+
+    // alokace nového øetìzce :
     if(strInitLen(&dest->value.s, destLen) == EOK) {
       dest->type = STRING;
 
-      // kopírování
-      strncpy(dest->value.s.str, &s[from-1], destLen);
-      dest->value.s.str[destLen] = '\0';
+      // kopírování :
+      if (destLen > 0) {
+        strncpy(dest->value.s.str, &s[from-1], destLen);
+        dest->value.s.str[destLen] = '\0';
+      }
     }
     else return ERR;
-
   }
   return EOK;
 }
