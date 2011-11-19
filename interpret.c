@@ -434,7 +434,7 @@ int executor(TFunction *fce) {
           case ERR_SEM: return ERR_SEM; break;
           case INTERPRET_OK: break;
         }
-				instr = instrTemp;
+				listSetActive(&fce->instructions,(TLItem *) instrTemp);
       break;
 
     /*instrukce pro vestavene funkce*/
