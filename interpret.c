@@ -131,8 +131,7 @@ int executor(TFunction *fce) {
 		/*instrukce pro praci se zasobnikem*/
 			/*===========================================I_POP==========================================*/
 			case I_POP:
-        if ((data1 = (TVarData *) stackTopPop(&stack)) == NULL)
-					data1->type = NIL;
+        data1 = (TVarData *) stackTopPop(&stack);
 				if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
