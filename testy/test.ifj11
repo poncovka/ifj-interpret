@@ -1,4 +1,8 @@
+function xxx()
+  write("aaa");
+end
+
 function main()
-  local a = "Hello world!!!"; 
-  write(a, "- !!");
+  local a;
+  a = xxx(); 
 end;  
