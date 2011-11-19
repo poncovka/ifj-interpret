@@ -60,7 +60,7 @@ int getTopTerminal  (TStack *S);
 
 int findRule        (TStack *S, TInstr *instr);
 int checkRule       (TInstr *instr);
-int checkSemErr     (TInstr *instr, TVar *var);
+int checkSemErr     (TInstr *instr, TVarData *data);
 
 int insertInstruction(TInstr *instr, TTable *table);
 int returnResult    (TStack *S, TVar **ptrResult);

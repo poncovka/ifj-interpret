@@ -156,10 +156,11 @@ int executor(TFunction *fce) {
       return ERR_INTERNAL;
 
     /*kontrola semantiky matematickych a porovnavacich operaci*/
-    if (checkSemErr(instr, (TVar *) instr->src1))
-      return ERR_INTERPRET;
-    if (checkSemErr(instr, (TVar *) instr->src2))
-      return ERR_INTERPRET;
+
+    if (isMathOperation(instr->type)){
+      if (checkSemErr(instr, giveMeData((TVar*)instr->src1, fce))) return ERR_INTERPRET;
+      if (checkSemErr(instr, giveMeData((TVar*)instr->src2, fce))) return ERR_INTERPRET;
+    }
 
     /*rozpozna typ instrukce a vykona ji*/
     switch (instr->type) {

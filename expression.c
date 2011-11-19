@@ -314,13 +314,13 @@ int checkRule (TInstr *instr) {
   // kontrola pro levý operand a operaci
   if (src1->varType == VT_CONST) {
     cntConst++;
-    err = checkSemErr(instr, src1);
+    err = checkSemErr(instr, src1->varData);
   }
 
   // kontrola pro pravý operand a operaci
   if (err == EOK && src2->varType == VT_CONST) {
     cntConst++;
-    err = checkSemErr(instr, src2);
+    err = checkSemErr(instr, src2->varData);
   }
 
   // kontrola obou operandù
@@ -340,13 +340,13 @@ int checkRule (TInstr *instr) {
  * Kontrola se provádí pouze pro matematické a relaèní instr.
  * Ke kontrole slou¾í tabulka semTable.
  * @param   ukazatel na instrukci
- * @param   ukazatel na promìnnou
+ * @param   ukazatel na data promìnné
  * @return  chybový kód
  */
-int checkSemErr (TInstr *instr, TVar *var) {
+int checkSemErr (TInstr *instr, TVarData *data) {
 
   if (isMathOperation(instr->type)){
-    if (semTable[instr->type][var->varData->type] != 1) {
+    if (semTable[instr->type][data->type] != 1) {
       return SEM_ERR;
     }
   }
