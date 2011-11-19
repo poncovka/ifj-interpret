@@ -10,20 +10,31 @@
 /*globalni promenna zasobnik*/
 TStack stack;
 
-TVarData stackPopVarData (TStack *stack) {
+/*void printTVarData(TVarData *data);*/
+void printTVarData(TVarData *data) {
+  printf("========printTVarData()=======\n");
+  switch (data->type) {
+		case NUMBER: printf("NUMBER: %g\n",data->value.n);
+		case STRING: printf("STRING: %s\n",data->value.s.str);
+		case BOOL: printf("BOOL: %d\n",data->value.b);
+		case NIL: printf("NIL\n");
+	} 
+	printf("==============================\n");
+}
 
+/*TVarData stackPopVarData(TStack *stack);*/
+TVarData stackPopVarData(TStack *stack) {
   TVarData data;
   if (!stackEmpty(stack)) {
-    // zásobník není prázdný, vyber data
+    // zasobnik neni prazdny, vyber data
     data = *((TVarData *) stackTopPop(stack));
   }
   else {
-    // zásobník je prázdný, vyber NIL
+    // zasobnik je prazdny, vyber NIL
     data.type = NIL;
   }
   return data;
 }
-
 
 //=================================================================================================>
 //----------------int cmpData(TVarData *data1, TVarData *data2, EInstrType instr);----------------->
@@ -117,12 +128,12 @@ TVarData *giveMeData(void *data, TFunction *fce) {
  * @return chybovy kod
  */
 int executor(TFunction *fce) {
+	TInstr *instrTemp;
   TInstr *instr;
   TVarData *data1;
   TVarData *data2;
-  TVarData newData;
-
   TVarData *dest;
+	TVarData newData;
   TVarData param, param2, param3;
 
   /*nastavi ukazatel na prvni instrukci*/
@@ -152,6 +163,7 @@ int executor(TFunction *fce) {
       /*===========================================I_POP==========================================*/
       case I_POP:
         newData = stackPopVarData(&stack);
+				printTVarData(&newData); /*DEBUG*/
         if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
           return ERR_INTERNAL;
       break;
@@ -159,6 +171,7 @@ int executor(TFunction *fce) {
       /*==========================================I_PUSH==========================================*/
       case I_PUSH:
         data1 = giveMeData(instr->dest,fce);
+				printTVarData(data1); /*DEBUG*/
         if (stackPush(&stack,data1) != STACK_EOK)
           return ERR_INTERNAL;
       break;
@@ -405,12 +418,14 @@ int executor(TFunction *fce) {
 
       /*========================================I_CALL============================================*/
       case I_CALL:
+			  instrTemp = instr;
         switch (executor((TFunction *)instr->dest)) {
           case ERR_INTERPRET: return ERR_INTERPRET; break;
           case ERR_INTERNAL: return ERR_INTERNAL; break;
           case ERR_SEM: return ERR_SEM; break;
           case INTERPRET_OK: break;
         }
+				instr = instrTemp;
       break;
 
     /*instrukce pro vestavene funkce*/
