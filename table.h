@@ -109,6 +109,13 @@ typedef struct{
    void *src2;
 }TInstr;
 
+
+/*
+ * smaze data a inicializuje je na NIL
+ * @param   uk na data promenne
+ */
+void freeVarData(TVarData *data);
+
 /*
  * generuje instrukci
  * @param   typ instrukce

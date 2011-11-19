@@ -15,15 +15,19 @@
 #include "table.h"
 #include "str.h"
 
-#define EOK 0
-#define ERR -1
+#define EOK  0
+#define ERR -5
+
+// funkce pro uvolnìní dat:
+
+void freeVarData(TVarData *data);
 
 // vestavene funkce:
 
-TVarData type  (TVarData *param);
-TVarData substr(TVarData *dataS, TVarData *dataFrom, TVarData *dataTo, int *err);
-TVarData find  (TVarData *sData, TVarData *sPatternData);
-TVarData sort  (TVarData *sData, int *err);
+int type  (TVarData *dest, TVarData *param);
+int substr(TVarData *dest, TVarData *dataS, TVarData *dataFrom, TVarData *dataTo);
+int find  (TVarData *dest, TVarData *sData, TVarData *sPatternData);
+int sort  (TVarData *dest, TVarData *sData);
 
 // funkce pro kmp:
 

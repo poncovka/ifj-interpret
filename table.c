@@ -21,6 +21,17 @@ TInstr *genInstr(EInstrType t, void *d, void *s1, void *s2){
    return i;
 }
 
+//----------------------------------------------------------------------
+
+void freeVarData(TVarData *data) {
+  if (data->type == STRING) {
+    strFree(&data->value.s);
+  }
+  data->type = NIL;
+}
+
+//----------------------------------------------------------------------
+
 int varRealloc(TVar *v, int cnt){
    if((cnt = v->alloc - cnt) >= 1)
       return INS_OK;
@@ -249,6 +260,7 @@ void clearNode(TNode n, EBTreeDataType type){
          // predpis jak smazat data poku jsou typu TVar *
          case VAR:{
             TVar *temp = ((TVar *)n->data);
+            freeVarData(temp->varData);
             free(temp->varData);
             free(n->data);
          }break;

@@ -8,15 +8,9 @@
 
 #include "library.h"
 
-/*
- * Inicializuje se zásobník. Ukazatel na NULL vyvolá chybu.
- * @param   ukazatel na zásobník
- * @return  kód chyby
- */
-
 const char *dataTypeStrings[]= {
- [NIL] ="nil", 
- [BOOL]="bool", 
+ [NIL]   ="nil", 
+ [BOOL]  ="bool", 
  [STRING]="string",
  [NUMBER]="number",  
 };
@@ -24,32 +18,37 @@ const char *dataTypeStrings[]= {
 /////////////////////////////////////////////////////////////////////////////////// vestavené funkce:
 
 /*
- * Funkce vrací øetìzec obsahující datový typ dat.
- * @param   ukazatel na data, jejich¾ typ chceme znát
- * @return  data STRING obsahující øetìzec s datovým typem
+ * Funkce vrací øetìzec obsahující datový typ promìnné.
+ * @param   destinace: uk na data, kam ukládáme výsledek
+ * @param   parametr:  uk na data promìnné
+ * @return  chybový kód
  */
-TVarData type(TVarData *param) {
+int type(TVarData *dest, TVarData *param) {
 
-  TVarData data;
-  data.value.s = strCreateString((char*) dataTypeStrings[param->type]);
-  data.type = STRING;
-  return data;
+  freeVarData(dest);
+
+  dest->type = STRING;
+
+  string s = strCreateConstString ((char*) dataTypeStrings[param->type]);
+  dest->value.s = strCreateString(&s);
+
+  if (strIsNull(&dest->value.s)) return ERR;
+  else return EOK;
 }
 
 /*
  * Funkce vrací podøetìzec zadaného øetìzce.
  * Pokud jsou parametry nesprávného typu, vrací NIL.
  * Pokud se nepodaøí alokace øetìzce, vrací chybový kód do err.
+ * @param   destinace: uk na data, kam ukládáme výsledek
  * @param   ukazatel na data STRING
  * @param   ukazatel na data NUMBER
  * @param   ukazatel na data NUMBER
- * @param   ukazatel chybu
- * @return  data STRING
+ * @return  chybový kód
  */
-TVarData substr(TVarData *dataS, TVarData *dataFrom, TVarData *dataTo, int *err) {
+int substr(TVarData *dest, TVarData *dataS, TVarData *dataFrom, TVarData *dataTo) {
 
-  TVarData data;
-  data.type = NIL;
+  freeVarData(dest);
 
   // kotrola parametrù:
   if (dataS->type == STRING && dataFrom->type == NUMBER && dataTo->type == NUMBER) {
@@ -63,29 +62,29 @@ TVarData substr(TVarData *dataS, TVarData *dataFrom, TVarData *dataTo, int *err)
     int destLen = to - from + 1;
 
     // alokace nového øetìzce
-    if(strInitLen(&data.value.s, destLen) == EOK) {
-      data.type = STRING;
+    if(strInitLen(&dest->value.s, destLen) == EOK) {
+      dest->type = STRING;
 
       // kopírování
-      strncpy(data.value.s.str, &s[from-1], destLen);
-      data.value.s.str[destLen] = '\0';
+      strncpy(dest->value.s.str, &s[from-1], destLen);
+      dest->value.s.str[destLen] = '\0';
     }
-    else *err = ERR;
+    else return ERR;
 
   }
-  return data;
+  return EOK;
 }
 
 /*
  * Funkce vyhledá první výskyt podøetìzce sPattern v øetìzci s
+ * @param   destinace: uk na data, kam ukládáme výsledek
  * @param   ukazatel na data STRING, v tomto øetìzci vyhledáváme
  * @param   ukazatel na data STRING, tento øetìzec hledáme
- * @return  data typu NIL, BOOL nebo NUMBER
+ * @return  chybový kód
  */
-TVarData find(TVarData *sData, TVarData *sPatternData) {
+int find(TVarData *dest, TVarData *sData, TVarData *sPatternData) {
 
-  TVarData data;
-  data.type = NIL;  
+  freeVarData(dest);
 
   // kontrola parametrù
   if (sData->type == STRING && sPatternData->type == STRING) {
@@ -93,39 +92,42 @@ TVarData find(TVarData *sData, TVarData *sPatternData) {
     // vyhledávání podøetìzce
     int position = kmp (sData->value.s.str, sPatternData->value.s.str);
     if (position < 0) {
-      data.type = BOOL;
-      data.value.b = FALSE;
+      dest->type = BOOL;
+      dest->value.b = FALSE;
     }
     else {
-      data.type = NUMBER;
-      data.value.n = position;
+      dest->type = NUMBER;
+      dest->value.n = position;
     }
   }
-  return data;
+
+  return EOK;
 }
 
 /*
- * Seøadí znaky v daném øetìzci podle ord. hodnot.
+ * Seøadí znaky v daném øetìzci podle ord. hodnot
+ * @param   destinace: uk na data, kam ukládáme výsledek
  * @param   ukazatel na data STRING
- * @param   ukazatel na chybu
- * @return  data STRING se setøízeným øetìzcem
+ * @return  chybový kód
  */
-TVarData sort(TVarData *sData, int *err) {
+int sort(TVarData *dest, TVarData *sData) {
 
-  TVarData data;
-  data.type = NIL;
+  freeVarData(dest);
 
   // kontrola parametrù:
   if (sData->type == STRING) {
 
-    data.type = STRING;
-    strInitLen(&data.value.s, 0);
-    *err = strCopyString(&data.value.s, &sData->value.s);
-    // setøízení:
-    if (*err == EOK) mergeSort(data.value.s.str);
+    dest->type = STRING;
+    dest->value.s = strCreateString(&sData->value.s);
+    if (!strIsNull(&dest->value.s)) {
+
+      // setøízení:
+      mergeSort(dest->value.s.str);
+    }
+    else return ERR;
   }
 
-  return data;
+  return EOK;
 }
 
 /////////////////////////////////////////////////////////////////////////////////// funkce KMP:

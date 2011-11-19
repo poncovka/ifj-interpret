@@ -24,8 +24,7 @@ int saveData(TVarData *data, void *dest, TFunction *fce) {
 	TVarData *tempVar = &((TVar *)dest)->varData[index];
 	
 	/*pokud prepisovana hodnota je retezec, uvolni*/
-	if (tempVar->type == STRING)
-		strFree(&tempVar->value.s); 
+  freeVarData(tempVar);  
 
 	/*nastavi typ a data promenne*/ 
 	tempVar->type = data->type;
@@ -33,8 +32,8 @@ int saveData(TVarData *data, void *dest, TFunction *fce) {
 		case BOOL: tempVar->value.b = data->value.b; break;
 		case NUMBER: tempVar->value.n = data->value.n; break;
 		case STRING:
-			strInit(&tempVar->value.s); 
-	    if (strCopyString(&tempVar->value.s,&data->value.s) == STR_ERROR)
+			tempVar->value.s = strCreateString(&data->value.s);
+	    if (strIsNull(&tempVar->value.s))
 				return EXIT_FAILURE;				
 	  break;
 		case NIL: break;
