@@ -12,6 +12,7 @@
 
 #include <string.h>
 #include <malloc.h>
+#include <stdio.h>
 
 #define STR_LEN_INC 8
 // konstanta STR_LEN_INC udava, na kolik bytu provedeme pocatecni alokaci pameti
