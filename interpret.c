@@ -29,19 +29,15 @@ void printTVarData(TVarData *data) {
 //=================================================================================================>
 //----------------------------TVarData stackPopVarData(TStack *stack);----------------------------->
 //=================================================================================================>
-/* @description
+/* @description pokud neni zasobnik prazdny vybere data, jinak NIL
  * @param zasobnik
  */
 TVarData stackPopVarData(TStack *stack) {
   TVarData data;
   if (!stackEmpty(stack)) {
-    // zasobnik neni prazdny, vyber data
     data = *((TVarData *) stackTopPop(stack));
   }
-  else {
-    // zasobnik je prazdny, vyber NIL
-    data.type = NIL;
-  }
+  else data.type = NIL;
   return data;
 }
 
