@@ -10,12 +10,16 @@
 /*globalni promenna zasobnik*/
 TStack stack;
 
-/*void printTVarData(TVarData *data);*/
+//=================================================================================================>
+//-----------------------------void printTVarData(TVarData *data);--------------------------------->
+//=================================================================================================>
+/* @desciption vypise typ dat a hodnotu (pozn.: debug)
+ * @param data
+ */
 void printTVarData(TVarData *data) {
-  //printf("========printTVarData()=======\n");
   if(data == NULL){
    printf("NULL\n");
-   return ;
+   return;
   }
   switch (data->type) {
                 case NUMBER: printf("NUMBER: %g\n",data->value.n); break;
@@ -23,20 +27,20 @@ void printTVarData(TVarData *data) {
                 case BOOL: printf("BOOL: %d\n",data->value.b); break;
                 case NIL: printf("NIL\n"); break;
         }
-        //printf("==============================\n");
 }
 
-/*TVarData stackPopVarData(TStack *stack);*/
+//=================================================================================================>
+//----------------------------TVarData stackPopVarData(TStack *stack);----------------------------->
+//=================================================================================================>
+/* @description pokud neni zasobnik prazdny vybere data, jinak NIL
+ * @param zasobnik
+ */
 TVarData stackPopVarData(TStack *stack) {
   TVarData data;
   if (!stackEmpty(stack)) {
-    // zasobnik neni prazdny, vyber data
     data = *((TVarData *) stackTopPop(stack));
   }
-  else {
-    // zasobnik je prazdny, vyber NIL
-    data.type = NIL;
-  }
+  else data.type = NIL;
   return data;
 }
 
@@ -132,14 +136,12 @@ TVarData *giveMeData(void *data, TFunction *fce) {
  * @return chybovy kod
  */
 int executor(TFunction *fce) {
-  //printf("\nSPUSTENO STACK TOP ");
-  //printTVarData((TVarData *)stackTop(&stack));
-  TInstr *instrTemp;
+        TInstr *instrTemp;
   TInstr *instr;
   TVarData *data1;
   TVarData *data2;
   TVarData *dest;
-  TVarData newData;
+        TVarData newData;
   TVarData param, param2, param3;
 
   /*nastavi ukazatel na prvni instrukci*/
@@ -147,7 +149,7 @@ int executor(TFunction *fce) {
   if (listFirst(&fce->instructions) == LIST_ERR)
     return ERR_INTERNAL;
 
-  /*cyklus provede vykonani vsech fci ze seznamu*/
+  /*cyklus provede vykonani vsech instrukci ze seznamu*/
   while (listActive(&fce->instructions)) {
 
     /*precte aktualni instrukci ze seznamu*/
@@ -168,12 +170,7 @@ int executor(TFunction *fce) {
     /*instrukce pro praci se zasobnikem*/
       /*===========================================I_POP==========================================*/
       case I_POP:
-        //printf("-STACK TOP ");
-        //printTVarData((TVarData *)stackTop(&stack));
-
         newData = stackPopVarData(&stack);
-        //printf("POP ");
-        //printTVarData(&newData); /*DEBUG*/
         if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
           return ERR_INTERNAL;
       break;
@@ -181,12 +178,8 @@ int executor(TFunction *fce) {
       /*==========================================I_PUSH==========================================*/
       case I_PUSH:
         data1 = giveMeData(instr->dest,fce);
-        //printf("PUSH ");
-        //printTVarData(data1);/*DEBUG*/
         if (stackPush(&stack,data1) != STACK_EOK)
           return ERR_INTERNAL;
-        //printf("STACK TOP ");
-        //printTVarData((TVarData *)stackTop(&stack));
       break;
 
       /*=========================================I_STACK_E========================================*/
@@ -213,8 +206,6 @@ int executor(TFunction *fce) {
         if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
           return ERR_INTERNAL;
         }
-        //printf("SET STACK TOP ");
-        //printTVarData((TVarData *)stackTop(&stack));
       break;
 
     /*instrukce pro aritmeticke operace*/
@@ -433,19 +424,19 @@ int executor(TFunction *fce) {
 
       /*========================================I_CALL============================================*/
       case I_CALL:
-         //printf("CALL STACK TOP ");
-         //printTVarData( (TVarData *)stackTop(&stack));
-         instrTemp = instr;
+        instrTemp = instr;
         switch (executor((TFunction *)instr->dest)) {
           case ERR_INTERPRET: return ERR_INTERPRET; break;
           case ERR_INTERNAL: return ERR_INTERNAL; break;
           case ERR_SEM: return ERR_SEM; break;
           case INTERPRET_OK: break;
         }
-                                instr = instrTemp;
+        instr = instrTemp;
+        listSetActive(&fce->instructions,(TLItem *) instrTemp);
       break;
 
     /*instrukce pro vestavene funkce*/
+      /*========================================I_TYPE============================================*/
       case I_TYPE:
         dest = giveMeData(instr->dest,fce);
         param = stackPopVarData(&stack);
@@ -453,6 +444,7 @@ int executor(TFunction *fce) {
           return ERR_INTERNAL;
       break;
 
+      /*========================================I_SUBSTR==========================================*/
       case I_SUBSTR:
         dest = giveMeData(instr->dest,fce);
         param = stackPopVarData(&stack);
@@ -462,6 +454,7 @@ int executor(TFunction *fce) {
           return ERR_INTERNAL;
       break;
 
+                        /*=========================================I_FIND===========================================*/
       case I_FIND:
         dest = giveMeData(instr->dest,fce);
         param = stackPopVarData(&stack);
@@ -470,6 +463,7 @@ int executor(TFunction *fce) {
           return ERR_INTERNAL;
       break;
 
+                        /*=========================================I_SORT===========================================*/
       case I_SORT:
         dest = giveMeData(instr->dest,fce);
         param = stackPopVarData(&stack);
