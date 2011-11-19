@@ -60,6 +60,12 @@ int saveData(TVarData *data, void *dest, TFunction *fce) {
 	/*pokud prepisovana hodnota je retezec, uvolni*/
   freeVarData(tempVar);  
 
+	/*pokud je ukazatel nulovy*/
+  if (data == NULL) {
+	  tempVar->type = NIL;
+		return EXIT_SUCCESS;
+	}
+
 	/*nastavi typ a data promenne*/ 
 	tempVar->type = data->type;
 	switch (data->type) {
@@ -371,8 +377,8 @@ int executor(TFunction *fce) {
 						else return ERR_SEM;	
 					break;
 					case NUMBER: printf("%g",data1->value.n); break;
-					case BOOL: break;
-					case NIL: break;
+					case BOOL: return ERR_SEM; break;
+					case NIL: return ERR_SEM; break;
 				}
 			break;
 
