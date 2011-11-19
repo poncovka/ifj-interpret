@@ -22,11 +22,11 @@ void printTVarData(TVarData *data) {
    return;
   }
   switch (data->type) {
-                case NUMBER: printf("NUMBER: %g\n",data->value.n); break;
-                case STRING: printf("STRING: %s\n",data->value.s.str); break;
-                case BOOL: printf("BOOL: %d\n",data->value.b); break;
-                case NIL: printf("NIL\n"); break;
-        }
+     case NUMBER: printf("NUMBER: %g\n",data->value.n); break;
+     case STRING: printf("STRING: %s\n",data->value.s.str); break;
+     case BOOL: printf("BOOL: %d\n",data->value.b); break;
+     case NIL: printf("NIL\n"); break;
+ }
 }
 
 //=================================================================================================>
@@ -136,7 +136,6 @@ TVarData *giveMeData(void *data, TFunction *fce) {
  * @return chybovy kod
  */
 int executor(TFunction *fce) {
-        TInstr *instrTemp;
   TInstr *instr;
   TVarData *data1;
   TVarData *data2;
@@ -157,14 +156,17 @@ int executor(TFunction *fce) {
       return ERR_INTERNAL;
 
     /*kontrola semantiky matematickych a porovnavacich operaci*/
-    if (checkSemErr(instr, (TVar *) instr->src1)) return ERR_INTERPRET;
-    if (checkSemErr(instr, (TVar *) instr->src2)) return ERR_INTERPRET;
+    if (checkSemErr(instr, (TVar *) instr->src1))
+      return ERR_INTERPRET;
+    if (checkSemErr(instr, (TVar *) instr->src2))
+      return ERR_INTERPRET;
 
     /*rozpozna typ instrukce a vykona ji*/
     switch (instr->type) {
       case I_LAB: break;
       case I_RETURN:
-        if (listLast(&fce->instructions) != LIST_EOK) return ERR_INTERNAL;
+        if (listLast(&fce->instructions) != LIST_EOK)
+         return ERR_INTERNAL;
       break;
 
     /*instrukce pro praci se zasobnikem*/
@@ -423,19 +425,18 @@ int executor(TFunction *fce) {
       break;
 
       /*========================================I_CALL============================================*/
-      case I_CALL:
-        instrTemp = instr;
+      case I_CALL:{
+        TLItem *tmp  = fce->instructions.Act;
         switch (executor((TFunction *)instr->dest)) {
           case ERR_INTERPRET: return ERR_INTERPRET; break;
           case ERR_INTERNAL: return ERR_INTERNAL; break;
           case ERR_SEM: return ERR_SEM; break;
           case INTERPRET_OK: break;
         }
-        instr = instrTemp;
-        listSetActive(&fce->instructions,(TLItem *) instrTemp);
-      break;
+        fce->instructions.Act = tmp;
+      }break;
 
-    /*instrukce pro vestavene funkce*/
+      /*instrukce pro vestavene funkce*/
       /*========================================I_TYPE============================================*/
       case I_TYPE:
         dest = giveMeData(instr->dest,fce);
@@ -454,7 +455,7 @@ int executor(TFunction *fce) {
           return ERR_INTERNAL;
       break;
 
-                        /*=========================================I_FIND===========================================*/
+      /*=========================================I_FIND===========================================*/
       case I_FIND:
         dest = giveMeData(instr->dest,fce);
         param = stackPopVarData(&stack);
@@ -463,7 +464,7 @@ int executor(TFunction *fce) {
           return ERR_INTERNAL;
       break;
 
-                        /*=========================================I_SORT===========================================*/
+      /*=========================================I_SORT===========================================*/
       case I_SORT:
         dest = giveMeData(instr->dest,fce);
         param = stackPopVarData(&stack);

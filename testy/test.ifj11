@@ -1,18 +1,35 @@
-function xxx(n)
-  local b;
-	write("\nxxx(", n,")\n");
-  write("n =  ", n , "\n");
-  if (n ~= 0)then
-    write("n = n - 1\n");
-    n = n - 1;
-    write("n = xxx(", n,")\n");
-    n = xxx(n);
-  else
-    write("nic nedelani\n");
-  end;
-end 
+function factorial(n)
+	local temp_result;
+	local	decremented_n;
+	local result;
+	local xType;
 
-function main()
+  write(n, "\n");
+	if n < 2 then
+		result = 1;
+	else 
+		decremented_n = n - 1;
+		temp_result = factorial(decremented_n);
+		
+    result = n * temp_result;
+		
+		xType = type(result);
+	  write("result ", xType, "\n");
+		
+	end;
+	return result;
+end
+
+function main() --Hlavni telo programu
 	local a = 5;
-  a = xxx(a);
+	local aType;
+
+	if a < 0 then
+		write("Faktorial nelze spocitat\n");
+	else
+		a = factorial(a);
+		aType = type(a);
+		write(aType, "\n");
+		write("Vysledek je: ", a, "\n");
+	end;
 end;
