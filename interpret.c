@@ -80,8 +80,8 @@ int executor(TFunction *fce) {
 			return ERR_INTERNAL;
 
 		/*kontrola semantiky matematickych a porovnavacich operaci*/
-		if (checkSemErr(instr, (TVar *) instr->src1)) return ERR_SEM;
-		if (checkSemErr(instr, (TVar *) instr->src2)) return ERR_SEM;
+		if (checkSemErr(instr, (TVar *) instr->src1)) return ERR_INTERPRET;
+		if (checkSemErr(instr, (TVar *) instr->src2)) return ERR_INTERPRET;
 
 		/*rozpozna typ instrukce a vykona ji*/
 		switch (instr->type) {
