@@ -14,10 +14,10 @@ TStack stack;
 void printTVarData(TVarData *data) {
   printf("========printTVarData()=======\n");
   switch (data->type) {
-		case NUMBER: printf("NUMBER: %g\n",data->value.n);
-		case STRING: printf("STRING: %s\n",data->value.s.str);
-		case BOOL: printf("BOOL: %d\n",data->value.b);
-		case NIL: printf("NIL\n");
+		case NUMBER: printf("NUMBER: %g\n",data->value.n); break;
+		case STRING: printf("STRING: %s\n",data->value.s.str); break;
+		case BOOL: printf("BOOL: %d\n",data->value.b); break;
+		case NIL: printf("NIL\n"); break;
 	} 
 	printf("==============================\n");
 }
