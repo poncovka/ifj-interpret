@@ -11,6 +11,40 @@
 TStack stack;
 
 //=================================================================================================>
+//----------------int cmpData(TVarData *data1, TVarData *data2, EInstrType instr);----------------->
+//=================================================================================================>
+/* @description vyhodnoti vyraz
+ * @param prvni data
+ * @param druha data
+ * @param porovnavaci instrukce
+ * @return TRUE/FALSE/ERR_INTERPRET
+ */
+int cmpData(TVarData *data1, TVarData *data2, EInstrType instr) {
+	if ((data1->type == STRING) && (data2->type == STRING)) {
+	  switch (instr) {
+			case I_CMP_L: return (strCmpString(&data1->value.s,&data2->value.s) < 0) ? TRUE : FALSE;  break;
+			case I_CMP_LE: return (strCmpString(&data1->value.s,&data2->value.s) <= 0) ? TRUE : FALSE; break;
+			case I_CMP_G: return (strCmpString(&data1->value.s,&data2->value.s) > 0) ? TRUE : FALSE; break;
+			case I_CMP_GE: return (strCmpString(&data1->value.s,&data2->value.s) >= 0) ? TRUE: FALSE; break;
+	    default: break;
+		}
+	}
+
+	else if ((data1->type == NUMBER) && (data2->type == NUMBER)) {
+		switch (instr) {
+			case I_CMP_L: return (data1->value.n < data2->value.n) ? TRUE : FALSE; break;
+			case I_CMP_LE: return (data1->value.n <= data2->value.n) ? TRUE : FALSE; break;
+			case I_CMP_G: return (data1->value.n > data2->value.n) ? TRUE : FALSE; break;
+			case I_CMP_GE: return (data1->value.n >= data2->value.n) ? TRUE : FALSE; break;
+			default: break;
+		}
+	}
+
+	else return ERR_INTERPRET;
+	return FALSE;
+}
+
+//=================================================================================================>
 //------------------void saveData(TVarData *data, TInstr *instr, TFunction *fce);------------------>
 //=================================================================================================>
 /* @description ulozi data do struktury /co, kam, fce/
@@ -92,7 +126,7 @@ int executor(TFunction *fce) {
 			/*===========================================I_POP==========================================*/
 			case I_POP:
         if ((data1 = (TVarData *) stackTopPop(&stack)) == NULL)
-					return ERR_INTERNAL;
+					data1->type = NIL;
 				if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
 					return ERR_INTERNAL;
 			break;
@@ -200,17 +234,11 @@ int executor(TFunction *fce) {
 				newData.type = BOOL;
 				data1 = giveMeData(instr->src1,fce);
 				data2 = giveMeData(instr->src2,fce);
-
-				if (data1->type == data2->type) { 
-					switch (data1->type) {
-						case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) < 0) ? TRUE : FALSE;	break;
-						case NUMBER: newData.value.b = (data1->value.n < data2->value.n) ? TRUE : FALSE; break;
-						case BOOL: break;
-						case NIL: break;
-					} 
+				switch (cmpData(data1,data2,instr->type)) {
+					case TRUE: newData.value.b = TRUE; break;
+					case FALSE: newData.value.b = FALSE; break;
+					case ERR_INTERPRET: return ERR_INTERPRET; break;
 				}
-
-				else newData.value.b = FALSE;
 				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
 					return ERR_INTERNAL;
 			break; 
@@ -220,17 +248,11 @@ int executor(TFunction *fce) {
 			  newData.type = BOOL;
 				data1 = giveMeData(instr->src1,fce);
 				data2 = giveMeData(instr->src2,fce);		
-
-        if (data1->type == data2->type) {
-          switch (data1->type) {
-            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) <= 0) ? TRUE : FALSE; break;
-            case NUMBER: newData.value.b = (data1->value.n <= data2->value.n) ? TRUE : FALSE; break;
-						case BOOL: break;
-						case NIL: break;
-          }
-        }
-
-				else newData.value.b = FALSE;
+        switch (cmpData(data1,data2,instr->type)) {
+          case TRUE: newData.value.b = TRUE; break;
+          case FALSE: newData.value.b = FALSE; break;
+          case ERR_INTERPRET: return ERR_INTERPRET; break;
+	      }
         if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
 					return ERR_INTERNAL;
 			break;
@@ -240,17 +262,11 @@ int executor(TFunction *fce) {
         newData.type = BOOL;
 				data1 = giveMeData(instr->src1,fce);
 				data2 = giveMeData(instr->src2,fce);
-
-        if (data1->type == data2->type) {
-          switch (data1->type) {
-            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) > 0) ? TRUE : FALSE; break;
-            case NUMBER: newData.value.b = (data1->value.n > data2->value.n) ? TRUE : FALSE; break;
-						case BOOL: break;
-						case NIL: break;
-          }
+        switch (cmpData(data1,data2,instr->type)) {
+          case TRUE: newData.value.b = TRUE; break;
+          case FALSE: newData.value.b = FALSE; break;
+          case ERR_INTERPRET: return ERR_INTERPRET; break;
         }
-
-				else newData.value.b = FALSE;
 				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
 					return ERR_INTERNAL;
 			break;
@@ -260,17 +276,11 @@ int executor(TFunction *fce) {
         newData.type = BOOL;
 				data1 = giveMeData(instr->src1,fce);
 				data2 = giveMeData(instr->src2,fce);
-
-				if (data1->type == data2->type) {
-          switch (data1->type) {
-            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) >= 0) ? TRUE : FALSE; break;
-            case NUMBER: newData.value.b = (data1->value.n >= data2->value.n) ? TRUE : FALSE; break;
-						case BOOL: break;
-						case NIL: break;
-          }          
-				}
-
-				else newData.value.b = FALSE;
+        switch (cmpData(data1,data2,instr->type)) {
+          case TRUE: newData.value.b = TRUE; break;
+          case FALSE: newData.value.b = FALSE; break;
+          case ERR_INTERPRET: return ERR_INTERPRET; break;
+        }
 				if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE) 
 					return ERR_INTERNAL; break;
 			break;
