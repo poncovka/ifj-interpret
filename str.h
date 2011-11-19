@@ -49,6 +49,10 @@ string strConcatenation (string *s1, string *s2);
 string strCreateString      (string *str);
 string strCreateConstString (char *str);
 
+string strReadNChar(FILE *f, int n);
+string strReadLine (FILE *f);
+string strReadAll  (FILE *f);
+
 /* BUDE SMAZANO
 int strCmpConstStr(string *s1, char *s2);
 char *strGetStr(string *s);
