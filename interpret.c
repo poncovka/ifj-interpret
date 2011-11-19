@@ -24,7 +24,6 @@ void printTVarData(TVarData *data) {
 		case BOOL: printf("BOOL: %d\n",data->value.b); break;
 		case NIL: printf("NIL\n"); break;
 	} 
-	printf("==============================\n");
 }
 
 //=================================================================================================>
@@ -151,7 +150,7 @@ int executor(TFunction *fce) {
   if (listFirst(&fce->instructions) == LIST_ERR)
     return ERR_INTERNAL;
 
-  /*cyklus provede vykonani vsech fci ze seznamu*/
+  /*cyklus provede vykonani vsech instrukci ze seznamu*/
   while (listActive(&fce->instructions)) {
 
     /*precte aktualni instrukci ze seznamu*/
