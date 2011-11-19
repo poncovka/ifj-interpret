@@ -1,31 +1,18 @@
 function xxx(n)
   local b;
-	b = type(n);
-	write("\nxxx(", n,")\nn je: ", b, "\n");
-	
-	
-  write("Vypis: ", n , "\n");
+	write("\nxxx(", n,")\n");
+  write("n =  ", n , "\n");
   if (n ~= 0)then
     write("n = n - 1\n");
     n = n - 1;
-    b = type(n);
-    write("n = xxx(", n, " [",b,"]",")\n");
+    write("n = xxx(", n,")\n");
     n = xxx(n);
   else
     write("nic nedelani\n");
   end;
 end 
 
---[[
-function druha(z)
-  write(z);
-end
-
-function prvni(x)
-  x = druha(x);
-end
-]]
 function main()
-	local a = 500;
+	local a = 5;
   a = xxx(a);
 end;

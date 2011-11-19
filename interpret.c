@@ -12,14 +12,18 @@ TStack stack;
 
 /*void printTVarData(TVarData *data);*/
 void printTVarData(TVarData *data) {
-  printf("========printTVarData()=======\n");
+  //printf("========printTVarData()=======\n");
+  if(data == NULL){
+   printf("NULL\n");
+   return ;
+  }
   switch (data->type) {
                 case NUMBER: printf("NUMBER: %g\n",data->value.n); break;
                 case STRING: printf("STRING: %s\n",data->value.s.str); break;
                 case BOOL: printf("BOOL: %d\n",data->value.b); break;
                 case NIL: printf("NIL\n"); break;
         }
-        printf("==============================\n");
+        //printf("==============================\n");
 }
 
 /*TVarData stackPopVarData(TStack *stack);*/
@@ -128,12 +132,14 @@ TVarData *giveMeData(void *data, TFunction *fce) {
  * @return chybovy kod
  */
 int executor(TFunction *fce) {
-        TInstr *instrTemp;
+  //printf("\nSPUSTENO STACK TOP ");
+  //printTVarData((TVarData *)stackTop(&stack));
+  TInstr *instrTemp;
   TInstr *instr;
   TVarData *data1;
   TVarData *data2;
   TVarData *dest;
-        TVarData newData;
+  TVarData newData;
   TVarData param, param2, param3;
 
   /*nastavi ukazatel na prvni instrukci*/
@@ -162,8 +168,12 @@ int executor(TFunction *fce) {
     /*instrukce pro praci se zasobnikem*/
       /*===========================================I_POP==========================================*/
       case I_POP:
+        //printf("-STACK TOP ");
+        //printTVarData((TVarData *)stackTop(&stack));
+
         newData = stackPopVarData(&stack);
-                                printTVarData(&newData); /*DEBUG*/
+        //printf("POP ");
+        //printTVarData(&newData); /*DEBUG*/
         if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
           return ERR_INTERNAL;
       break;
@@ -171,9 +181,12 @@ int executor(TFunction *fce) {
       /*==========================================I_PUSH==========================================*/
       case I_PUSH:
         data1 = giveMeData(instr->dest,fce);
-                                printTVarData(data1); /*DEBUG*/
+        //printf("PUSH ");
+        //printTVarData(data1);/*DEBUG*/
         if (stackPush(&stack,data1) != STACK_EOK)
           return ERR_INTERNAL;
+        //printf("STACK TOP ");
+        //printTVarData((TVarData *)stackTop(&stack));
       break;
 
       /*=========================================I_STACK_E========================================*/
@@ -194,12 +207,14 @@ int executor(TFunction *fce) {
       case I_SET:
         if (varRealloc(instr->dest,fce->cnt) != INS_OK)
           return ERR_INTERNAL;
-        ((TVar *)instr->dest)->varData->type = NIL;
+        ((TVar *)instr->dest)->varData[fce->cnt].type = NIL;
         if (instr->src1 != NULL) {
           data1 = giveMeData(instr->src1,fce);
         if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
           return ERR_INTERNAL;
         }
+        //printf("SET STACK TOP ");
+        //printTVarData((TVarData *)stackTop(&stack));
       break;
 
     /*instrukce pro aritmeticke operace*/
@@ -418,7 +433,9 @@ int executor(TFunction *fce) {
 
       /*========================================I_CALL============================================*/
       case I_CALL:
-                          instrTemp = instr;
+         //printf("CALL STACK TOP ");
+         //printTVarData( (TVarData *)stackTop(&stack));
+         instrTemp = instr;
         switch (executor((TFunction *)instr->dest)) {
           case ERR_INTERPRET: return ERR_INTERPRET; break;
           case ERR_INTERNAL: return ERR_INTERNAL; break;
