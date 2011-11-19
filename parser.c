@@ -541,8 +541,11 @@ int prsAssign(TVar *var){
 
    int tokenTmp = token; // ulozim si attr abych potom vedel jakou instrukci generovat
    int err;
-
-   TFunction *Ftmp = tableSearchFunction(table, attr);
+   TFunction *Ftmp;
+   if(token == KW_MAIN)
+      Ftmp = table->lastAddedFunc;
+   else
+      Ftmp = tableSearchFunction(table, attr);
 
    if(Ftmp == NULL && (token != KW_TYPE && token != KW_SUBSTR && token != KW_FIND && token != KW_SORT) ){
       // 23. <assign> -> expression
@@ -568,6 +571,7 @@ int prsAssign(TVar *var){
 
    TInstr *tmpInstr = NULL;
    switch(tokenTmp){
+      case KW_MAIN:
       case L_ID:{
             tmpInstr = genInstr(I_CALL, Ftmp, NULL, NULL);
             if(tmpInstr == NULL) return INTR_ERR;
