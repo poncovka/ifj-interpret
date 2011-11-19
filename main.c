@@ -30,13 +30,13 @@ int main(int argc, char *argv[]){
    if(err != PRS_OK){
      fprintf(stderr,"\n\n----------------------------------------------------------------------\n\n");
       switch(err){
-         case LEX_ERR: fprintf(stderr,"Lexikalni chyba, radek: %d\n", countOfRows);break;
-         case SYN_ERR: fprintf(stderr,"Syntakticka chyba, radek: %d\n", countOfRows);break;
-         case SEM_ERR: fprintf(stderr,"Semanticka chyba, radek: %d\n", countOfRows);break;
-         case RUN_ERR: fprintf(stderr,"Interpretacni chyba,  radek: %d\n", countOfRows);break;
-         case INTR_ERR:fprintf(stderr,"Interni chyba, radek: %d\n", countOfRows);break;
+         case LEX_ERR: fprintf(stderr,"Lexikalni chyba, radek: %d", countOfRows);break;
+         case SYN_ERR: fprintf(stderr,"Syntakticka chyba, radek: %d", countOfRows);break;
+         case SEM_ERR: fprintf(stderr,"Semanticka chyba, radek: %d", countOfRows);break;
+         case RUN_ERR: fprintf(stderr,"Interpretacni chyba,  radek: %d", countOfRows);break;
+         case INTR_ERR:fprintf(stderr,"Interni chyba, radek: %d", countOfRows);break;
       }
-      fprintf(stderr,"\n----------------------------------------------------------------------\n");
+      fprintf(stderr,"\n\n----------------------------------------------------------------------\n");
    }
 
    // ---- DEBUG ----
