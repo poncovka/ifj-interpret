@@ -215,6 +215,97 @@ string strCreateConstString (char *str) {
   return s;
 }
 
+/*
+ * Funkce naète n znakù a vrátí je ve
+ * vytvoøeném øetìzci.
+ * @author  Vendula Poncová
+ * @param   vstupní soubor
+ * @param   poèet naètených znakù
+ * @return  nový string
+ */
+string strReadNChar(FILE *f, int n) {
+
+  int err = STR_SUCCESS;
+  if (n <= 0) {
+    n = 0;  
+    err = STR_ERROR;
+  }
+
+  // inicializujeme a alokujeme string
+  string s = {NULL, 0, 0};
+  err = strInitLen(&s, n);
+
+  // naèteme a zkopírujeme znaky:
+  if (n > 0 && err == STR_SUCCESS){
+    int i, c;
+    for (i = 0; (i < n) && ((c = fgetc(f)) != EOF); i++) {
+      s.str[i] = (char)c;
+    }
+    s.str[i] = '\0';
+    s.length = i;
+  }
+
+  return s;
+}
+
+/*
+ * Funkce naèítá znaky do konce øádku
+ *  a vrátí je ve vytvoøeném øetìzci.
+ * @author  Vendula Poncová
+ * @param   vstupní soubor
+ * @return  nový string
+ */
+string strReadLine(FILE *f) {
+  int err = STR_SUCCESS;
+  
+  // inicializujeme a alokujeme string
+  string s = {NULL, 0, 0};
+  err = strInit(&s);
+
+  // naèteme a zkopírujeme znaky:
+  if (err == STR_SUCCESS){
+    int c;
+    while(((c = fgetc(f)) != EOF) && (c !='\n')){
+      err = strAddChar(&s, c);
+    }
+    // pokud do¹lo k chybì, uvolníme data
+    if (err == STR_ERROR) {
+      strFree(&s);
+    }
+  }
+
+  return s;
+}
+
+/*
+ * Funkce naèítá znaky do konce souboru (EOF)
+ *  a vrátí je ve vytvoøeném øetìzci.
+ * @author  Vendula Poncová
+ * @param   vstupní soubor
+ * @return  nový string
+ */
+string strReadAll(FILE *f) {
+  int err = STR_SUCCESS;
+  
+  // inicializujeme a alokujeme string
+  string s = {NULL, 0, 0};
+  err = strInit(&s);
+
+  // naèteme a zkopírujeme znaky:
+  if (err == STR_SUCCESS){
+    int c;
+    while(((c = fgetc(f)) != EOF)){
+      err = strAddChar(&s, c);
+    }
+    // pokud do¹lo k chybì, uvolníme data
+    if (err == STR_ERROR) {
+      strFree(&s);
+    }
+  }
+
+  return s;
+}
+
 /* BUDE SMAZÁNO
 
 int strCopyString(string *s1, string *s2) {
