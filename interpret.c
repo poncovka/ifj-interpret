@@ -126,7 +126,9 @@ int executor(TFunction *fce) {
 		/*rozpozna typ instrukce a vykona ji*/
 		switch (instr->type) {
 			case I_LAB: break;
-			case I_RETURN: break;
+			case I_RETURN: 
+				if (listLast(&fce->instructions) != LIST_EOK) return ERR_INTERNAL;
+			break;
 
 		/*instrukce pro praci se zasobnikem*/
 			/*===========================================I_POP==========================================*/
