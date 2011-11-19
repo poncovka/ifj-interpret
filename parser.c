@@ -462,11 +462,11 @@ int prsCommand(){
          NEXT_TOKEN
          if((err == parseExpression(table, &tmpV)) != EOK) return err;
 
-         TInstr *pop = genInstr(I_POP, tmpV, NULL, NULL);
+         TInstr *push = genInstr(I_PUSH, tmpV, NULL, NULL);
          TInstr *ret = genInstr(I_RETURN, NULL, NULL, NULL);
-         if(pop == NULL || ret == NULL)   return INTR_ERR;
+         if(push == NULL || ret == NULL)   return INTR_ERR;
 
-         if(listInsertLast(instr, pop) != EOK) return INTR_ERR;
+         if(listInsertLast(instr, push) != EOK) return INTR_ERR;
          if(listInsertLast(instr, ret) != EOK) return INTR_ERR;
          return PRS_OK;
       }break;

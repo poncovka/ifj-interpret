@@ -1,8 +1,25 @@
-function xxx()
-  write("aaa");
+-- Program 1: Vypocet faktorialu (iterativne)
+function fact(a)
+  local vysl;
+  
+  if a < 0 then 
+		write("Faktorial nelze spocitat");
+	else 
+		vysl = 1;
+		while a > 0 then 
+			vysl = vysl * a;
+			a = a - 1;
+		end;
+		return vysl;
+	end;
 end
 
-function main()
-  local a;
-  a = xxx(); 
-end;  
+
+function main() --Hlavni telo programu
+	local a = 5;
+	local vysl;
+
+	write("a = ", a, "\n");
+  vysl = fact(a);
+  write("Vysledek je: ", vysl, "\n");
+end;
