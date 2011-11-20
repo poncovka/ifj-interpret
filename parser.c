@@ -152,8 +152,13 @@ int prsDefFunc(){
 
          return prsProgram();
       }break;
+      case KW_SORT:
+      case KW_FIND:
+      case KW_SUBSTR:
+      case KW_TYPE:
+         return SEM_ERR;break;
    }
-   return SEM_ERR;
+   return SYN_ERR;
 }
 
 int prsParams(){
@@ -252,6 +257,8 @@ int prsDefVar(){
    if(token != KW_LOCAL) return SYN_ERR;
 
    NEXT_TOKEN
+   if(token == KW_TYPE || token == KW_SUBSTR || token == KW_FIND || token == KW_SORT || token == KW_MAIN)
+      return SEM_ERR;
    if(token != L_ID) return SYN_ERR;
    // prohledam jestli se nejaka promena nejmenuje stejne jako nejaka funkce
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;

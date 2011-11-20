@@ -1,6 +1,10 @@
+function xx()
+  local a;
+  local a;
+end;
 
 function main()--Hlavni telo programu
-	local a = 100;
-  a = type(a);
-  write(a);
+	local a;
+	a = read("*a");
+	write(a, "\n");
 end;

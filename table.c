@@ -120,7 +120,7 @@ int functionInsertVar(TFunction *F, string s){
       free(v);
       free(vd);
       free(newName);
-      return INS_MALLOC;
+      return err ;
    }
    return INS_OK;
 }
