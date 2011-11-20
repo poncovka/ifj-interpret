@@ -23,7 +23,7 @@
       14. <stat_list> -> eps
       15. <stat_list> -> <commad> ; <stat_list>
       16. <command> -> if expression then <stat_list> else <stat_list> end
-      17. <command> -> while expression then <stat_list> end
+      17. <command> -> while expression do <stat_list> end
       18. <command> -> return expression
       19. <command> -> write ( expression <expression_n> )
       20. <expression_n> -> eps
@@ -405,7 +405,7 @@ int prsCommand(){
          NEXT_TOKEN
          return PRS_OK;
       }break;
-      // 17. <command> -> while expression then <stat_list> end
+      // 17. <command> -> while expression do <stat_list> end
       case KW_WHILE:{
          TInstr *labWhile = genInstr(I_LAB, NULL, NULL, NULL);
          TInstr *labEnd   = genInstr(I_LAB, NULL, NULL, NULL);
@@ -433,8 +433,8 @@ int prsCommand(){
          if(jmpz == NULL) return INTR_ERR;
          if(listInsertLast(instr, jmpz) != LIST_EOK) return INTR_ERR;
 
-         // ocekavam then
-         if(token != KW_THEN) return SYN_ERR;
+         // ocekavam do
+         if(token != KW_DO) return SYN_ERR;
          // naparsuju vnitrek cyklu
          NEXT_TOKEN
          int err = prsStatList();

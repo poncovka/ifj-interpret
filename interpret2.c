@@ -51,16 +51,16 @@ void printTVarData(TVarData *data) {
 //=================================================================================================>
 //----------------------------TVarData stackPopVarData(TStack *stack);----------------------------->
 //=================================================================================================>
-/* @description pokud neni zasobnik prazdny vrati data, jinak vrati NULL
+/* @description pokud neni zasobnik prazdny vybere data, jinak NIL
  * @param zasobnik
  */
-TVarData *stackPopVarData(TStack *stack) {
-  // zasobnik neni prazdny, vrat ukazatel na data
+TVarData stackPopVarData(TStack *stack) {
+  TVarData data;
   if (!stackEmpty(stack)) {
-    return ((TVarData *) stackTopPop(stack));
+    data = *((TVarData *) stackTopPop(stack));
   }
-  // zasobnik je prazdny, vrat NULL
-  else return NULL;
+  else data.type = NIL;
+  return data;
 }
 
 //=================================================================================================>
@@ -162,17 +162,13 @@ TVarData *giveMeData(void *data, TFunction *fce) {
  * @return chybovy kod
  */
 int executor(TFunction *fce) {
-
-  TInstr   *instr;
-
-  // pomocne promenne
 	int result;
+  TInstr *instr;
+  TVarData *data1;
+  TVarData *data2;
   TVarData *dest;
-  TVarData *data1, *data2;
-  TVarData *param, *param2, *param3;  
-
   TVarData newData;
-  TVarData nilData = {.type = NIL};
+  TVarData param, param2, param3;
 
   /*nastavi ukazatel na prvni instrukci*/
   fce->cnt++;
@@ -204,26 +200,22 @@ int executor(TFunction *fce) {
     /*instrukce pro praci se zasobnikem*/
       /*===========================================I_POP==========================================*/
       case I_POP: {
-        data1 = stackPopVarData(&stack);
-
-        if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
+        TVarData *topTmp = stackTop(&stack);
+        newData = stackPopVarData(&stack);
+        if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
           return ERR_INTERNAL;
-
-        if (data1 != NULL) {
-        freeVarData(data1); free(data1);
-        }
+        freeVarData(topTmp);
+        free(topTmp);
       } break;
 
       /*==========================================I_PUSH==========================================*/
       case I_PUSH: {
-        data1 = giveMeData(instr->dest,fce);
-
         TVarData *copyTmp = malloc(sizeof(TVarData));
-        if (copyTmp == NULL) 
-          return ERR_INTERNAL;
+        if(copyTmp == NULL)
+         return ERR_INTERNAL;
         copyTmp->type = NIL;
-
-        if (copyData(copyTmp, data1) != EXIT_SUCCESS)
+        data1 = giveMeData(instr->dest,fce);
+        if(copyData(copyTmp, data1) != EXIT_SUCCESS)
          return ERR_INTERNAL;
 
         if (stackPush(&stack,copyTmp) != STACK_EOK)
@@ -510,101 +502,89 @@ int executor(TFunction *fce) {
       /*instrukce pro vestavene funkce*/
       /*========================================I_TYPE============================================*/
       case I_TYPE: {
-        // ziska parametry funkce
         dest  = giveMeData(instr->dest,fce);
+        TVarData *prmTmp = stackTop(&stack);
         param = stackPopVarData(&stack);
-        if (param == NULL) param = &nilData;
-
-        // zavola funkci
-        if (type(dest, param) == ERR)
+        if (type(dest, &param) == ERR)
           return ERR_INTERNAL;
 
         // kdyby predal vic parametru tak vyprazdnim zasobnik
         if(stackDeleteDataDelete(&stack) != STACK_EOK)
-            return ERR_INTERNAL;
+          return ERR_INTERNAL;
 
         // musim uvolnit parametr protze byl zkopirovany na zasobnik
-        if (param != &nilData) {
-          freeVarData(param); free(param);
-        }
+        freeVarData(prmTmp);
+        free(prmTmp);
       } break;
 
       /*========================================I_SUBSTR==========================================*/
       case I_SUBSTR: {
-        // ziskam parametry funkce
-        dest = giveMeData(instr->dest,fce);
-        param   = stackPopVarData(&stack);
-        if (param == NULL) param = &nilData;
-        param2  = stackPopVarData(&stack);
-        if (param2 == NULL) param2 = &nilData;
-        param3  = stackPopVarData(&stack);
-        if (param3 == NULL) param3 = &nilData;
+        TVarData *prmTmp;
+        TVarData *prm2Tmp;
+        TVarData *prm3Tmp;
 
-        // zavolam funkci
-        if (substr(dest, param, param2, param3 ) == ERR)
+        dest = giveMeData(instr->dest,fce);
+        prmTmp  = stackTop(&stack);
+        param   = stackPopVarData(&stack);
+        prm2Tmp = stackTop(&stack);
+        param2  = stackPopVarData(&stack);
+        prm3Tmp = stackTop(&stack);
+        param3  = stackPopVarData(&stack);
+        if (substr(dest, &param, &param2, &param3 ) == ERR)
           return ERR_INTERNAL;
 
         // kdyby predal vic parametru tak vyprazdnim zasobnik
         if(stackDeleteDataDelete(&stack) != STACK_EOK)
-            return ERR_INTERNAL;
+          return ERR_INTERNAL;
+        freeVarData(prm3Tmp);
+        freeVarData(prm2Tmp);
+        freeVarData(prmTmp);
 
-        // uvolnim pamet
-        if (param != &nilData) {
-          freeVarData(param); free(param);
-        }
-        if (param2 != &nilData) {
-          freeVarData(param2); free(param2);
-        }
-        if (param3 != &nilData) {
-          freeVarData(param3); free(param3);
-        }
+        free(prm3Tmp);
+        free(prm2Tmp);
+        free(prmTmp);
       } break;
 
       /*=========================================I_FIND===========================================*/
       case I_FIND: {
-        // ziskam parametry funkce
-        dest = giveMeData(instr->dest,fce);
-        param   = stackPopVarData(&stack);
-        if (param == NULL) param = &nilData;
-        param2  = stackPopVarData(&stack);
-        if (param2 == NULL) param2 = &nilData;
+        TVarData *prmTmp;
+        TVarData *prm2Tmp;
 
-        // zavolam funkci
-        if (find(dest, param, param2) == ERR)
+        dest = giveMeData(instr->dest,fce);
+        prmTmp  = stackTop(&stack);
+        param   = stackPopVarData(&stack);
+        prm2Tmp  = stackTop(&stack);
+        param2   = stackPopVarData(&stack);
+
+        if (find(dest, &param, &param2) == ERR)
           return ERR_INTERNAL;
 
         // kdyby predal vic parametru tak vyprazdnim zasobnik
         if(stackDeleteDataDelete(&stack) != STACK_EOK)
-            return ERR_INTERNAL;
+          return ERR_INTERNAL;
 
-        // uvolni pamet
-        if (param != &nilData) {
-          freeVarData(param); free(param);
-        }
-        if (param2 != &nilData) {
-          freeVarData(param2); free(param2);
-        }
+        freeVarData(prm2Tmp);
+        freeVarData(prmTmp);
+        free(prm2Tmp);
+        free(prmTmp);
       } break;
 
       /*=========================================I_SORT===========================================*/
       case I_SORT: {
-        // ziskam parametry funkce
-        dest = giveMeData(instr->dest,fce);
-        param   = stackPopVarData(&stack);
-        if (param == NULL) param = &nilData;
+        TVarData *prmTmp;
 
-        // zavolam funkci
-        if (sort(dest, param) == ERR)
+        dest = giveMeData(instr->dest,fce);
+        prmTmp  = stackTop(&stack);
+        param = stackPopVarData(&stack);
+        if (sort(dest, &param) == ERR)
           return ERR_INTERNAL;
 
         // kdyby predal vic parametru tak vyprazdnim zasobnik
         if(stackDeleteDataDelete(&stack) != STACK_EOK)
             return ERR_INTERNAL;
 
-        // uvolnim pamet
-        if (param != &nilData) {
-          freeVarData(param); free(param);
-        }
+        freeVarData(prmTmp);
+        free(prmTmp);
       } break;
 
     /*v pripade jineho typu chyba*/

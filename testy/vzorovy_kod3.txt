@@ -6,7 +6,7 @@ function main() --Hlavni telo programu
 	local str3;
 	local p;
 
-	str1 = substr(str1, 1, -25);
+	str1 = substr(str1, 1, 20);
 	str2 = str1 .. ", ktery je ulozeny jako ";
 	str3 = type(str2);
 	str2 = str2 .. str3;
@@ -20,7 +20,7 @@ function main() --Hlavni telo programu
 	while (str2 ~= "abcdefgh") do 
 		write("Spatne zadana posloupnost, zkuste znovu\n");
 		str1 = read("*1");
-		str2 = sirt(str1);
+		str2 = sort(str1);
 	end;
 	return 0;
 end;

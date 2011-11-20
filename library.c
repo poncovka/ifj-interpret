@@ -81,6 +81,7 @@ int substr(TVarData *dest, TVarData *src, TVarData *dataFrom, TVarData *dataTo) 
       if (destLen > 0) {
         strncpy(dest->value.s.str, &s[from-1], destLen);
         dest->value.s.str[destLen] = '\0';
+        dest->value.s.length = destLen;
       }
     }
     else return ERR;

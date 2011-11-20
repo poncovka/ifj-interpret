@@ -225,18 +225,11 @@ string strCreateConstString (char *str) {
  */
 string strReadNChar(FILE *f, int n) {
 
-  int err = STR_SUCCESS;
-  if (n <= 0) {
-    n = 0;  
-    err = STR_ERROR;
-  }
-
   // inicializujeme a alokujeme string
   string s = {NULL, 0, 0};
-  err = strInitLen(&s, n);
 
   // naèteme a zkopírujeme znaky:
-  if (n > 0 && err == STR_SUCCESS){
+  if (n > 0 && strInitLen(&s, n) == STR_SUCCESS){
     int i, c;
     for (i = 0; (i < n) && ((c = fgetc(f)) != EOF); i++) {
       s.str[i] = (char)c;
