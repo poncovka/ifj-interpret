@@ -476,7 +476,7 @@ int executor(TFunction *fce) {
 					}
 
           else if (strncmp(data1->value.s.str,"*a",2) == 0) {
-						dest->value.s = strReadLine(stdin);
+						dest->value.s = strReadAll(stdin);
             if (dest->value.s.str == NULL)
 						  return ERR_INTERNAL;
 						dest->type = STRING;
