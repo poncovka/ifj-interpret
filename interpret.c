@@ -10,9 +10,13 @@
 /*globalni promenna zasobnik*/
 TStack stack;
 
+/*deklarace funkci*/
 int executor(TFunction *fce);
 int stackDeleteDataDelete(TStack *s);
 
+//=================================================================================================>
+//------------------------------TVarData *interpret(TFunction *fce);------------------------------->
+//=================================================================================================>
 /* @description vykona interpretaci funkce
  * @param aktualni funkce
  * @return chybovy kod
@@ -25,7 +29,6 @@ int interpret(TFunction *fce) {
   return result;
 }
 
-
 //=================================================================================================>
 //-----------------------------void printTVarData(TVarData *data);--------------------------------->
 //=================================================================================================>
@@ -33,16 +36,16 @@ int interpret(TFunction *fce) {
  * @param data
  */
 void printTVarData(TVarData *data) {
-  if(data == NULL){
-   printf("NULL\n");
-   return;
+  if (data == NULL) {
+    printf("NULL\n");
+    return;
   }
   switch (data->type) {
-     case NUMBER: printf("NUMBER: %g\n",data->value.n); break;
-     case STRING: printf("STRING: %s\n",data->value.s.str); break;
-     case BOOL: printf("BOOL: %d\n",data->value.b); break;
-     case NIL: printf("NIL\n"); break;
- }
+    case NUMBER: printf("NUMBER: %g\n",data->value.n); break;
+    case STRING: printf("STRING: %s\n",data->value.s.str); break;
+    case BOOL: printf("BOOL: %d\n",data->value.b); break;
+    case NIL: printf("NIL\n"); break;
+  }
 }
 
 //=================================================================================================>
@@ -94,8 +97,12 @@ int cmpData(TVarData *data1, TVarData *data2, EInstrType instr) {
   return FALSE;
 }
 
+//=================================================================================================>
+//-------------------------TVarData *copyData(TVarData *dest, TVarData *src);---------------------->
+//=================================================================================================>
+
 int copyData(TVarData *dest, TVarData *src){
-     /*pokud prepisovana hodnota je retezec, uvolni*/
+  /*pokud prepisovana hodnota je retezec, uvolni*/
   freeVarData(dest);
 
   /*pokud je ukazatel nulovy*/
@@ -131,7 +138,6 @@ int copyData(TVarData *dest, TVarData *src){
 int saveData(TVarData *data, void *dest, TFunction *fce) {
   int index = (((TVar *)dest)->varType == VT_VAR) ? fce->cnt : 0;
   TVarData *tempVar = &((TVar *)dest)->varData[index];
-
   return copyData(tempVar, data);
 }
 
@@ -156,11 +162,12 @@ TVarData *giveMeData(void *data, TFunction *fce) {
  * @return chybovy kod
  */
 int executor(TFunction *fce) {
+	int result;
   TInstr *instr;
   TVarData *data1;
   TVarData *data2;
   TVarData *dest;
-        TVarData newData;
+  TVarData newData;
   TVarData param, param2, param3;
 
   /*nastavi ukazatel na prvni instrukci*/
@@ -192,17 +199,17 @@ int executor(TFunction *fce) {
 
     /*instrukce pro praci se zasobnikem*/
       /*===========================================I_POP==========================================*/
-      case I_POP:{
+      case I_POP: {
         TVarData *topTmp = stackTop(&stack);
         newData = stackPopVarData(&stack);
         if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
           return ERR_INTERNAL;
         freeVarData(topTmp);
         free(topTmp);
-      }break;
+      } break;
 
       /*==========================================I_PUSH==========================================*/
-      case I_PUSH:{
+      case I_PUSH: {
         TVarData *copyTmp = malloc(sizeof(TVarData));
         if(copyTmp == NULL)
          return ERR_INTERNAL;
@@ -213,13 +220,13 @@ int executor(TFunction *fce) {
 
         if (stackPush(&stack,copyTmp) != STACK_EOK)
           return ERR_INTERNAL;
-      }break;
+      } break;
 
       /*=========================================I_STACK_E========================================*/
-      case I_STACK_E:{
+      case I_STACK_E: {
          if(stackDeleteDataDelete(&stack) != STACK_EOK)
             return ERR_INTERNAL;
-      }break;
+      } break;
 
     /*instrukce pro inicializace, presuny*/
       /*===========================================I_MOV==========================================*/
@@ -441,23 +448,40 @@ int executor(TFunction *fce) {
       break;
 
       /*========================================I_READ============================================*/
-      case I_READ:
+      case I_READ: 
         data1 = giveMeData(instr->src1,fce);
-        switch (data1->type)  {
-          case STRING:
-            if (strcmp(data1->value.s.str,"*n") == 0) return INTERPRET_OK;
-            else if (strcmp(data1->value.s.str,"*l") == 0) return INTERPRET_OK;
-            else if (strcmp(data1->value.s.str,"*a") == 0) return INTERPRET_OK;
-            else return ERR_SEM;
-          break;
-          case NUMBER: printf("%g",data1->value.n); break;
-          case BOOL: return ERR_SEM; break;
-          case NIL: return ERR_SEM; break;
-        }
+        dest = giveMeData(instr->dest,fce);
+				freeVarData(dest);
+
+        if (data1->type == STRING) { 
+          if (strncmp(data1->value.s.str,"*n",2) == 0) {
+            dest->type = NUMBER;
+			      result = scanf("%lf",&dest->value.n); //dodelat osetreni
+				  }
+            
+          else if (strncmp(data1->value.s.str,"*l",2) == 0) {
+						dest->type = STRING;
+            dest->value.s = strReadLine(stdin);
+					}
+
+          else if (strncmp(data1->value.s.str,"*a",2) == 0) {
+						dest->type = STRING;
+						dest->value.s = strReadLine(stdin);
+					}
+
+			    else return ERR_SEM; 
+				}
+
+        else if (data1->type == NUMBER) {
+					dest->type = STRING;
+			    dest->value.s = strReadNChar(stdin,data1->value.n);
+				} 
+
+				else return ERR_SEM; 
       break;
 
       /*========================================I_CALL============================================*/
-      case I_CALL:{
+      case I_CALL: {
         TLItem *tmp  = fce->instructions.Act;
         switch (executor((TFunction *)instr->dest)) {
           case ERR_INTERPRET: return ERR_INTERPRET; break;
@@ -466,11 +490,11 @@ int executor(TFunction *fce) {
           case INTERPRET_OK: break;
         }
         fce->instructions.Act = tmp;
-      }break;
+      } break;
 
       /*instrukce pro vestavene funkce*/
       /*========================================I_TYPE============================================*/
-      case I_TYPE:{
+      case I_TYPE: {
         dest  = giveMeData(instr->dest,fce);
         TVarData *prmTmp = stackTop(&stack);
         param = stackPopVarData(&stack);
@@ -479,34 +503,32 @@ int executor(TFunction *fce) {
 
         // kdyby predal vic parametru tak vyprazdnim zasobnik
         if(stackDeleteDataDelete(&stack) != STACK_EOK)
-            return ERR_INTERNAL;
+          return ERR_INTERNAL;
+
         // musim uvolnit parametr protze byl zkopirovany na zasobnik
         freeVarData(prmTmp);
         free(prmTmp);
-      }break;
+      } break;
 
       /*========================================I_SUBSTR==========================================*/
-      case I_SUBSTR:{
+      case I_SUBSTR: {
         TVarData *prmTmp;
         TVarData *prm2Tmp;
         TVarData *prm3Tmp;
 
         dest = giveMeData(instr->dest,fce);
-
         prmTmp  = stackTop(&stack);
         param   = stackPopVarData(&stack);
-
         prm2Tmp = stackTop(&stack);
         param2  = stackPopVarData(&stack);
-
         prm3Tmp = stackTop(&stack);
         param3  = stackPopVarData(&stack);
-
         if (substr(dest, &param, &param2, &param3 ) == ERR)
           return ERR_INTERNAL;
+
         // kdyby predal vic parametru tak vyprazdnim zasobnik
         if(stackDeleteDataDelete(&stack) != STACK_EOK)
-            return ERR_INTERNAL;
+          return ERR_INTERNAL;
         freeVarData(prm3Tmp);
         freeVarData(prm2Tmp);
         freeVarData(prmTmp);
@@ -514,80 +536,82 @@ int executor(TFunction *fce) {
         free(prm3Tmp);
         free(prm2Tmp);
         free(prmTmp);
-      }break;
+      } break;
 
       /*=========================================I_FIND===========================================*/
-      case I_FIND:{
+      case I_FIND: {
         TVarData *prmTmp;
         TVarData *prm2Tmp;
 
         dest = giveMeData(instr->dest,fce);
-
         prmTmp  = stackTop(&stack);
         param   = stackPopVarData(&stack);
-
         prm2Tmp  = stackTop(&stack);
         param2   = stackPopVarData(&stack);
 
         if (find(dest, &param, &param2) == ERR)
           return ERR_INTERNAL;
+
         // kdyby predal vic parametru tak vyprazdnim zasobnik
         if(stackDeleteDataDelete(&stack) != STACK_EOK)
-            return ERR_INTERNAL;
+          return ERR_INTERNAL;
+
         freeVarData(prm2Tmp);
         freeVarData(prmTmp);
-
         free(prm2Tmp);
         free(prmTmp);
-      }break;
+      } break;
 
       /*=========================================I_SORT===========================================*/
-      case I_SORT:{
+      case I_SORT: {
         TVarData *prmTmp;
 
         dest = giveMeData(instr->dest,fce);
-
         prmTmp  = stackTop(&stack);
         param = stackPopVarData(&stack);
         if (sort(dest, &param) == ERR)
           return ERR_INTERNAL;
+
         // kdyby predal vic parametru tak vyprazdnim zasobnik
         if(stackDeleteDataDelete(&stack) != STACK_EOK)
             return ERR_INTERNAL;
+
         freeVarData(prmTmp);
         free(prmTmp);
-      }break;
+      } break;
 
     /*v pripade jineho typu chyba*/
       default: return ERR_INTERNAL; break;
-
     } //konec switch
 
     /*posune aktivitu na dalsi instrukci*/
     if ((listSucc(&fce->instructions)) == LIST_ERR)
       return ERR_INTERNAL;
-
   } //konec while
 
   fce->cnt--;
   return INTERPRET_OK;
 } //konec executor
 
-/*
- * uvolni zasobnik + uvolni data
+
+//=================================================================================================>
+//--------------------------------int stackDeleteDataDelete(TStack *s);---------------------------->
+//=================================================================================================>
+/* uvolni zasobnik + uvolni data
  * @author Marek Salat - xsalat00
- *
+ * @param zasobnik
+ * @return chybovy kod
  */
 int stackDeleteDataDelete(TStack *s){
-   if (s != NULL) {
-      while (!stackEmpty(s) ){
-         TVarData *tmp = (TVarData *)stackTop(s);
-         freeVarData(tmp);
-         free(tmp);
-         stackPop(s);
-      }
-   }
-  else return STACK_ERR; // chybný ukazatel
-
+  if (s != NULL) {
+    while (!stackEmpty(s) ){
+      TVarData *tmp = (TVarData *)stackTop(s);
+      freeVarData(tmp);
+      free(tmp);
+      stackPop(s);
+    }
+  }
+  /*chybny ukazatel*/
+  else return STACK_ERR;
   return STACK_EOK;
 }
