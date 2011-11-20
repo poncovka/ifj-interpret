@@ -30,18 +30,24 @@ int main(int argc, char *argv[]){
   setSourceFile(f);
 
   int err = parser(&table);
-  if (err == PRS_OK)
-    err = interpret(table.lastAddedFunc);
+  if (err == PRS_OK){
+   err = interpret(table.lastAddedFunc);
+   countOfRows = -1;
+  }
 
   if(err != PRS_OK){
     fprintf(stderr,"\n\n----------------------------------------------------------------------\n\n");
     switch(err){
-      case LEX_ERR: fprintf(stderr,"Lexikalni chyba, radek: %d", countOfRows);break;
-      case SYN_ERR: fprintf(stderr,"Syntakticka chyba, radek: %d", countOfRows);break;
-      case SEM_ERR: fprintf(stderr,"Semanticka chyba, radek: %d", countOfRows);break;
-      case RUN_ERR: fprintf(stderr,"Interpretacni chyba,  radek: %d", countOfRows);break;
-      case INTR_ERR:fprintf(stderr,"Interni chyba, radek: %d", countOfRows);break;
+      case LEX_ERR: fprintf(stderr,"Lexikalni chyba: ");break;
+      case SYN_ERR: fprintf(stderr,"Syntakticka chyba: ");break;
+      case SEM_ERR: fprintf(stderr,"Semanticka chyba: ");break;
+      case RUN_ERR: fprintf(stderr,"Interpretacni chyba,: ");break;
+      case INTR_ERR:fprintf(stderr,"Interni chyba: ");break;
     }
+    if(countOfRows == -1)
+      printf("Pri interpretaci");
+   else
+      printf("Blizko radku %d", countOfRows);
     fprintf(stderr,"\n\n----------------------------------------------------------------------\n");
   }
 
