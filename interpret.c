@@ -78,6 +78,31 @@ int cmpData(TVarData *data1, TVarData *data2, EInstrType instr) {
   return FALSE;
 }
 
+int copyData(TVarData *dest, TVarData *src){
+     /*pokud prepisovana hodnota je retezec, uvolni*/
+  freeVarData(dest);
+
+  /*pokud je ukazatel nulovy*/
+  if (src == NULL) {
+    dest->type = NIL;
+    return EXIT_SUCCESS;
+  }
+
+  /*nastavi typ a src promenne*/
+  dest->type = src->type;
+  switch (src->type) {
+    case BOOL: dest->value.b = src->value.b; break;
+    case NUMBER: dest->value.n = src->value.n; break;
+    case STRING:
+      strInit(&dest->value.s);
+      if(strCopyString(&dest->value.s, &src->value.s) != STR_SUCCESS)
+        return EXIT_FAILURE;
+    break;
+    case NIL: break;
+  }
+  return EXIT_SUCCESS;
+
+}
 //=================================================================================================>
 //------------------void saveData(TVarData *data, TInstr *instr, TFunction *fce);------------------>
 //=================================================================================================>
@@ -91,28 +116,7 @@ int saveData(TVarData *data, void *dest, TFunction *fce) {
   int index = (((TVar *)dest)->varType == VT_VAR) ? fce->cnt : 0;
   TVarData *tempVar = &((TVar *)dest)->varData[index];
 
-  /*pokud prepisovana hodnota je retezec, uvolni*/
-  freeVarData(tempVar);
-
-  /*pokud je ukazatel nulovy*/
-  if (data == NULL) {
-    tempVar->type = NIL;
-    return EXIT_SUCCESS;
-  }
-
-  /*nastavi typ a data promenne*/
-  tempVar->type = data->type;
-  switch (data->type) {
-    case BOOL: tempVar->value.b = data->value.b; break;
-    case NUMBER: tempVar->value.n = data->value.n; break;
-    case STRING:
-      tempVar->value.s = strCreateString(&data->value.s);
-      if (strIsNull(&tempVar->value.s))
-        return EXIT_FAILURE;
-    break;
-    case NIL: break;
-  }
-  return EXIT_SUCCESS;
+  return copyData(tempVar, data);
 }
 
 //=================================================================================================>
@@ -172,24 +176,35 @@ int executor(TFunction *fce) {
 
     /*instrukce pro praci se zasobnikem*/
       /*===========================================I_POP==========================================*/
-      case I_POP:
+      case I_POP:{
+        TVarData *topTmp = stackTop(&stack);
         newData = stackPopVarData(&stack);
         if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
           return ERR_INTERNAL;
-      break;
+        free(topTmp);
+      }break;
 
       /*==========================================I_PUSH==========================================*/
-      case I_PUSH:
+      case I_PUSH:{
+        TVarData *copyTmp = malloc(sizeof(TVarData));
+        if(copyTmp == NULL)
+         return ERR_INTERNAL;
+        copyTmp->type = NIL;
         data1 = giveMeData(instr->dest,fce);
-        if (stackPush(&stack,data1) != STACK_EOK)
+        if(copyData(copyTmp, data1) != EXIT_SUCCESS)
+         return ERR_INTERNAL;
+
+        if (stackPush(&stack,copyTmp) != STACK_EOK)
           return ERR_INTERNAL;
-      break;
+      }break;
 
       /*=========================================I_STACK_E========================================*/
-      case I_STACK_E:
-        if (stackDelete(&stack) != STACK_EOK)
-          return ERR_INTERNAL;
-      break;
+      case I_STACK_E:{
+         while (!stackEmpty(&stack) ){
+            free(stackTop(&stack));
+            stackPop(&stack);
+         }
+      }break;
 
     /*instrukce pro inicializace, presuny*/
       /*===========================================I_MOV==========================================*/
@@ -200,16 +215,17 @@ int executor(TFunction *fce) {
       break;
 
       /*===========================================I_SET==========================================*/
-      case I_SET:
+      case I_SET:{
         if (varRealloc(instr->dest,fce->cnt) != INS_OK)
           return ERR_INTERNAL;
-        ((TVar *)instr->dest)->varData[fce->cnt].type = NIL;
+        TVarData *tmp = giveMeData(instr->dest, fce);
+        tmp->type = NIL;
         if (instr->src1 != NULL) {
           data1 = giveMeData(instr->src1,fce);
         if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)
           return ERR_INTERNAL;
         }
-      break;
+      }break;
 
     /*instrukce pro aritmeticke operace*/
       /*===========================================I_ADD==========================================*/

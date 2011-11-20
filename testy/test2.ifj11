@@ -16,7 +16,7 @@ function factorial(n)
 end
 
 function main()--Hlavni telo programu
-	local a = 7;
+	local a = 100;
 	local vysl;
 
 	if a < 0 then

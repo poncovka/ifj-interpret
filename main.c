@@ -41,11 +41,11 @@ int main(int argc, char *argv[]){
       case LEX_ERR: fprintf(stderr,"Lexikalni chyba: ");break;
       case SYN_ERR: fprintf(stderr,"Syntakticka chyba: ");break;
       case SEM_ERR: fprintf(stderr,"Semanticka chyba: ");break;
-      case RUN_ERR: fprintf(stderr,"Interpretacni chyba,: ");break;
+      case RUN_ERR: fprintf(stderr,"Interpretacni chyba");break;
       case INTR_ERR:fprintf(stderr,"Interni chyba: ");break;
     }
     if(countOfRows == -1)
-      printf("Pri interpretaci");
+      printf("%s", err == RUN_ERR ? "" : "Pri interpretaci");
    else
       printf("Blizko radku %d", countOfRows);
     fprintf(stderr,"\n\n----------------------------------------------------------------------\n");

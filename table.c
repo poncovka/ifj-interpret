@@ -24,10 +24,12 @@ TInstr *genInstr(EInstrType t, void *d, void *s1, void *s2){
 //----------------------------------------------------------------------
 
 void freeVarData(TVarData *data) {
-  if (data->type == STRING) {
-    strFree(&data->value.s);
-  }
-  data->type = NIL;
+  if(data != NULL){
+     if (data->type == STRING) {
+       strFree(&data->value.s);
+     }
+     data->type = NIL;
+   }
 }
 
 //----------------------------------------------------------------------
@@ -35,11 +37,12 @@ void freeVarData(TVarData *data) {
 int varRealloc(TVar *v, int cnt){
    if((cnt = v->alloc - cnt) >= 1)
       return INS_OK;
+
    cnt *=-1;
    cnt = cnt / VAR_ALLOC_SIZE + 1;
 
    v->alloc += cnt*VAR_ALLOC_SIZE;
-   if( ( v->varData = realloc(v->varData, v->alloc) ) == NULL)
+   if( ( v->varData = realloc(v->varData, sizeof(TVarData)*v->alloc) ) == NULL)
       return INS_MALLOC;
    return INS_OK;
 }
