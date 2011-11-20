@@ -455,26 +455,33 @@ int executor(TFunction *fce) {
 
         if (data1->type == STRING) { 
           if (strncmp(data1->value.s.str,"*n",2) == 0) {
-            dest->type = NUMBER;
 			      result = scanf("%lf",&dest->value.n); //dodelat osetreni
+						if (result == EILSEQ) return ERR_SEM;
+            dest->type = NUMBER;
 				  }
             
           else if (strncmp(data1->value.s.str,"*l",2) == 0) {
-						dest->type = STRING;
             dest->value.s = strReadLine(stdin);
+            if (dest->value.s.str == NULL) 
+						  return ERR_INTERNAL;
+						dest->type = STRING;
 					}
 
           else if (strncmp(data1->value.s.str,"*a",2) == 0) {
-						dest->type = STRING;
 						dest->value.s = strReadLine(stdin);
+            if (dest->value.s.str == NULL)
+						  return ERR_INTERNAL;
+						dest->type = STRING;
 					}
 
 			    else return ERR_SEM; 
 				}
 
         else if (data1->type == NUMBER) {
-					dest->type = STRING;
 			    dest->value.s = strReadNChar(stdin,data1->value.n);
+					if (dest->value.s.str == NULL)
+						return ERR_INTERNAL;
+					dest->type = STRING;
 				} 
 
 				else return ERR_SEM; 
