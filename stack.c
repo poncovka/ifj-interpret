@@ -115,7 +115,7 @@ void *stackTopPop (TStack *s) {
  * @return  kód chyby
  */
 int stackDelete (TStack *s) {
-  
+
   if (s != NULL) {
     while (!stackEmpty(s)) {
       stackPop(s);

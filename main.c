@@ -52,11 +52,11 @@ int main(int argc, char *argv[]){
   }
 
   // ---- DEBUG ----
-  // /*
+  /*
     FILE *log = fopen("debug.log", "w");
     tablePrintOrder(table, log);
     fclose(log);
-  // */
+  */
   // -- END DEBUG --
 
   fclose(f);
