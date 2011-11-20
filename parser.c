@@ -375,8 +375,8 @@ int prsCommand(){
          // JMP_Z tmp labElse
          if( listInsertLast(instr, jmpz) != LIST_EOK)
             return INTR_ERR;
-
-         err = prsStat();
+         NEXT_TOKEN
+         err = prsStatList();
          if(err != PRS_OK) return err;
 
          // JMP labEndIf
@@ -389,7 +389,8 @@ int prsCommand(){
             return INTR_ERR;
          itmElse = instr->Last;
 
-         err = prsStat();
+         NEXT_TOKEN
+         err = prsStatList();
          if(err != PRS_OK) return err;
 
          if(token != KW_END) return SYN_ERR;
@@ -435,8 +436,10 @@ int prsCommand(){
          // ocekavam then
          if(token != KW_THEN) return SYN_ERR;
          // naparsuju vnitrek cyklu
-         int err = prsStat();
+         NEXT_TOKEN
+         int err = prsStatList();
          if(err != PRS_OK) return err;
+
          // mel by byt nacten end
          if(token != KW_END) return SYN_ERR;
 

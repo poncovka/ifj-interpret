@@ -13,8 +13,8 @@
 #include "parser.h"
 #include "interpret.h"
 
-int main(int argc, char *argv[]){	
-  FILE *f; 
+int main(int argc, char *argv[]){
+  FILE *f;
 
   if (argc == 1) {
     fprintf(stderr,"ERROR: neni zadan vstupni soubor\n");
@@ -25,9 +25,9 @@ int main(int argc, char *argv[]){
     return -INTR_ERR;
   }
 
-  TTable table;     
+  TTable table;
   tableInit(&table);
-  setSourceFile(f); 
+  setSourceFile(f);
 
   int err = parser(&table);
   if (err == PRS_OK)
@@ -46,9 +46,11 @@ int main(int argc, char *argv[]){
   }
 
   // ---- DEBUG ----
-  //  FILE *log = fopen("debug.log", "w");
-  //  tablePrintOrder(table, log);
-  //  fclose(log);
+  // /*
+    FILE *log = fopen("debug.log", "w");
+    tablePrintOrder(table, log);
+    fclose(log);
+  // */
   // -- END DEBUG --
 
   fclose(f);
