@@ -45,9 +45,9 @@ int main(int argc, char *argv[]){
       case INTR_ERR:fprintf(stderr,"Interni chyba: ");break;
     }
     if(countOfRows == -1)
-      printf("%s", err == RUN_ERR ? "" : "Pri interpretaci");
+      fprintf(stderr,"%s", err == RUN_ERR ? "" : "Pri interpretaci");
    else
-      printf("Blizko radku %d", countOfRows);
+      fprintf(stderr,"Blizko radku %d", countOfRows);
     fprintf(stderr,"\n\n----------------------------------------------------------------------\n");
   }
 

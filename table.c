@@ -102,6 +102,7 @@ int functionInsertVar(TFunction *F, string s){
       free(v);
       return INS_MALLOC;
    }
+   vd->type = NIL;
 
    char *newName = strCopyChar(&s);
    if(newName == NULL){
