@@ -1,5 +1,5 @@
 /*
- * @description   Prace s binarnim vyheldavacim stromem (AVL strom) 16.11.2011 uz neni AVL :(
+ * @description   Prace s binarnim vyheldavacim stromem 16.11.2011 uz neni AVL :(
  * @author        Marek Salat - xsalat00
  * @projekt       IFJ11
  * @date
@@ -112,6 +112,7 @@ int insert(TNode *T, char *key, void *data){
    TNode   *tmp  = T;
 
    while( *tmp != NULL){
+      (*tmp)->height++;
       int cmpResult = strcmp(key, (*tmp)->key);
 
       if( cmpResult < 0)

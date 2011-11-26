@@ -82,7 +82,7 @@ int tableInsertFunction (TTable *T, string s){
    if(err <= 0){  // neprobehl insert v poradku?
       free(f);
       free(newName);
-      return INS_MALLOC;
+      return err;
    }
 
    T->lastAddedFunc = f;

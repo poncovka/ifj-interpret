@@ -1,5 +1,5 @@
 /*
- * @description   Prace s binarnim vyheldavacim stromem (AVL strom) 16.11.2011 uz neni AVL :(
+ * @description   Prace s binarnim vyheldavacim stromem
  * @author        Marek Salat - xsalat00
  * @projekt       IFJ11
  * @date
@@ -15,8 +15,8 @@
 #define INS_OK          1  // vlozeno v poradku
 #define INS_NODE_EXIST  0  // prvek se zadanym klicem uz existuje
 #define INS_MALLOC     -5  // chyba pri alokaci
-#define INS_TREE_NULL  -6  // misto stromu NULL
-#define INS_KEY_NULL   -7  // misto klice NULL
+#define INS_TREE_NULL  -5  // misto stromu NULL
+#define INS_KEY_NULL   -5  // misto klice NULL
 
 typedef enum{
    DEFAULT,       // data budou void repektive zadna, nijak se nemazou
