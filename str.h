@@ -54,10 +54,4 @@ string strReadNChar(FILE *f, int n);
 string strReadLine (FILE *f);
 string strReadAll  (FILE *f);
 
-/* BUDE SMAZANO
-int strCmpConstStr(string *s1, char *s2);
-char *strGetStr(string *s);
-int strGetLength(string *s);
-*/
-
 #endif //STR_H_INCLUDED

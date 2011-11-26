@@ -149,8 +149,8 @@ int functionInsertConstatnt(TFunction *f, string attr, int token){
          }break;
       case L_STRING:{
             vd->type = STRING;
-            strInit( &(vd->value.s) );
-            if( strCopyString( &(vd->value.s), &attr ) == STR_ERROR)
+            vd->value.s = strCreateString(&attr);
+            if(strIsNull(&vd->value.s))
                err = INS_MALLOC;
          }break;
       case KW_TRUE:{

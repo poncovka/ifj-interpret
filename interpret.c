@@ -117,8 +117,8 @@ int copyData(TVarData *dest, TVarData *src){
     case BOOL: dest->value.b = src->value.b; break;
     case NUMBER: dest->value.n = src->value.n; break;
     case STRING:
-      strInit(&dest->value.s);
-      if(strCopyString(&dest->value.s, &src->value.s) != STR_SUCCESS)
+      dest->value.s = strCreateString(&src->value.s);
+      if (strIsNull(&dest->value.s))
         return EXIT_FAILURE;
     break;
     case NIL: break;
@@ -388,7 +388,7 @@ int executor(TFunction *fce) {
 
         if (data1->type == data2->type) {
           switch (data1->type) {
-            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) == 0) ? TRUE : FALSE; break;
+            case STRING: newData.value.b = (strCmpString(&data1->value.s,&data2->value.s) == 0) ? TRUE : FALSE; break;
             case NUMBER: newData.value.b = (data1->value.n == data2->value.n) ? TRUE : FALSE; break;
             case BOOL: newData.value.b = (data1->value.b == data2->value.b) ? TRUE : FALSE; break;
             case NIL: newData.value.b = TRUE; break;
@@ -408,7 +408,7 @@ int executor(TFunction *fce) {
 
         if (data1->type == data2->type) {
           switch (data1->type) {
-            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) != 0) ? TRUE : FALSE; break;
+            case STRING: newData.value.b = (strCmpString(&data1->value.s,&data2->value.s) != 0) ? TRUE : FALSE; break;
             case NUMBER: newData.value.b = (data1->value.n != data2->value.n) ? TRUE : FALSE; break;
             case BOOL: newData.value.b = (data1->value.b != data2->value.b) ? TRUE : FALSE; break;
             case NIL: newData.value.b = FALSE; break;
@@ -470,14 +470,14 @@ int executor(TFunction *fce) {
             
           else if (strncmp(data1->value.s.str,"*l",2) == 0) {
             dest->value.s = strReadLine(stdin);
-            if (dest->value.s.str == NULL) 
+            if (strIsNull(&dest->value.s)) 
 						  return ERR_INTERNAL;
 						dest->type = STRING;
 					}
 
           else if (strncmp(data1->value.s.str,"*a",2) == 0) {
 						dest->value.s = strReadAll(stdin);
-            if (dest->value.s.str == NULL)
+            if (strIsNull(&dest->value.s))
 						  return ERR_INTERNAL;
 						dest->type = STRING;
 					}
@@ -487,7 +487,7 @@ int executor(TFunction *fce) {
 
         else if (data1->type == NUMBER) {
 			    dest->value.s = strReadNChar(stdin,data1->value.n);
-					if (dest->value.s.str == NULL)
+					if (strIsNull(&dest->value.s))
 						return ERR_INTERNAL;
 					dest->type = STRING;
 				} 
