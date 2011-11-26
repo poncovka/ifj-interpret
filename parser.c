@@ -85,12 +85,14 @@ int prsDefFunc(){
    switch(token){
       case KW_MAIN:{
          // 2. <def_func> -> main ( ) <stat> end ; <EOF>
-         if( (err = tableInsertFunction(table, attr) ) == INS_NODE_EXIST)
-            return SEM_ERR;   // tato fce uz v tabulce je (NEMELA BY BYT!!!)
-         else if(err != INS_OK)
-            return INTR_ERR;  // nepodarilo se vlozit
+         if( (err = tableInsertFunction(table, attr) ) != INS_OK){
+            switch(err){
+               case INS_NODE_EXIST: return SEM_ERR;   // tato fce uz v tabulce je (NEMELA BY BYT!!!)
+               case INS_MALLOC:
+               default: return INTR_ERR;
+            }
+         }
 
-         // povedlo vlozit
          instr = &(table->lastAddedFunc->instructions);
          NEXT_TOKEN
          if(token != L_LEFT_BRACKET) return SYN_ERR;
@@ -99,7 +101,7 @@ int prsDefFunc(){
          if(token != L_RIGHT_BRACKET) return SYN_ERR;
 
          // vlozim instrukci na vyprazdeni zasobniku protoze main muze byt volany rekuzivne
-         // a nejaky sikula by mainu mohl dta parametry
+         // a nejaky sikula by mainu mohl dat parametry
          if( (i = genInstr(I_STACK_E, NULL, NULL, NULL) ) == NULL )
             return INTR_ERR;
          if( listInsertLast( instr,  i) != LIST_EOK)
@@ -120,38 +122,41 @@ int prsDefFunc(){
          return PRS_OK;
       }break;
       case L_ID: {
-         // 3. <def_func> -> idFunc ( <params> ) <stat> end <program>
-         if( (err = tableInsertFunction(table, attr) ) == INS_NODE_EXIST)
-            return SEM_ERR;   // tato fce uz v tabulce je
-         else if(err != INS_OK)
-            return INTR_ERR;  // nepodarilo se vlozit
+            // 3. <def_func> -> idFunc ( <params> ) <stat> end <program>
+            if( (err = tableInsertFunction(table, attr) ) != INS_OK){
+               switch(err){
+                  case INS_NODE_EXIST: return SEM_ERR;
+                  case INS_MALLOC:
+                  default: return INTR_ERR;
+               }
+            }
 
-         // povedlo vlozit
-         instr = &(table->lastAddedFunc->instructions);
+            // povedlo vlozit
+            instr = &(table->lastAddedFunc->instructions);
 
-         NEXT_TOKEN
-         if(token != L_LEFT_BRACKET) return SYN_ERR;
+            NEXT_TOKEN
+            if(token != L_LEFT_BRACKET) return SYN_ERR;
 
-         err = prsParams();
-         if(err != PRS_OK) return err;
+            err = prsParams();
+            if(err != PRS_OK) return err;
 
-         // vyprazdnim zasobnik kdyby mi nahodou nekdo predal funkci vic parametru nez ocekava
-         if( (i = genInstr(I_STACK_E, NULL, NULL, NULL)) == NULL)
-            return INTR_ERR;
-         if( listInsertLast( instr, i ) != LIST_EOK)
-            return INTR_ERR;
+            // vyprazdnim zasobnik kdyby mi nahodou nekdo predal funkci vic parametru nez ocekava
+            if( (i = genInstr(I_STACK_E, NULL, NULL, NULL)) == NULL)
+               return INTR_ERR;
+            if( listInsertLast( instr, i ) != LIST_EOK)
+               return INTR_ERR;
 
-         // dalsi attr uz nacetl prsParams
-         if(token != L_RIGHT_BRACKET) return SYN_ERR;
+            // dalsi attr uz nacetl prsParams
+            if(token != L_RIGHT_BRACKET) return SYN_ERR;
 
-         err = prsStat();
-         if(err != PRS_OK) return err;
+            err = prsStat();
+            if(err != PRS_OK) return err;
 
-         // dalsi attr uz nacetl prsStat
-         if(token != KW_END) return SYN_ERR;
+            // dalsi attr uz nacetl prsStat
+            if(token != KW_END) return SYN_ERR;
 
-         return prsProgram();
-      }break;
+            return prsProgram();
+         }break;
       case KW_SORT:
       case KW_FIND:
       case KW_SUBSTR:
@@ -175,9 +180,13 @@ int prsParams(){
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
    // pokusim se id vlozit to tabulky
    err = functionInsertVar(table->lastAddedFunc, attr);
-   if(err == INS_NODE_EXIST) return SEM_ERR;
-   if(err != INS_OK) return INTR_ERR;
-
+   if(err != INS_OK){
+      switch(err){
+         case INS_NODE_EXIST: return SEM_ERR;
+         case INS_MALLOC:
+         default: return INTR_ERR;
+      }
+   }
    // nageneruju instrukci
    if( (i = genInstr(I_SET, getLastAddedVar(table->lastAddedFunc), NULL, NULL) ) == NULL)
       return INTR_ERR;
@@ -214,8 +223,13 @@ int prsParamsN(){
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
    // pokusim se id vlozit to tabulky
    err = functionInsertVar(table->lastAddedFunc, attr);
-   if(err == INS_NODE_EXIST) return SEM_ERR;
-   if(err != INS_OK) return INTR_ERR;
+   if(err != INS_OK){
+      switch(err){
+         case INS_NODE_EXIST: return SEM_ERR;
+         case INS_MALLOC:
+         default: return INTR_ERR;
+      }
+   }
 
    // nageneruju instrukci
    if( (i = genInstr(I_SET, getLastAddedVar(table->lastAddedFunc), NULL, NULL) ) == NULL)
@@ -264,8 +278,13 @@ int prsDefVar(){
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
    // pokusim se id vlozit to tabulky
    err = functionInsertVar(table->lastAddedFunc, attr);
-   if(err == INS_NODE_EXIST) return SEM_ERR;
-   if(err != INS_OK) return INTR_ERR;
+   if(err != INS_OK){
+      switch(err){
+         case INS_NODE_EXIST: return SEM_ERR;
+         case INS_MALLOC:
+         default: return INTR_ERR;
+      }
+   }
 
    err = prsInit();
    if(err != PRS_OK) return err;
