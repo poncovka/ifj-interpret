@@ -1,10 +1,5 @@
-function xx()
-  local a;
-  local a;
-end;
-
 function main()--Hlavni telo programu
 	local a;
-	a = read("*a");
+	a = read("*ln");
 	write(a, "\n");
 end;

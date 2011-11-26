@@ -5,7 +5,7 @@
  * @date
  */
 
-#include "binaryTree.h"
+#include "binary_tree.h"
 
 /*
  * @return  vetsi ze dvou cisel

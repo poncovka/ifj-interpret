@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "binaryTree.h"
+#include "binary_tree.h"
 #include "scanner.h"
 #include "str.h"
 #include "list.h"
