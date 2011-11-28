@@ -250,7 +250,7 @@ int executor(TFunction *fce) {
         if (varRealloc(instr->dest,fce->cnt) != INS_OK)
           return ERR_INTERNAL;
         TVarData *tmp = giveMeData(instr->dest, fce);
-        tmp->type = NIL;
+        freeVarData(tmp);
         if (instr->src1 != NULL) {
           data1 = giveMeData(instr->src1,fce);
         if (saveData(data1,instr->dest,fce) == EXIT_FAILURE)

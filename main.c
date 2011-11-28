@@ -13,6 +13,13 @@
 #include "parser.h"
 #include "interpret.h"
 
+#define DEBUG 0
+#if DEBUG
+  #define debuguj(prikazy) prikazy
+#else
+  #define debuguj(prikazy)
+#endif
+
 int main(int argc, char *argv[]){
   FILE *f;
 
@@ -52,11 +59,11 @@ int main(int argc, char *argv[]){
   }
 
   // ---- DEBUG ----
-  /*
+  debuguj(
     FILE *log = fopen("debug.log", "w");
     tablePrintOrder(table, log);
     fclose(log);
-  */
+  )
   // -- END DEBUG --
 
   fclose(f);

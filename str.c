@@ -17,7 +17,7 @@
  */
 int strInit(string *s) {
 
-   if ((s->str = (char*) malloc(STR_LEN_INC)) == NULL)
+   if ((s->str = (char*) malloc(sizeof(char)*STR_LEN_INC)) == NULL)
       return STR_ERROR;
 
    s->str[0] = '\0';
@@ -30,6 +30,9 @@ int strInit(string *s) {
 /*
  * Funkce vytvoøí prázdný string
  * o velikosti dané parametrem.
+ * Pro len < 0 nealokuje nic,
+ * pro len = 0 vznikne prazdny retezec,
+ * jinak alokuje se rezetec dane delky.
  * @author  Vendula Poncová
  * @param   ukazatel na string
  * @param   delka noveho retezce
@@ -38,8 +41,8 @@ int strInit(string *s) {
 int strInitLen(string *s, int len) {
 
    // provede alokaci
-   if (len > 0){
-     if ((s->str = (char*) malloc(len + 1)) == NULL)
+   if (len >= 0){
+     if ((s->str = (char*) malloc(sizeof(char)*(len + 1))) == NULL)
         return STR_ERROR;
 
      s->allocSize = len + 1;
@@ -95,9 +98,13 @@ int strAddChar(string *s1, char c) {
    if (s1->length + 1 >= s1->allocSize)
    {
       // pamet nestaci, je potreba provest realokaci
-      if ((s1->str = (char*) realloc(s1->str, s1->length + STR_LEN_INC)) == NULL)
-         return STR_ERROR;
       s1->allocSize = s1->length + STR_LEN_INC;
+
+      char *oldPtr = s1->str;
+      if ((s1->str = (char*) realloc(s1->str, sizeof(char) * s1->allocSize)) == NULL) {
+         free(oldPtr);
+         return STR_ERROR;
+      }
    }
    s1->str[s1->length] = c;
    s1->length++;
@@ -115,7 +122,7 @@ int strAddChar(string *s1, char c) {
 char *strCopyChar(string *s) {
 
    char *strNew = NULL;
-   if((strNew = (char *) malloc(sizeof(char)*(s->length + 1))) == NULL) {
+   if ((strNew = (char *) malloc(sizeof(char)*(s->length + 1))) == NULL) {
       return NULL;
    }
    strcpy(strNew,s->str);
@@ -135,9 +142,12 @@ int strCopyString(string *s1, string *s2) {
    if (newLength >= s1->allocSize)
    {
       // pamet nestaci, je potreba provest realokaci
-      if ((s1->str = (char*) realloc(s1->str, newLength + 1)) == NULL)
-         return STR_ERROR;
       s1->allocSize = newLength + 1;
+      char *oldPtr = s1->str;
+      if ((s1->str = (char*) realloc(s1->str, sizeof(char)*s1->allocSize)) == NULL) {
+         free(oldPtr);
+         return STR_ERROR;
+      }
    }
    strcpy(s1->str, s2->str);
    s1->length = newLength;
@@ -192,8 +202,7 @@ string strCreateString (string *sCopy) {
   string s;
   s.length = sCopy->length;
   s.allocSize = s.length + 1;
-  s.str = sCopy->str;
-  s.str = strCopyChar(&s);
+  s.str = strCopyChar(sCopy);
 
   return s;
 }
@@ -229,7 +238,7 @@ string strReadNChar(FILE *f, int n) {
   string s = {NULL, 0, 0};
 
   // naèteme a zkopírujeme znaky:
-  if (n > 0 && strInitLen(&s, n) == STR_SUCCESS){
+  if (n >= 0 && strInitLen(&s, n) == STR_SUCCESS){
     int i, c;
     for (i = 0; (i < n) && ((c = fgetc(f)) != EOF); i++) {
       s.str[i] = (char)c;

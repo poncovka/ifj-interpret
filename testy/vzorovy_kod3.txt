@@ -15,11 +15,11 @@ function main() --Hlavni telo programu
 	write("Pozice retezce \"text\" v retezc str2: ", p, "\n");
 	write("Zadejte nejakou posloupnost vsech malych pismen a-h, ");
 	write("pricemz se pismena nesmeji v posloupnosti opakovat\n");
-	str1 = read("*1");
+	str1 = read("*l");
 	str2 = sort(str1);
 	while (str2 ~= "abcdefgh") do 
 		write("Spatne zadana posloupnost, zkuste znovu\n");
-		str1 = read("*1");
+		str1 = read("*l");
 		str2 = sort(str1);
 	end;
 	return 0;
