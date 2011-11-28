@@ -198,7 +198,7 @@ int executor(TFunction *fce) {
       case I_LAB: break;
       case I_RETURN:
         if (listLast(&fce->instructions) != LIST_EOK)
-         return ERR_INTERNAL;
+          return ERR_INTERNAL;
       break;
 
     /*instrukce pro praci se zasobnikem*/
@@ -210,7 +210,8 @@ int executor(TFunction *fce) {
           return ERR_INTERNAL;
 
         if (data1 != NULL) {
-        freeVarData(data1); free(data1);
+          freeVarData(data1); 
+					free(data1);
         }
       } break;
 
@@ -232,8 +233,8 @@ int executor(TFunction *fce) {
 
       /*=========================================I_STACK_E========================================*/
       case I_STACK_E: {
-         if(stackDeleteDataDelete(&stack) != STACK_EOK)
-            return ERR_INTERNAL;
+        if(stackDeleteDataDelete(&stack) != STACK_EOK)
+          return ERR_INTERNAL;
       } break;
 
     /*instrukce pro inicializace, presuny*/
@@ -450,8 +451,7 @@ int executor(TFunction *fce) {
         switch (data1->type) {
           case STRING: printf("%s",data1->value.s.str); break;
           case NUMBER: printf("%g",data1->value.n); break;
-          case BOOL: return ERR_SEM; break;
-          case NIL: return ERR_SEM; break;
+          default: return ERR_SEM; break;
         }
       break;
 
