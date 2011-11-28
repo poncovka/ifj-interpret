@@ -16,7 +16,7 @@
 int main(int argc, char *argv[]){
   FILE *f;
 
-  if (argc == 1) {
+  if (argc != 2) {
     fprintf(stderr,"ERROR: neni zadan vstupni soubor\n");
     return -INTR_ERR;
   }
