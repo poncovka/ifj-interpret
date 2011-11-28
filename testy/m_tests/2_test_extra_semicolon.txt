@@ -1,9 +1,0 @@
-function fun()
-local d;
-end;
-
-function main()
-local a;
-local b;
-local c;
-end;

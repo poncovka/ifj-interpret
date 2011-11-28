@@ -1,5 +1,0 @@
-function main()
-local a;
-local b;
-local c;
-endd;

@@ -1,4 +1,0 @@
-function main()
-local a;
-a=reaad(*n);
-end;

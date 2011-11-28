@@ -1,5 +1,0 @@
-function main()
-local a;
-whille a>0 do
-end;
-end;

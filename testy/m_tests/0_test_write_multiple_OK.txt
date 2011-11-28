@@ -1,6 +1,0 @@
-function main()
-local a=5;
-local b="test";
-local c=42;
-write(a,b,c);
-end;

@@ -1,5 +1,0 @@
-function main()
-local a;
-local b;
-a="test\053";
-end;

@@ -1,7 +1,0 @@
-function main()
-local a;
-local b;
-local c;
-a=5;
-b=find(a,"es");
-end;

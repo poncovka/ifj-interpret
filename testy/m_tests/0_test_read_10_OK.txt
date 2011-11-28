@@ -1,4 +1,0 @@
-function main()
-local a;
-a=read(10);
-end;

@@ -1,6 +1,0 @@
-function main()
-local a;
-if a 
-else
-end;
-end;
