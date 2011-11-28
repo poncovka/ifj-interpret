@@ -1,7 +1,6 @@
 function main() --Hlavni telo programu
-  local a = 5;
-  while a ~= 0 do
-    write(a, "\n");
-    a = a - 1;
+  local a = "xxx";
+  while a ~= "" do
+    a = read("*l");
   end;
 end;

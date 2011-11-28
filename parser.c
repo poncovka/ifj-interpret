@@ -353,7 +353,8 @@ int prsStatList(){
    err = prsCommand();
    if(err != PRS_OK) return err;
 
-   // attr uz je nacteny NEXT_TOKEN
+   // attr uz je nacteny
+   printf("%s", attr.str);
    if(token != L_SEMICOLON) return SYN_ERR;
 
    NEXT_TOKEN // <stat_list> ceka uz nacteny attr
@@ -489,7 +490,8 @@ int prsCommand(){
       case KW_RETURN:{
          // preskocim vyraz a vratim ze bylo vse OK
          NEXT_TOKEN
-         if((err == parseExpression(table, &tmpV)) != EOK) return err;
+         if((err = parseExpression(table, &tmpV)) != EOK)
+         return err;
 
          TInstr *push = genInstr(I_PUSH, tmpV, NULL, NULL);
          TInstr *ret = genInstr(I_RETURN, NULL, NULL, NULL);
@@ -497,6 +499,7 @@ int prsCommand(){
 
          if(listInsertLast(instr, push) != EOK) return INTR_ERR;
          if(listInsertLast(instr, ret) != EOK) return INTR_ERR;
+
          return PRS_OK;
       }break;
       // 19. <command> -> write ( expression <expression_n> )

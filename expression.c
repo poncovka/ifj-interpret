@@ -20,7 +20,7 @@
 // precedenèní tabulka:
 const char precedentTable[MAXTAB][MAXTAB] = {
 
-// tokeny:                  id   (   )   +   -   *   /   ^  ..   <  <=   >  >=  ==  ~=             $ 
+// tokeny:                  id   (   )   +   -   *   /   ^  ..   <  <=   >  >=  ==  ~=             $
 [L_ID]            ={[L_ID]= 0 , 0 ,'>','>','>','>','>','>','>','>','>','>','>','>','>',[ENDEXPR]='>'},
 [L_LEFT_BRACKET]  ={[L_ID]='<','<','=','<','<','<','<','<','<','<','<','<','<','<','<',[ENDEXPR]= 0 },
 [L_RIGHT_BRACKET] ={[L_ID]= 0 , 0 ,'>','>','>','>','>','>','>','>','>','>','>','>','>',[ENDEXPR]='>'},
@@ -68,10 +68,10 @@ TStack Stack;
 
 /*
  * Syntaktická a sématická kontrola výrazu pomocí
- * precedenèní SA a zásobníku. 
+ * precedenèní SA a zásobníku.
  * První token, který by zpùsobil syntaktickou chybu je
  * pova¾ován za konec výrazu a bude zpracován parserem.
- * Sémantika kontroluje definování promìnných a operace 
+ * Sémantika kontroluje definování promìnných a operace
  * s konstantami.
  * Ukazatel *ptrResult bude ukazovat na výsledek výrazu.
  * @param   ukazatel na tabulku
@@ -116,7 +116,7 @@ int parseExpression(TTable *table, TVar **ptrResult) {
                  if (err != EOK) break;
 
                  token = getNextToken(&attr);                 // next token
-                 if (token < 0) err = token; 
+                 if (token < 0) err = token;
                  break;
 
       case '>':  err = findRule(&Stack, &instr);              // najdi pravidlo
@@ -168,7 +168,7 @@ int parseExpression(TTable *table, TVar **ptrResult) {
  * pøípadnì ukazatel pøedán v parametru pom.
  * @param   ukazatel na zásobník
  * @param   aktuální token
- * @param   ukazatel na TVar 
+ * @param   ukazatel na TVar
  * @return  chybový kód
  */
 int shift (TStack *S, int token, TVar *pom) {
@@ -178,9 +178,10 @@ int shift (TStack *S, int token, TVar *pom) {
   // inicialiazce dat:
 
   // identifikátor
-  if (isId(token)) {
+ if (token == L_ID) {
     pom = functionSearchVar(table->lastAddedFunc, attr);
-    if (pom == NULL) err = SEM_ERR; // nedefinovaná promìnná
+    if (pom == NULL)
+      err = SEM_ERR; // nedefinovaná promìnná
     token = EXPRESSION;             // pravidlo E->id
   }
 
@@ -214,7 +215,7 @@ int getTopTerminal(TStack *S) {
 
   TSItem *pom = S->top;
 
-  // hledáme terminál nejblí¾e k zásobníku: 
+  // hledáme terminál nejblí¾e k zásobníku:
   while (pom != NULL && ((TStackData*)pom->data)->token == EXPRESSION) {
     pom = pom->next;
   }
@@ -245,7 +246,7 @@ int findRule(TStack *S, TInstr *instr) {
       instr->type = NOINSTR;                     // nebude se generovat pravidlo
       free(top);
       if (!stackEmpty(S)) {
-        top = (TStackData *) stackTopPop(S);  
+        top = (TStackData *) stackTopPop(S);
 
         if (top->token == EXPRESSION) {          // pop(výraz)
           instr->dest = top->var;
@@ -269,7 +270,7 @@ int findRule(TStack *S, TInstr *instr) {
       if (!stackEmpty(S)) {
         top = (TStackData *) stackTopPop(S);
 
-        if (isOperator(top->token)) {           // pop(operátor) 
+        if (isOperator(top->token)) {           // pop(operátor)
           instr->type = top->token + OFFSET;
           free(top);
           if (!stackEmpty(S)) {
@@ -278,7 +279,7 @@ int findRule(TStack *S, TInstr *instr) {
             if (top->token == EXPRESSION) {    // pop(výraz)
               err = EOK;                       // nalezeno pravidlo!
               instr->src1 = top->var;
-              free(top);      
+              free(top);
             }
           }
         }
@@ -370,12 +371,12 @@ int insertInstruction(TInstr *instr, TTable *table) {
   int err = EOK;
   TList *LTmpVars = &table->lastAddedFunc->tmpVar;
   TList *LInstr = &table->lastAddedFunc->instructions;
- 
+
   // vytvoø pomocnou promìnnou pro výsledek operace
   TVar *var = createTmpVar(LTmpVars, &err);
   if (err == EOK) {
     instr->dest = var;
-    
+
     // vytvoø novou instrukci
     TInstr *newInstr = genInstr(instr->type, instr->dest, instr->src1, instr->src2);
     if (newInstr != NULL) {
@@ -391,7 +392,7 @@ int insertInstruction(TInstr *instr, TTable *table) {
 
 /*
  * Operace nad zásobníkem: POP RESULT
- * Ze zásobníku vyjme výsledek výrazu a 
+ * Ze zásobníku vyjme výsledek výrazu a
  * nastaví na nìj ukazatel result.
  * @param   ukazatel na zásobník
  * @param   ukazatel na adresu výsledku
@@ -421,7 +422,7 @@ int returnResult(TStack *S, TVar **ptrResult) {
 /*
  * Vytvoøí pomocnou promìnnou a vrátí na ni ukazatel.
  * Promìnné se pro ka¾dý výraz "recyklují" :
- * Pro dal¹í výraz se pou¾ijí tyté¾ promìnné, pokud dojdou, 
+ * Pro dal¹í výraz se pou¾ijí tyté¾ promìnné, pokud dojdou,
  * vlo¾í se do seznamu nová promìnná. Øe¹eno pomocí aktivního prvku.
  * @param   ukazatel na seznam pomocných promìnných
  * @param   ukazatel na chybu
@@ -556,7 +557,7 @@ void tiskniList (TList *L) {
     if (((TVar*)i->dest)->name == NULL) printf("%d = ", (int)i->dest);
     else printf("%s = ",((TVar*)i->dest)->name);
 
-    TVar *var = ((TVar*)i->src1); 
+    TVar *var = ((TVar*)i->src1);
     if (var->varType == VT_CONST) {
       switch(var->varData->type) {
         case NIL:     printf("  nil  ");
@@ -574,10 +575,10 @@ void tiskniList (TList *L) {
 
     printf(" %s ",iTable[i->type]);
 
-    var = ((TVar*)i->src2); 
+    var = ((TVar*)i->src2);
     if (var->varType == VT_CONST) {
       switch(var->varData->type) {
-        case NIL:     printf("  nil  "); 
+        case NIL:     printf("  nil  ");
                       break;
         case BOOL:    printf("  %s  ", (var->varData->value.b ? "TRUE":"FALSE"));
                       break;
