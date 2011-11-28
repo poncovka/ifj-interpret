@@ -117,8 +117,8 @@ int copyData(TVarData *dest, TVarData *src){
     case BOOL: dest->value.b = src->value.b; break;
     case NUMBER: dest->value.n = src->value.n; break;
     case STRING:
-      strInit(&dest->value.s);
-      if(strCopyString(&dest->value.s, &src->value.s) != STR_SUCCESS)
+      dest->value.s = strCreateString(&src->value.s);
+      if (strIsNull(&dest->value.s))
         return EXIT_FAILURE;
     break;
     case NIL: break;
@@ -198,7 +198,7 @@ int executor(TFunction *fce) {
       case I_LAB: break;
       case I_RETURN:
         if (listLast(&fce->instructions) != LIST_EOK)
-         return ERR_INTERNAL;
+          return ERR_INTERNAL;
       break;
 
     /*instrukce pro praci se zasobnikem*/
@@ -210,7 +210,8 @@ int executor(TFunction *fce) {
           return ERR_INTERNAL;
 
         if (data1 != NULL) {
-        freeVarData(data1); free(data1);
+          freeVarData(data1); 
+					free(data1);
         }
       } break;
 
@@ -232,8 +233,8 @@ int executor(TFunction *fce) {
 
       /*=========================================I_STACK_E========================================*/
       case I_STACK_E: {
-         if(stackDeleteDataDelete(&stack) != STACK_EOK)
-            return ERR_INTERNAL;
+        if(stackDeleteDataDelete(&stack) != STACK_EOK)
+          return ERR_INTERNAL;
       } break;
 
     /*instrukce pro inicializace, presuny*/
@@ -388,7 +389,7 @@ int executor(TFunction *fce) {
 
         if (data1->type == data2->type) {
           switch (data1->type) {
-            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) == 0) ? TRUE : FALSE; break;
+            case STRING: newData.value.b = (strCmpString(&data1->value.s,&data2->value.s) == 0) ? TRUE : FALSE; break;
             case NUMBER: newData.value.b = (data1->value.n == data2->value.n) ? TRUE : FALSE; break;
             case BOOL: newData.value.b = (data1->value.b == data2->value.b) ? TRUE : FALSE; break;
             case NIL: newData.value.b = TRUE; break;
@@ -408,7 +409,7 @@ int executor(TFunction *fce) {
 
         if (data1->type == data2->type) {
           switch (data1->type) {
-            case STRING: newData.value.b = (strcmp(data1->value.s.str,data2->value.s.str) != 0) ? TRUE : FALSE; break;
+            case STRING: newData.value.b = (strCmpString(&data1->value.s,&data2->value.s) != 0) ? TRUE : FALSE; break;
             case NUMBER: newData.value.b = (data1->value.n != data2->value.n) ? TRUE : FALSE; break;
             case BOOL: newData.value.b = (data1->value.b != data2->value.b) ? TRUE : FALSE; break;
             case NIL: newData.value.b = FALSE; break;
@@ -450,8 +451,7 @@ int executor(TFunction *fce) {
         switch (data1->type) {
           case STRING: printf("%s",data1->value.s.str); break;
           case NUMBER: printf("%g",data1->value.n); break;
-          case BOOL: return ERR_SEM; break;
-          case NIL: return ERR_SEM; break;
+          default: return ERR_SEM; break;
         }
       break;
 
@@ -461,33 +461,37 @@ int executor(TFunction *fce) {
         dest = giveMeData(instr->dest,fce);
 				freeVarData(dest);
 
+				/*cislo*/
         if (data1->type == STRING) { 
           if (strncmp(data1->value.s.str,"*n",2) == 0) {
 			      result = scanf("%lf",&dest->value.n); //dodelat osetreni
-						if (result == EILSEQ) return ERR_SEM;
+						if (result != 1) return ERR_SEM;
             dest->type = NUMBER;
 				  }
             
+					/*do konce radky*/
           else if (strncmp(data1->value.s.str,"*l",2) == 0) {
             dest->value.s = strReadLine(stdin);
-            if (dest->value.s.str == NULL) 
+            if (strIsNull(&dest->value.s)) 
 						  return ERR_INTERNAL;
 						dest->type = STRING;
 					}
 
+					/*dokud neni EOF*/
           else if (strncmp(data1->value.s.str,"*a",2) == 0) {
 						dest->value.s = strReadAll(stdin);
-            if (dest->value.s.str == NULL)
+            if (strIsNull(&dest->value.s))
 						  return ERR_INTERNAL;
 						dest->type = STRING;
 					}
 
 			    else return ERR_SEM; 
 				}
-
+        
+				/*pocet znaku*/
         else if (data1->type == NUMBER) {
 			    dest->value.s = strReadNChar(stdin,data1->value.n);
-					if (dest->value.s.str == NULL)
+					if (strIsNull(&dest->value.s))
 						return ERR_INTERNAL;
 					dest->type = STRING;
 				} 

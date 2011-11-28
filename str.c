@@ -299,46 +299,4 @@ string strReadAll(FILE *f) {
   return s;
 }
 
-/* BUDE SMAZÁNO
-
-int strCopyString(string *s1, string *s2) {
-
-      // uvolní pùvodní øetìzec
-   strFree(s1);
-
-   // inicializuje a alokuje na novou délku
-   if (strInitLen(s1, s2->length) == STR_SUCCESS){
-
-     // zkopíruje obsah druhého stringu
-     strcpy(s1->str, s2->str);
-     s1->length = s2->length;
-
-     return STR_SUCCESS;
-   }
-   else return STR_ERROR;
-
-}
-*/
-
-/* BUDE SMAZÁNO
-
-int strCmpConstStr(string *s1, char* s2)
-// porovna nas retezec s konstantnim retezcem
-{
-   return strcmp(s1->str, s2);
-}
-
-char *strGetStr(string *s)
-// vrati textovou cast retezce
-{
-   return s->str;
-}
-
-int strGetLength(string *s)
-// vrati delku daneho retezce
-{
-   return s->length;
-}
-*/
-
 /* konec souboru str.c */
