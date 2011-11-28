@@ -461,13 +461,15 @@ int executor(TFunction *fce) {
         dest = giveMeData(instr->dest,fce);
 				freeVarData(dest);
 
+				/*cislo*/
         if (data1->type == STRING) { 
           if (strncmp(data1->value.s.str,"*n",2) == 0) {
 			      result = scanf("%lf",&dest->value.n); //dodelat osetreni
-						if (result == EILSEQ) return ERR_SEM;
+						if (result != 1) return ERR_SEM;
             dest->type = NUMBER;
 				  }
             
+					/*do konce radky*/
           else if (strncmp(data1->value.s.str,"*l",2) == 0) {
             dest->value.s = strReadLine(stdin);
             if (strIsNull(&dest->value.s)) 
@@ -475,6 +477,7 @@ int executor(TFunction *fce) {
 						dest->type = STRING;
 					}
 
+					/*dokud neni EOF*/
           else if (strncmp(data1->value.s.str,"*a",2) == 0) {
 						dest->value.s = strReadAll(stdin);
             if (strIsNull(&dest->value.s))
@@ -484,7 +487,8 @@ int executor(TFunction *fce) {
 
 			    else return ERR_SEM; 
 				}
-
+        
+				/*pocet znaku*/
         else if (data1->type == NUMBER) {
 			    dest->value.s = strReadNChar(stdin,data1->value.n);
 					if (strIsNull(&dest->value.s))
