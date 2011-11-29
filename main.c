@@ -37,6 +37,15 @@ int main(int argc, char *argv[]){
   setSourceFile(f);
 
   int err = parser(&table);
+
+  // ---- DEBUG ----
+  debuguj(
+    FILE *log = fopen("debug.log", "w");
+    tablePrintOrder(table, log);
+    fclose(log);
+  )
+  // -- END DEBUG --
+
   if (err == PRS_OK){
    err = interpret(table.lastAddedFunc);
    countOfRows = -1;
@@ -57,14 +66,6 @@ int main(int argc, char *argv[]){
       fprintf(stderr,"Blizko radku %d", countOfRows);
     fprintf(stderr,"\n\n----------------------------------------------------------------------\n");
   }
-
-  // ---- DEBUG ----
-  debuguj(
-    FILE *log = fopen("debug.log", "w");
-    tablePrintOrder(table, log);
-    fclose(log);
-  )
-  // -- END DEBUG --
 
   fclose(f);
   tableClear(&table);

@@ -172,7 +172,7 @@ function main()
   
   while c ~= "" do
     tmp = type(c);
-    write("-----DEBUG----\n", tmp, "\n", c, "\n");
+    -- write("-----DEBUG----\n", tmp, "\n", c, "\n");
   
     if c == " " then -- jde o oddelovac, pushujeme buffer
       if(buf ~= "") then -- ale jen pokud buffer neni prazdny
