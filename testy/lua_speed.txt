@@ -1,0 +1,49 @@
+function loop()
+  	local a;
+	local b;
+	local fn;
+	local pomoc;
+	local fn1;
+fn = "Ahoj, ja sem tu jen abych to zdrzel protoze se chci kopirovat jak nakej hnusnej posrane dlouhej text, a proto jsem na tolik radku a jelikoz zde konci smysluplne informace tak uaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbfffffffff ffffffffffffds mdfa sdkfasůfa oskfa sůflksf aldkfa sldkfa sdlkkf asldf af-------- that's all!!!";	
+	fn1 = "Dalsi smysluplnej debilni uchylnej test s kerym se bude vymenovat fn pres pomocnou promennou";
+	pomoc = 25632589652356332;	
+	a = 100000;
+	while(a > 0) do
+		b = a;
+		if(a >1000) then
+			b = b + 35000;
+			if(b > 40000) then
+				if(b < 123417) then
+					b = b - 28761;
+				else
+					b = b - 125368 * 2;
+				end;
+			else
+				b = 7457;
+			end;
+		else
+			if (a == 666)then
+				write("Hell's Gate is open!!");
+			else end;
+			pomoc = fn;
+			fn = fn1;
+			fn = pomoc;
+		end;
+			
+		b = a * b;
+		a = a - 1;
+	end;
+end
+
+function main() --Hlavni telo programu
+  local a;
+
+	local b;
+a = 0;
+	while(a <= 100) do
+		a=a+1;
+		b = loop();
+		write("1");	
+	end;
+end;
+
