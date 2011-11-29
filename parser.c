@@ -354,7 +354,6 @@ int prsStatList(){
    if(err != PRS_OK) return err;
 
    // attr uz je nacteny
-   printf("%s", attr.str);
    if(token != L_SEMICOLON) return SYN_ERR;
 
    NEXT_TOKEN // <stat_list> ceka uz nacteny attr

@@ -1,6 +1,6 @@
+function nic()
+end
+
 function main() --Hlavni telo programu
-  local a = "xxx";
-  while a ~= "" do
-    a = read("*l");
-  end;
+
 end;
