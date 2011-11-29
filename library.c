@@ -10,7 +10,7 @@
 
 const char *dataTypeStrings[]= {
    [NIL]   ="nil",
-   [BOOL]  ="bool",
+   [BOOL]  ="boolean",
    [STRING]="string",
    [NUMBER]="number",
 };
