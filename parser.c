@@ -7,37 +7,37 @@
 
  /*
   * PRAVIDLA
-      1.  <program> -> function <def_func>
-      2.  <def_func> -> main ( ) <stat> end ; <EOF>
-      3.  <def_func> -> idFunc ( <params> ) <stat> end <program>
-      4.  <params> -> eps
-      5.  <params> -> id <params_n>
-      6.  <params_n> -> eps
-      7.  <params_n> -> , id <params_n>
-      8.  <stat> -> <def_var> <stat_list>
-      9.  <def_var> -> eps
-      10. <def_var> -> local id <INIT> ; <def_var>
-      11. <init> -> eps
-      12. <init> -> = <lit>
-      13. <lit> -> literal
-      14. <stat_list> -> eps
-      15. <stat_list> -> <commad> ; <stat_list>
-      16. <command> -> if expression then <stat_list> else <stat_list> end
-      17. <command> -> while expression do <stat_list> end
-      18. <command> -> return expression
-      19. <command> -> write ( expression <expression_n> )
+      1.       <program> -> function <def_func>
+      2.      <def_func> -> main ( ) <stat> end ; <EOF>
+      3.      <def_func> -> idFunc ( <params> ) <stat> end <program>
+      4.        <params> -> eps
+      5.        <params> -> id <params_n>
+      6.      <params_n> -> eps
+      7.      <params_n> -> , id <params_n>
+      8.          <stat> -> <def_var> <stat_list>
+      9.       <def_var> -> eps
+      10.      <def_var> -> local id <INIT> ; <def_var>
+      11.         <init> -> eps
+      12.         <init> -> = <lit>
+      13.          <lit> -> literal
+      14.    <stat_list> -> eps
+      15.    <stat_list> -> <commad> ; <stat_list>
+      16.      <command> -> if expression then <stat_list> else <stat_list> end
+      17.      <command> -> while expression do <stat_list> end
+      18.      <command> -> return expression
+      19.      <command> -> write ( expression <expression_n> )
       20. <expression_n> -> eps
       21. <expression_n> -> , expression <expression_n>
-      22. <command> -> id = <assign>
-      23. <assign> -> expression
-      24. <assign> -> read ( <lit> )
-      25. <assign> -> idFunc ( <params> )
-      26. <var_params> -> eps
-      27. <var_params> -> <var> <var_n>
-      28. <var> -> <lit>
-      29. <var> -> id
-      30. <var_n> -> eps
-      31. <var_n> -> , <var> <var_n>
+      22.      <command> -> id = <assign>
+      23.       <assign> -> expression
+      24.       <assign> -> read ( <lit> )
+      25.       <assign> -> idFunc ( <params> )
+      26.   <var_params> -> eps
+      27.   <var_params> -> <var> <var_n>
+      28.          <var> -> <lit>
+      29.          <var> -> id
+      30.        <var_n> -> eps
+      31.        <var_n> -> , <var> <var_n>
  */
 
 #include "parser.h"
@@ -411,8 +411,7 @@ int prsCommand(){
             return token;
          }
 
-         err = prsStatList();
-         if(err != PRS_OK || token !=  KW_ELSE) {
+         if( ( err = prsStatList() ) != PRS_OK || token !=  KW_ELSE) {
             free(labElse);
             free(labEndIf);
             free(jmp);
@@ -435,8 +434,7 @@ int prsCommand(){
             return token;
          }
 
-         err = prsStatList();
-         if(err != PRS_OK || token != KW_END) {
+         if( ( err = prsStatList() ) != PRS_OK || token != KW_END) {
             free(labEndIf);
             return token != KW_END ? SYN_ERR : err;
          }
@@ -469,9 +467,17 @@ int prsCommand(){
          // ulozim si adresu vygenerovaneho navesti
          jmpToWhile = instr->Last;
 
-         // vypocet
-         NEXT_TOKEN
-         if( (err = parseExpression(table, &tmpV)) != EOK ) return err;
+         // nactu dalsi token
+         token = getNextToken(&attr);
+         if(token < 0) {
+            free(labEnd);
+            return token;
+         }
+         // zpracuju vzraz
+         if( (err = parseExpression(table, &tmpV)) != EOK || token != KW_DO) {
+            free(labEnd);
+            return token != KW_DO ? SYN_ERR : err;
+         }
 
          // porovani pripadny skok na konec cyklu
          // misto kam se bude skakat se doplni pozdeji
@@ -479,12 +485,6 @@ int prsCommand(){
 
          if(jmpz == NULL) return INTR_ERR;
          if(listInsertLast(instr, jmpz) != LIST_EOK) return INTR_ERR;
-
-         // ocekavam do
-         if(token != KW_DO) {
-            free(labEnd);
-            return SYN_ERR;
-         }
 
          //nactu dalsi token
          token = getNextToken(&attr);
@@ -494,15 +494,10 @@ int prsCommand(){
          }
          // naparsuju vnitrek cyklu
          int err = prsStatList();
-         if(err != PRS_OK) {
+         if(err != PRS_OK || token != KW_END) {
             free(labEnd);
-            //free();
-            return err;
+            return token != KW_END ? SYN_ERR : err;
          }
-
-         // mel by byt nacten end
-         if(token != KW_END) return SYN_ERR;
-
 
          TInstr *jmp = genInstr(I_JMP, jmpToWhile, NULL, NULL);
          if(jmp == NULL) return INTR_ERR;
