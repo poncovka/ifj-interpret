@@ -401,25 +401,46 @@ int prsCommand(){
          // JMP_Z tmp labElse
          if( listInsertLast(instr, jmpz) != LIST_EOK)
             return INTR_ERR;
-         NEXT_TOKEN
+
+         //nactu dalsi token
+         token = getNextToken(&attr);
+         if(token < 0) {
+            free(labElse);
+            free(labEndIf);
+            free(jmp);
+            return token;
+         }
+
          err = prsStatList();
-         if(err != PRS_OK) return err;
+         if(err != PRS_OK || token !=  KW_ELSE) {
+            free(labElse);
+            free(labEndIf);
+            free(jmp);
+            return token != KW_ELSE ? SYN_ERR : err;
+         }
 
          // JMP labEndIf
          if( listInsertLast(instr, jmp) != LIST_EOK)
             return INTR_ERR;
-         // cekam else
-         if(token != KW_ELSE) return SYN_ERR;
+
          // LAB labElse
          if( listInsertLast(instr, labElse) != LIST_EOK)
             return INTR_ERR;
          itmElse = instr->Last;
 
-         NEXT_TOKEN
-         err = prsStatList();
-         if(err != PRS_OK) return err;
+         //nactu dalsi token
+         token = getNextToken(&attr);
+         if(token < 0) {
+            free(labEndIf);
+            return token;
+         }
 
-         if(token != KW_END) return SYN_ERR;
+         err = prsStatList();
+         if(err != PRS_OK || token != KW_END) {
+            free(labEndIf);
+            return token != KW_END ? SYN_ERR : err;
+         }
+
          // LAB labEndIf
          if( listInsertLast(instr, labEndIf) != LIST_EOK)
             return INTR_ERR;
@@ -460,11 +481,24 @@ int prsCommand(){
          if(listInsertLast(instr, jmpz) != LIST_EOK) return INTR_ERR;
 
          // ocekavam do
-         if(token != KW_DO) return SYN_ERR;
+         if(token != KW_DO) {
+            free(labEnd);
+            return SYN_ERR;
+         }
+
+         //nactu dalsi token
+         token = getNextToken(&attr);
+         if(token < 0) {
+            free(labEnd);
+            return token;
+         }
          // naparsuju vnitrek cyklu
-         NEXT_TOKEN
          int err = prsStatList();
-         if(err != PRS_OK) return err;
+         if(err != PRS_OK) {
+            free(labEnd);
+            //free();
+            return err;
+         }
 
          // mel by byt nacten end
          if(token != KW_END) return SYN_ERR;
