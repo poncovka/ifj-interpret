@@ -18,13 +18,13 @@
 #define INS_TREE_NULL  -5  // misto stromu NULL
 #define INS_KEY_NULL   -5  // misto klice NULL
 
-typedef enum{
+typedef enum {
    DEFAULT,       // data budou void repektive zadna, nijak se nemazou
    FUNCIONS,      // data se pretypuji na TFunction*
    VAR,           // tady jeste nevim 28.10.2011 jak bude vypadat polozka pro symbol|identifikator
-}EBTreeDataType;
+} EBTreeDataType;
 
-typedef struct TBTreeNode{
+typedef struct TBTreeNode {
    struct TBTreeNode *left;   // levy podstrom
    struct TBTreeNode *right;  // pravy podstrom
    char  *key;                // vyhledavaci klic
@@ -32,7 +32,7 @@ typedef struct TBTreeNode{
    void  *data;               // data uzivatele, predem nevim jaka, data si prida uzivatel
 } *TNode;
 
-typedef struct{
+typedef struct {
    TNode root;                // koren stromu
    TNode lastAdded;           // ukazatel na posledni pridanou polozku(nekdy se to muze hodit)
    int   nodeCount;           // pocet uzlu

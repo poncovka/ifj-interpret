@@ -46,8 +46,8 @@ extern const int semTable[][DATTYPE];
 // pomocná struktura pro data na zásobníku:
 
 typedef struct {
-  int token;            // token
-  TVar *var;            // adresa promìnné
+   int token;            // token
+   TVar *var;            // adresa promìnné
 } TStackData;
 
 

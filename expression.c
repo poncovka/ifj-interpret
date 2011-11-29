@@ -10,9 +10,9 @@
 // tisknout pomocné výpisy:
 #define TISK 0
 #if TISK
-  #define tisk(prikazy) prikazy
+#define tisk(prikazy) prikazy
 #else
-  #define tisk(prikazy)
+#define tisk(prikazy)
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,22 +21,22 @@
 const char precedentTable[MAXTAB][MAXTAB] = {
 
 // tokeny:                  id   (   )   +   -   *   /   ^  ..   <  <=   >  >=  ==  ~=             $
-[L_ID]            ={[L_ID]= 0 , 0 ,'>','>','>','>','>','>','>','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_LEFT_BRACKET]  ={[L_ID]='<','<','=','<','<','<','<','<','<','<','<','<','<','<','<',[ENDEXPR]= 0 },
-[L_RIGHT_BRACKET] ={[L_ID]= 0 , 0 ,'>','>','>','>','>','>','>','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_ADDITION]      ={[L_ID]='<','<','>','>','>','<','<','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_SUBTRACTION]   ={[L_ID]='<','<','>','>','>','<','<','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_MULTIPLICATION]={[L_ID]='<','<','>','>','>','>','>','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_DIVISION]      ={[L_ID]='<','<','>','>','>','>','>','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_POWER]         ={[L_ID]='<','<','>','>','>','>','>','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_CONCATENATION] ={[L_ID]='<','<','>','<','<','<','<','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_SMALLER]       ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_SMALLER_EQUAL] ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_BIGGER]        ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_BIGGER_EQUAL]  ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_EQUAL]         ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
-[L_UNEQUAL]       ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
-[ENDEXPR]         ={[L_ID]='<','<', 0 ,'<','<','<','<','<','<','<','<','<','<','<','<',[ENDEXPR]='$'},
+   [L_ID]            ={[L_ID]= 0 , 0 ,'>','>','>','>','>','>','>','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_LEFT_BRACKET]  ={[L_ID]='<','<','=','<','<','<','<','<','<','<','<','<','<','<','<',[ENDEXPR]= 0 },
+   [L_RIGHT_BRACKET] ={[L_ID]= 0 , 0 ,'>','>','>','>','>','>','>','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_ADDITION]      ={[L_ID]='<','<','>','>','>','<','<','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_SUBTRACTION]   ={[L_ID]='<','<','>','>','>','<','<','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_MULTIPLICATION]={[L_ID]='<','<','>','>','>','>','>','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_DIVISION]      ={[L_ID]='<','<','>','>','>','>','>','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_POWER]         ={[L_ID]='<','<','>','>','>','>','>','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_CONCATENATION] ={[L_ID]='<','<','>','<','<','<','<','<','>','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_SMALLER]       ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_SMALLER_EQUAL] ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_BIGGER]        ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_BIGGER_EQUAL]  ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_EQUAL]         ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [L_UNEQUAL]       ={[L_ID]='<','<','>','<','<','<','<','<','<','>','>','>','>','>','>',[ENDEXPR]='>'},
+   [ENDEXPR]         ={[L_ID]='<','<', 0 ,'<','<','<','<','<','<','<','<','<','<','<','<',[ENDEXPR]='$'},
 
 }; //precedentTable
 
@@ -44,21 +44,21 @@ const char precedentTable[MAXTAB][MAXTAB] = {
 // tabulka pro kontrolu semantiky :
 const int semTable[][DATTYPE] = {
 
-  // NIL,BOOL,NUMBER,STRING
-  // 7
-  [I_ADD]   ={0,0,1,0},
-  [I_SUB]   ={0,0,1,0},
-  [I_MUL]   ={0,0,1,0},
-  [I_DIV]   ={0,0,1,0},
-  [I_POW]   ={0,0,1,0},
-  [I_CON]   ={0,0,0,1},
-  [I_CMP_L] ={0,0,1,1},
-  [I_CMP_LE]={0,0,1,1},
-  [I_CMP_G] ={0,0,1,1},
-  [I_CMP_GE]={0,0,1,1},
-  [I_CMP_E] ={1,1,1,1},
-  [I_CMP_NE]={1,1,1,1},
-  // 18
+   // NIL,BOOL,NUMBER,STRING
+   // 7
+   [I_ADD]   ={0,0,1,0},
+   [I_SUB]   ={0,0,1,0},
+   [I_MUL]   ={0,0,1,0},
+   [I_DIV]   ={0,0,1,0},
+   [I_POW]   ={0,0,1,0},
+   [I_CON]   ={0,0,0,1},
+   [I_CMP_L] ={0,0,1,1},
+   [I_CMP_LE]={0,0,1,1},
+   [I_CMP_G] ={0,0,1,1},
+   [I_CMP_GE]={0,0,1,1},
+   [I_CMP_E] ={1,1,1,1},
+   [I_CMP_NE]={1,1,1,1},
+   // 18
 }; // semTable
 
 
@@ -79,83 +79,86 @@ TStack Stack;
  * @return  chybový kód
  */
 int parseExpression(TTable *table, TVar **ptrResult) {
-  int err = EOK;
+   int err = EOK;
 
-  TList *LTmpVars = &table->lastAddedFunc->tmpVar;
+   TList *LTmpVars = &table->lastAddedFunc->tmpVar;
 
-  // inicializace
-  stackInit(&Stack);
-  listFirst(LTmpVars);
+   // inicializace
+   stackInit(&Stack);
+   listFirst(LTmpVars);
 
-  shift(&Stack, ENDEXPR, NULL);      // vlo¾eno dno zásobníku
+   shift(&Stack, ENDEXPR, NULL);      // vlo¾eno dno zásobníku
 
-  int a ,b;
-  char c;
-  TInstr instr = {NOINSTR, NULL, NULL, NULL};
+   int a ,b;
+   char c;
+   TInstr instr = {NOINSTR, NULL, NULL, NULL};
 
-  do {
+   do {
 
-    a = token;                       // aktuální token
-    b = getTopTerminal(&Stack);      // najdeme nejvrchnìj¹í terminál
+      a = token;                       // aktuální token
+      b = getTopTerminal(&Stack);      // najdeme nejvrchnìj¹í terminál
 
-    if (isConst(a)) {                // pokud je to konstanta
-      c = precedentTable[b][L_ID];   // kontrolujeme syntaxi podle identifikátoru
-    }
-    else {
-      c = precedentTable[b][a];      // podíváme se do tabulky
-    }
+      if (isConst(a)) {                // pokud je to konstanta
+         c = precedentTable[b][L_ID];   // kontrolujeme syntaxi podle identifikátoru
+      } else {
+         c = precedentTable[b][a];      // podíváme se do tabulky
+      }
 
-    if (c == 0) {                    // chyba
-      a = ENDEXPR;                   // token pova¾ujeme za konec výrazu
-      c = precedentTable[b][a];      // znovu se podíváme do tabulky
-    }
+      if (c == 0) {                    // chyba
+         a = ENDEXPR;                   // token pova¾ujeme za konec výrazu
+         c = precedentTable[b][a];      // znovu se podíváme do tabulky
+      }
 
-    switch(c) {
+      switch(c) {
       case '=':
-      case '<':  err = shift(&Stack, a, NULL);                // push(a)
-                 if (err != EOK) break;
+      case '<':
+         err = shift(&Stack, a, NULL);                // push(a)
+         if (err != EOK) break;
 
-                 token = getNextToken(&attr);                 // next token
-                 if (token < 0) err = token;
-                 break;
+         token = getNextToken(&attr);                 // next token
+         if (token < 0) err = token;
+         break;
 
-      case '>':  err = findRule(&Stack, &instr);              // najdi pravidlo
-                 if (err != EOK) break;
+      case '>':
+         err = findRule(&Stack, &instr);              // najdi pravidlo
+         if (err != EOK) break;
 
-                 err = checkRule(&instr);                     // kontrola sémantiky
-                 if (err != EOK) break;
+         err = checkRule(&instr);                     // kontrola sémantiky
+         if (err != EOK) break;
 
-                 err = insertInstruction(&instr, table);      // vlo¾ instrukci
-                 if (err != EOK) break;
+         err = insertInstruction(&instr, table);      // vlo¾ instrukci
+         if (err != EOK) break;
 
-                 err = shift(&Stack, EXPRESSION, instr.dest); // push(výsledek)
-                 break;
+         err = shift(&Stack, EXPRESSION, instr.dest); // push(výsledek)
+         break;
 
-      case '$':  err = returnResult(&Stack, ptrResult);       // ukazatel na výsledek
-                 break;
+      case '$':
+         err = returnResult(&Stack, ptrResult);       // ukazatel na výsledek
+         break;
 
-      default :  err = SYN_ERR;                               // syntaktická chyba
-    };
+      default :
+         err = SYN_ERR;                               // syntaktická chyba
+      };
 
-    // kontrolni vypis:
-    tisk(
-    printf("\n a = %d b = %d c = %c err = %d \n\n", a, b, c, err);
-    tiskniStack(&Stack);
-    )
+      // kontrolni vypis:
+      tisk(
+         printf("\n a = %d b = %d c = %c err = %d \n\n", a, b, c, err);
+         tiskniStack(&Stack);
+      )
 
-  }while ((a != ENDEXPR || b != ENDEXPR) && err == EOK);
+   } while ((a != ENDEXPR || b != ENDEXPR) && err == EOK);
 
-  // kontrolni vypis:
-  tisk(
-  tiskniList(&table->lastAddedFunc->instructions);
-  printf("vysledek = %d\n", (int) *ptrResult);
-  )
+   // kontrolni vypis:
+   tisk(
+      tiskniList(&table->lastAddedFunc->instructions);
+      printf("vysledek = %d\n", (int) *ptrResult);
+   )
 
-  // úklid
-  stackDataDelete(&Stack);
-  stackDelete(&Stack);
+   // úklid
+   stackDataDelete(&Stack);
+   stackDelete(&Stack);
 
-  return err;
+   return err;
 }
 
 ////////////////////////////////////////////////////////////////////////  Dal¹í funkce
@@ -173,34 +176,33 @@ int parseExpression(TTable *table, TVar **ptrResult) {
  */
 int shift (TStack *S, int token, TVar *pom) {
 
-  int err = EOK;
+   int err = EOK;
 
-  // inicialiazce dat:
+   // inicialiazce dat:
 
-  // identifikátor
- if (token == L_ID) {
-    pom = functionSearchVar(table->lastAddedFunc, attr);
-    if (pom == NULL)
-      err = SEM_ERR; // nedefinovaná promìnná
-    token = EXPRESSION;             // pravidlo E->id
-  }
+   // identifikátor
+   if (token == L_ID) {
+      pom = functionSearchVar(table->lastAddedFunc, attr);
+      if (pom == NULL)
+         err = SEM_ERR; // nedefinovaná promìnná
+      token = EXPRESSION;             // pravidlo E->id
+   }
 
-  // konstanta
-  else if (isConst(token)) {
-    if (functionInsertConstatnt(table->lastAddedFunc, attr, token) == INS_OK) {
-      pom = (TVar*) listCopyLast(&table->lastAddedFunc->constants);
-    }
-    else err = INTR_ERR;            // nedostatek pamìti
-    token = EXPRESSION;             // pravidlo E->const
-  }
+   // konstanta
+   else if (isConst(token)) {
+      if (functionInsertConstatnt(table->lastAddedFunc, attr, token) == INS_OK) {
+         pom = (TVar*) listCopyLast(&table->lastAddedFunc->constants);
+      } else err = INTR_ERR;          // nedostatek pamìti
+      token = EXPRESSION;             // pravidlo E->const
+   }
 
-  // vlo¾íme data na zásobník :
-  if (err == EOK){
-    TStackData *data = createStackData(token, pom, &err);
-    if (err == EOK) err = stackPush(S, data);
-  }
+   // vlo¾íme data na zásobník :
+   if (err == EOK) {
+      TStackData *data = createStackData(token, pom, &err);
+      if (err == EOK) err = stackPush(S, data);
+   }
 
-  return err;
+   return err;
 }
 
 /*
@@ -213,15 +215,15 @@ int shift (TStack *S, int token, TVar *pom) {
  */
 int getTopTerminal(TStack *S) {
 
-  TSItem *pom = S->top;
+   TSItem *pom = S->top;
 
-  // hledáme terminál nejblí¾e k zásobníku:
-  while (pom != NULL && ((TStackData*)pom->data)->token == EXPRESSION) {
-    pom = pom->next;
-  }
+   // hledáme terminál nejblí¾e k zásobníku:
+   while (pom != NULL && ((TStackData*)pom->data)->token == EXPRESSION) {
+      pom = pom->next;
+   }
 
-  if (pom == NULL) return -1;
-  else return ((TStackData*)pom->data)->token;
+   if (pom == NULL) return -1;
+   else return ((TStackData*)pom->data)->token;
 }
 
 /*
@@ -235,64 +237,64 @@ int getTopTerminal(TStack *S) {
  */
 int findRule(TStack *S, TInstr *instr) {
 
-  int err = SYN_ERR;
-  TStackData *top = NULL;
+   int err = SYN_ERR;
+   TStackData *top = NULL;
 
-  if (!stackEmpty(S)){
-    top = (TStackData *) stackTopPop(S);
+   if (!stackEmpty(S)) {
+      top = (TStackData *) stackTopPop(S);
 
-    // pravidlo E -> (E)
-    if (top->token == L_RIGHT_BRACKET) {         // pop(pravá závorka)
-      instr->type = NOINSTR;                     // nebude se generovat pravidlo
-      free(top);
-      if (!stackEmpty(S)) {
-        top = (TStackData *) stackTopPop(S);
-
-        if (top->token == EXPRESSION) {          // pop(výraz)
-          instr->dest = top->var;
-          free(top);
-          if (!stackEmpty(S)){
+      // pravidlo E -> (E)
+      if (top->token == L_RIGHT_BRACKET) {         // pop(pravá závorka)
+         instr->type = NOINSTR;                     // nebude se generovat pravidlo
+         free(top);
+         if (!stackEmpty(S)) {
             top = (TStackData *) stackTopPop(S);
 
-            if (top->token == L_LEFT_BRACKET) {  // pop(levá závorka)
-              err = EOK;                         // nalezeno pravidlo!
-              free(top);
+            if (top->token == EXPRESSION) {          // pop(výraz)
+               instr->dest = top->var;
+               free(top);
+               if (!stackEmpty(S)) {
+                  top = (TStackData *) stackTopPop(S);
+
+                  if (top->token == L_LEFT_BRACKET) {  // pop(levá závorka)
+                     err = EOK;                         // nalezeno pravidlo!
+                     free(top);
+                  }
+               }
             }
-          }
-        }
-      }
-    } // konec pravidla
+         }
+      } // konec pravidla
 
-    // pravidlo E -> E op E
-    else if (top->token == EXPRESSION) {        // pop(výraz)
-      instr->src2 = top->var;
-      free(top);
-      if (!stackEmpty(S)) {
-        top = (TStackData *) stackTopPop(S);
-
-        if (isOperator(top->token)) {           // pop(operátor)
-          instr->type = top->token + OFFSET;
-          free(top);
-          if (!stackEmpty(S)) {
+      // pravidlo E -> E op E
+      else if (top->token == EXPRESSION) {        // pop(výraz)
+         instr->src2 = top->var;
+         free(top);
+         if (!stackEmpty(S)) {
             top = (TStackData *) stackTopPop(S);
 
-            if (top->token == EXPRESSION) {    // pop(výraz)
-              err = EOK;                       // nalezeno pravidlo!
-              instr->src1 = top->var;
-              free(top);
+            if (isOperator(top->token)) {           // pop(operátor)
+               instr->type = top->token + OFFSET;
+               free(top);
+               if (!stackEmpty(S)) {
+                  top = (TStackData *) stackTopPop(S);
+
+                  if (top->token == EXPRESSION) {    // pop(výraz)
+                     err = EOK;                       // nalezeno pravidlo!
+                     instr->src1 = top->var;
+                     free(top);
+                  }
+               }
             }
-          }
-        }
-      }
-    } // konec pravidla
-  }
+         }
+      } // konec pravidla
+   }
 
-  // pokud nìkde zhavarovalo
-  if (err != EOK && top != NULL) {
-    free(top);
-  }
+   // pokud nìkde zhavarovalo
+   if (err != EOK && top != NULL) {
+      free(top);
+   }
 
-  return err;
+   return err;
 }
 
 /*
@@ -303,37 +305,36 @@ int findRule(TStack *S, TInstr *instr) {
  */
 int checkRule (TInstr *instr) {
 
-  // pravidlo E -> (E)
-  if (instr->type == NOINSTR) return EOK;
+   // pravidlo E -> (E)
+   if (instr->type == NOINSTR) return EOK;
 
-  // pravidlo E -> E op E
-  int err = EOK;
-  int cntConst = 0;
-  TVar *src1 = (TVar*)instr->src1;
-  TVar *src2 = (TVar*)instr->src2;
+   // pravidlo E -> E op E
+   int err = EOK;
+   int cntConst = 0;
+   TVar *src1 = (TVar*)instr->src1;
+   TVar *src2 = (TVar*)instr->src2;
 
-  // kontrola pro levý operand a operaci
-  if (src1->varType == VT_CONST) {
-    cntConst++;
-    err = checkSemErr(instr, src1->varData);
-  }
+   // kontrola pro levý operand a operaci
+   if (src1->varType == VT_CONST) {
+      cntConst++;
+      err = checkSemErr(instr, src1->varData);
+   }
 
-  // kontrola pro pravý operand a operaci
-  if (err == EOK && src2->varType == VT_CONST) {
-    cntConst++;
-    err = checkSemErr(instr, src2->varData);
-  }
+   // kontrola pro pravý operand a operaci
+   if (err == EOK && src2->varType == VT_CONST) {
+      cntConst++;
+      err = checkSemErr(instr, src2->varData);
+   }
 
-  // kontrola obou operandù
-  if (err == EOK && cntConst == 2) {
-    if (isLGEOperation(instr->type) &&
-        (src1->varData->type != src2->varData->type))
-    {
-        err = SEM_ERR;
-    }
-  }
+   // kontrola obou operandù
+   if (err == EOK && cntConst == 2) {
+      if (isLGEOperation(instr->type) &&
+            (src1->varData->type != src2->varData->type)) {
+         err = SEM_ERR;
+      }
+   }
 
-  return err;
+   return err;
 }
 
 /*
@@ -346,12 +347,12 @@ int checkRule (TInstr *instr) {
  */
 int checkSemErr (TInstr *instr, TVarData *data) {
 
-  if (isMathOperation(instr->type)){
-    if (semTable[instr->type][data->type] != 1) {
-      return SEM_ERR;
-    }
-  }
-  return EOK;
+   if (isMathOperation(instr->type)) {
+      if (semTable[instr->type][data->type] != 1) {
+         return SEM_ERR;
+      }
+   }
+   return EOK;
 }
 
 /*
@@ -364,30 +365,29 @@ int checkSemErr (TInstr *instr, TVarData *data) {
  */
 int insertInstruction(TInstr *instr, TTable *table) {
 
-  // pravidlo E -> (E)
-  if (instr->type == NOINSTR) return EOK;
+   // pravidlo E -> (E)
+   if (instr->type == NOINSTR) return EOK;
 
-  // pravidlo E -> E op E
-  int err = EOK;
-  TList *LTmpVars = &table->lastAddedFunc->tmpVar;
-  TList *LInstr = &table->lastAddedFunc->instructions;
+   // pravidlo E -> E op E
+   int err = EOK;
+   TList *LTmpVars = &table->lastAddedFunc->tmpVar;
+   TList *LInstr = &table->lastAddedFunc->instructions;
 
-  // vytvoø pomocnou promìnnou pro výsledek operace
-  TVar *var = createTmpVar(LTmpVars, &err);
-  if (err == EOK) {
-    instr->dest = var;
+   // vytvoø pomocnou promìnnou pro výsledek operace
+   TVar *var = createTmpVar(LTmpVars, &err);
+   if (err == EOK) {
+      instr->dest = var;
 
-    // vytvoø novou instrukci
-    TInstr *newInstr = genInstr(instr->type, instr->dest, instr->src1, instr->src2);
-    if (newInstr != NULL) {
+      // vytvoø novou instrukci
+      TInstr *newInstr = genInstr(instr->type, instr->dest, instr->src1, instr->src2);
+      if (newInstr != NULL) {
 
-      // vlo¾ instrukci do seznamu
-      err = listInsertLast(LInstr, newInstr);
-    }
-    else err = INTR_ERR; // nedostatek pamìti
-  }
+         // vlo¾ instrukci do seznamu
+         err = listInsertLast(LInstr, newInstr);
+      } else err = INTR_ERR; // nedostatek pamìti
+   }
 
-  return err;
+   return err;
 }
 
 /*
@@ -400,21 +400,21 @@ int insertInstruction(TInstr *instr, TTable *table) {
  */
 int returnResult(TStack *S, TVar **ptrResult) {
 
-  int err = SYN_ERR;
-  TStackData *top = NULL;
+   int err = SYN_ERR;
+   TStackData *top = NULL;
 
-  if (!stackEmpty(S)) {
-    top = (TStackData *) stackTopPop(S);
-    if (top->token == EXPRESSION) {
+   if (!stackEmpty(S)) {
+      top = (TStackData *) stackTopPop(S);
+      if (top->token == EXPRESSION) {
 
-       // ze stacku se podaøilo vyjmout výraz
-      *ptrResult = top->var;
-       err = EOK;
-    }
-    free(top);
-  }
+         // ze stacku se podaøilo vyjmout výraz
+         *ptrResult = top->var;
+         err = EOK;
+      }
+      free(top);
+   }
 
-  return err;
+   return err;
 }
 
 ////////////////////////////////////////////////////////////////////////  Vytváøení a mazání pomocných struktur
@@ -430,36 +430,33 @@ int returnResult(TStack *S, TVar **ptrResult) {
  */
 TVar *createTmpVar(TList *L, int *err) {
 
-  // posuneme aktivitu na dal¹í prvek seznamu :
-  listSucc(L);
+   // posuneme aktivitu na dal¹í prvek seznamu :
+   listSucc(L);
 
-  // aktivita se ztratila, je tøeba vytvoøit novou promìnnou
-  if (!listActive(L)) {
+   // aktivita se ztratila, je tøeba vytvoøit novou promìnnou
+   if (!listActive(L)) {
 
-    // alokace promìnné a dat
-    TVar *pom = NULL;
-    if ( (pom = malloc(sizeof(TVar))) != NULL) {
-       if ( (pom->varData = (TVarData*)malloc(sizeof(TVarData))) != NULL ) {
+      // alokace promìnné a dat
+      TVar *pom = NULL;
+      if ( (pom = malloc(sizeof(TVar))) != NULL) {
+         if ( (pom->varData = (TVarData*)malloc(sizeof(TVarData))) != NULL ) {
 
-         pom->varType = VT_TMP_VAR;        // inicializace
-         pom->name = NULL;
-         pom->varData->type = NIL;
-         *err = listInsertLast(L, pom);    // vlo¾ení do seznamu
-         listLast(L);                      // stane se aktivním
-       }
-       else {
-         *err = INTR_ERR;                  // chyba pøi alokaci
-          free(pom);
-       }
-    }
-    else *err = INTR_ERR;
-  }
+            pom->varType = VT_TMP_VAR;        // inicializace
+            pom->name = NULL;
+            pom->varData->type = NIL;
+            *err = listInsertLast(L, pom);    // vlo¾ení do seznamu
+            listLast(L);                      // stane se aktivním
+         } else {
+            *err = INTR_ERR;                  // chyba pøi alokaci
+            free(pom);
+         }
+      } else *err = INTR_ERR;
+   }
 
-  //  vrátí ukazatel na promìnnou nebo NULL
-  if (*err == EOK){
-    return (TVar*)listGetActive(L)->data;
-  }
-  else return NULL;
+   //  vrátí ukazatel na promìnnou nebo NULL
+   if (*err == EOK) {
+      return (TVar*)listGetActive(L)->data;
+   } else return NULL;
 }
 
 /*
@@ -471,14 +468,13 @@ TVar *createTmpVar(TList *L, int *err) {
  */
 TStackData *createStackData(int token, TVar *var, int *err) {
 
-  TStackData *data = NULL;
-  if ( (data = (TStackData*)malloc(sizeof(TStackData))) != NULL ){
-    data->token = token;
-    data->var = var;
-  }
-  else *err = INTR_ERR; // nedostatek pamìti
+   TStackData *data = NULL;
+   if ( (data = (TStackData*)malloc(sizeof(TStackData))) != NULL ) {
+      data->token = token;
+      data->var = var;
+   } else *err = INTR_ERR; // nedostatek pamìti
 
-  return data;
+   return data;
 }
 
 /*
@@ -487,11 +483,11 @@ TStackData *createStackData(int token, TVar *var, int *err) {
  */
 void stackDataDelete(TStack *S) {
 
-  TSItem *pom = S->top;
-  while (pom != NULL) {
-    free (pom->data);
-    pom = pom->next;
-  }
+   TSItem *pom = S->top;
+   while (pom != NULL) {
+      free (pom->data);
+      pom = pom->next;
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////  Funkce pro kontrolní výpisy
@@ -500,15 +496,15 @@ void stackDataDelete(TStack *S) {
  * Vytiskne precedenèní tabulku
  */
 void tiskniPrecTab() {
-  printf("%d %d", MAXTAB, ENDEXPR);
-  printf("\n");
-  for (int i = 0; i<MAXTAB; i++){
-    for (int j = 0; j<MAXTAB; j++){
-      if (precedentTable[i][j] == 0) printf("0 ");
-      else printf("%c ",precedentTable[i][j]);
-    }
-  printf("\n");
-  }
+   printf("%d %d", MAXTAB, ENDEXPR);
+   printf("\n");
+   for (int i = 0; i<MAXTAB; i++) {
+      for (int j = 0; j<MAXTAB; j++) {
+         if (precedentTable[i][j] == 0) printf("0 ");
+         else printf("%c ",precedentTable[i][j]);
+      }
+      printf("\n");
+   }
 }
 
 /*
@@ -516,16 +512,16 @@ void tiskniPrecTab() {
  */
 void tiskniStack (TStack *s) {
 
-  printf("Stav zásobníku: top\n");
-  TSItem *pom = s->top;
-  while (pom != NULL) {
-    printf("\t%d\n",((TStackData*)(pom->data))->token);
-    pom = pom->next;
-  }
-  printf("_______bottom_________\n\n");
+   printf("Stav zásobníku: top\n");
+   TSItem *pom = s->top;
+   while (pom != NULL) {
+      printf("\t%d\n",((TStackData*)(pom->data))->token);
+      pom = pom->next;
+   }
+   printf("_______bottom_________\n\n");
 }
 
-const char *iTable[]={
+const char *iTable[]= {
    [I_ADD]="+",      // dst src src
    [I_SUB]="-",      // dst src src
    [I_MUL]="*",      // dst src src
@@ -546,55 +542,61 @@ const char *iTable[]={
  */
 void tiskniList (TList *L) {
 
-  printf("\nStav seznamu:\n");
+   printf("\nStav seznamu:\n");
 
-  TLItem *pom = L->First;
-  TInstr *i = NULL;
+   TLItem *pom = L->First;
+   TInstr *i = NULL;
 
-  while (pom != NULL) {
-    i = (TInstr*)(pom->data);
+   while (pom != NULL) {
+      i = (TInstr*)(pom->data);
 
-    if (((TVar*)i->dest)->name == NULL) printf("%d = ", (int)i->dest);
-    else printf("%s = ",((TVar*)i->dest)->name);
+      if (((TVar*)i->dest)->name == NULL) printf("%d = ", (int)i->dest);
+      else printf("%s = ",((TVar*)i->dest)->name);
 
-    TVar *var = ((TVar*)i->src1);
-    if (var->varType == VT_CONST) {
-      switch(var->varData->type) {
-        case NIL:     printf("  nil  ");
-                      break;
-        case BOOL:    printf("  %s  ", (var->varData->value.b ? "TRUE":"FALSE"));
-                      break;
-        case STRING:  printf("  %s  ", var->varData->value.s.str);
-                      break;
-        case NUMBER:  printf("  %g  ",var->varData->value.n);
-                      break;
-      }
-    }
-    else if (var->name == NULL) printf(" %d ", (int)var);
-    else printf(" %s ",var->name);
+      TVar *var = ((TVar*)i->src1);
+      if (var->varType == VT_CONST) {
+         switch(var->varData->type) {
+         case NIL:
+            printf("  nil  ");
+            break;
+         case BOOL:
+            printf("  %s  ", (var->varData->value.b ? "TRUE":"FALSE"));
+            break;
+         case STRING:
+            printf("  %s  ", var->varData->value.s.str);
+            break;
+         case NUMBER:
+            printf("  %g  ",var->varData->value.n);
+            break;
+         }
+      } else if (var->name == NULL) printf(" %d ", (int)var);
+      else printf(" %s ",var->name);
 
-    printf(" %s ",iTable[i->type]);
+      printf(" %s ",iTable[i->type]);
 
-    var = ((TVar*)i->src2);
-    if (var->varType == VT_CONST) {
-      switch(var->varData->type) {
-        case NIL:     printf("  nil  ");
-                      break;
-        case BOOL:    printf("  %s  ", (var->varData->value.b ? "TRUE":"FALSE"));
-                      break;
-        case STRING:  printf("  %s  ", var->varData->value.s.str);
-                      break;
-        case NUMBER:  printf("  %g  ",var->varData->value.n);
-                      break;
-      }
-    }
-    else if (var->name == NULL) printf(" %d ", (int)var);
-    else printf(" %s ",var->name);
+      var = ((TVar*)i->src2);
+      if (var->varType == VT_CONST) {
+         switch(var->varData->type) {
+         case NIL:
+            printf("  nil  ");
+            break;
+         case BOOL:
+            printf("  %s  ", (var->varData->value.b ? "TRUE":"FALSE"));
+            break;
+         case STRING:
+            printf("  %s  ", var->varData->value.s.str);
+            break;
+         case NUMBER:
+            printf("  %g  ",var->varData->value.n);
+            break;
+         }
+      } else if (var->name == NULL) printf(" %d ", (int)var);
+      else printf(" %s ",var->name);
 
-    printf("\n");
-    pom = pom->next;
-  }
-  printf("________________\n\n");
+      printf("\n");
+      pom = pom->next;
+   }
+   printf("________________\n\n");
 }
 
 /* konec expression.c */

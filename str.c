@@ -41,20 +41,20 @@ int strInit(string *s) {
 int strInitLen(string *s, int len) {
 
    // provede alokaci
-   if (len >= 0){
-     if ((s->str = (char*) malloc(sizeof(char)*(len + 1))) == NULL)
-        return STR_ERROR;
+   if (len >= 0) {
+      if ((s->str = (char*) malloc(sizeof(char)*(len + 1))) == NULL)
+         return STR_ERROR;
 
-     s->allocSize = len + 1;
-     s->str[0] = '\0';
+      s->allocSize = len + 1;
+      s->str[0] = '\0';
    }
    // bez alokace
    else {
-    s->allocSize = 0;
-    s->str = NULL;
+      s->allocSize = 0;
+      s->str = NULL;
    }
 
-   s->length = 0;   
+   s->length = 0;
    return STR_SUCCESS;
 }
 
@@ -64,9 +64,9 @@ int strInitLen(string *s, int len) {
  * @param   ukazatel na string
  */
 void strFree(string *s) {
-  free(s->str);
-  s->length = 0;
-  s->allocSize = 0;
+   free(s->str);
+   s->length = 0;
+   s->allocSize = 0;
 }
 
 /*
@@ -95,8 +95,7 @@ int strIsNull (string *s) {
  */
 int strAddChar(string *s1, char c) {
 
-   if (s1->length + 1 >= s1->allocSize)
-   {
+   if (s1->length + 1 >= s1->allocSize) {
       // pamet nestaci, je potreba provest realokaci
       s1->allocSize = s1->length + STR_LEN_INC;
 
@@ -139,8 +138,7 @@ char *strCopyChar(string *s) {
 int strCopyString(string *s1, string *s2) {
 
    int newLength = s2->length;
-   if (newLength >= s1->allocSize)
-   {
+   if (newLength >= s1->allocSize) {
       // pamet nestaci, je potreba provest realokaci
       s1->allocSize = newLength + 1;
       char *oldPtr = s1->str;
@@ -165,7 +163,7 @@ int strCmpString(string *s1, string *s2) {
 }
 
 /*
- * Funkce provede konkatenaci dvou stringù 
+ * Funkce provede konkatenaci dvou stringù
  * a vrátí nový string.
  * @author  Vendula Poncová
  * @param   ukazatel na string
@@ -174,19 +172,18 @@ int strCmpString(string *s1, string *s2) {
  */
 string strConcatenation (string *s1, string *s2) {
 
-  string s;
-  s.length = s1->length + s2->length;
-  s.allocSize = s.length + 1;
+   string s;
+   s.length = s1->length + s2->length;
+   s.allocSize = s.length + 1;
 
-  if ( (s.str = (char*)malloc(sizeof(char)*s.allocSize)) != NULL ) {
+   if ( (s.str = (char*)malloc(sizeof(char)*s.allocSize)) != NULL ) {
 
-    strcpy(s.str, s1->str);
-    strcpy(&s.str[s1->length], s2->str);
+      strcpy(s.str, s1->str);
+      strcpy(&s.str[s1->length], s2->str);
 
-  }
-  else s.str = NULL;
+   } else s.str = NULL;
 
-  return s;
+   return s;
 }
 
 /*
@@ -199,12 +196,12 @@ string strConcatenation (string *s1, string *s2) {
  */
 string strCreateString (string *sCopy) {
 
-  string s;
-  s.length = sCopy->length;
-  s.allocSize = s.length + 1;
-  s.str = strCopyChar(sCopy);
+   string s;
+   s.length = sCopy->length;
+   s.allocSize = s.length + 1;
+   s.str = strCopyChar(sCopy);
 
-  return s;
+   return s;
 }
 
 /*
@@ -216,12 +213,12 @@ string strCreateString (string *sCopy) {
  * @return  nový string
  */
 string strCreateConstString (char *str) {
-  string s;
-  s.length = strlen(str);
-  s.allocSize = s.length + 1;
-  s.str = str;
+   string s;
+   s.length = strlen(str);
+   s.allocSize = s.length + 1;
+   s.str = str;
 
-  return s;
+   return s;
 }
 
 /*
@@ -234,20 +231,20 @@ string strCreateConstString (char *str) {
  */
 string strReadNChar(FILE *f, int n) {
 
-  // inicializujeme a alokujeme string
-  string s = {NULL, 0, 0};
+   // inicializujeme a alokujeme string
+   string s = {NULL, 0, 0};
 
-  // naèteme a zkopírujeme znaky:
-  if (n >= 0 && strInitLen(&s, n) == STR_SUCCESS){
-    int i, c;
-    for (i = 0; (i < n) && ((c = fgetc(f)) != EOF); i++) {
-      s.str[i] = (char)c;
-    }
-    s.str[i] = '\0';
-    s.length = i;
-  }
+   // naèteme a zkopírujeme znaky:
+   if (n >= 0 && strInitLen(&s, n) == STR_SUCCESS) {
+      int i, c;
+      for (i = 0; (i < n) && ((c = fgetc(f)) != EOF); i++) {
+         s.str[i] = (char)c;
+      }
+      s.str[i] = '\0';
+      s.length = i;
+   }
 
-  return s;
+   return s;
 }
 
 /*
@@ -258,25 +255,25 @@ string strReadNChar(FILE *f, int n) {
  * @return  nový string
  */
 string strReadLine(FILE *f) {
-  int err = STR_SUCCESS;
-  
-  // inicializujeme a alokujeme string
-  string s = {NULL, 0, 0};
-  err = strInit(&s);
+   int err = STR_SUCCESS;
 
-  // naèteme a zkopírujeme znaky:
-  if (err == STR_SUCCESS){
-    int c;
-    while(((c = fgetc(f)) != EOF) && (c !='\n')){
-      err = strAddChar(&s, c);
-    }
-    // pokud do¹lo k chybì, uvolníme data
-    if (err == STR_ERROR) {
-      strFree(&s);
-    }
-  }
+   // inicializujeme a alokujeme string
+   string s = {NULL, 0, 0};
+   err = strInit(&s);
 
-  return s;
+   // naèteme a zkopírujeme znaky:
+   if (err == STR_SUCCESS) {
+      int c;
+      while(((c = fgetc(f)) != EOF) && (c !='\n')) {
+         err = strAddChar(&s, c);
+      }
+      // pokud do¹lo k chybì, uvolníme data
+      if (err == STR_ERROR) {
+         strFree(&s);
+      }
+   }
+
+   return s;
 }
 
 /*
@@ -287,25 +284,25 @@ string strReadLine(FILE *f) {
  * @return  nový string
  */
 string strReadAll(FILE *f) {
-  int err = STR_SUCCESS;
-  
-  // inicializujeme a alokujeme string
-  string s = {NULL, 0, 0};
-  err = strInit(&s);
+   int err = STR_SUCCESS;
 
-  // naèteme a zkopírujeme znaky:
-  if (err == STR_SUCCESS){
-    int c;
-    while(((c = fgetc(f)) != EOF)){
-      err = strAddChar(&s, c);
-    }
-    // pokud do¹lo k chybì, uvolníme data
-    if (err == STR_ERROR) {
-      strFree(&s);
-    }
-  }
+   // inicializujeme a alokujeme string
+   string s = {NULL, 0, 0};
+   err = strInit(&s);
 
-  return s;
+   // naèteme a zkopírujeme znaky:
+   if (err == STR_SUCCESS) {
+      int c;
+      while(((c = fgetc(f)) != EOF)) {
+         err = strAddChar(&s, c);
+      }
+      // pokud do¹lo k chybì, uvolníme data
+      if (err == STR_ERROR) {
+         strFree(&s);
+      }
+   }
+
+   return s;
 }
 
 /* konec souboru str.c */

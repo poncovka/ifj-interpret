@@ -15,13 +15,12 @@
  */
 int listInit (TList *L) {
 
-  if (L != NULL) {      // inicializace
-    L->Act = NULL;
-    L->First = NULL;
-    L->Last = NULL;
-  }
-  else return LIST_ERR; // neplatný uk
-  return LIST_EOK;
+   if (L != NULL) {      // inicializace
+      L->Act = NULL;
+      L->First = NULL;
+      L->Last = NULL;
+   } else return LIST_ERR; // neplatný uk
+   return LIST_EOK;
 }
 
 /*
@@ -32,19 +31,18 @@ int listInit (TList *L) {
  */
 int listDispose (TList *L) {
 
-  if (L != NULL) {
-    TLItem *pom = NULL;
-    L->Act = NULL;
-    L->Last = NULL;
+   if (L != NULL) {
+      TLItem *pom = NULL;
+      L->Act = NULL;
+      L->Last = NULL;
 
-    while (L->First != NULL) {  // mazání prvkù
-      pom = L->First;
-      L->First = L->First->next;
-      free(pom);
-    }
-  }
-  else return LIST_ERR;         // neplatný uk
-  return LIST_EOK;
+      while (L->First != NULL) {  // mazání prvkù
+         pom = L->First;
+         L->First = L->First->next;
+         free(pom);
+      }
+   } else return LIST_ERR;       // neplatný uk
+   return LIST_EOK;
 
 }
 
@@ -57,20 +55,18 @@ int listDispose (TList *L) {
  */
 int listInsertFirst  (TList *L, void *data) {
 
-  if (L != NULL) {
-    TLItem *pom = NULL;        // alokace nového prvku
+   if (L != NULL) {
+      TLItem *pom = NULL;        // alokace nového prvku
 
-    if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
-      pom->data = data;         // inicializace
-      pom->next = L->First;
-      L->First = pom;
-                                // první prvek je i poslední
-      if (L->First->next == NULL) L->Last = pom;
-    }
-    else return LIST_EALLOC;    // nedostatek pamìti
-  }
-  else return LIST_ERR;         // neplatný uk
-  return LIST_EOK;
+      if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
+         pom->data = data;         // inicializace
+         pom->next = L->First;
+         L->First = pom;
+         // první prvek je i poslední
+         if (L->First->next == NULL) L->Last = pom;
+      } else return LIST_EALLOC;  // nedostatek pamìti
+   } else return LIST_ERR;       // neplatný uk
+   return LIST_EOK;
 
 }
 
@@ -83,27 +79,24 @@ int listInsertFirst  (TList *L, void *data) {
  */
 int listInsertLast  (TList *L, void *data) {
 
-  if (L != NULL) {
-    TLItem *pom = NULL;        // alokace nového prvku
+   if (L != NULL) {
+      TLItem *pom = NULL;        // alokace nového prvku
 
-    if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
-      pom->data = data;         // inicializace
-      pom->next = NULL;
+      if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
+         pom->data = data;         // inicializace
+         pom->next = NULL;
 
-      if (L->First == NULL) {   // seznam byl prázdný
-        L->First = pom;         // nový prvek je prvním
-      }
-      else {                    // v seznamu alespoò 1 prvek
-        L->Last->next = pom;
-      }
+         if (L->First == NULL) {   // seznam byl prázdný
+            L->First = pom;         // nový prvek je prvním
+         } else {                  // v seznamu alespoò 1 prvek
+            L->Last->next = pom;
+         }
 
-      L->Last = pom;            // nový prvek je poslední
+         L->Last = pom;            // nový prvek je poslední
 
-    }
-    else return LIST_EALLOC;    // nedostatek pamìti
-  }
-  else return LIST_ERR;         // neplatný uk
-  return LIST_EOK;
+      } else return LIST_EALLOC;  // nedostatek pamìti
+   } else return LIST_ERR;       // neplatný uk
+   return LIST_EOK;
 
 }
 
@@ -115,11 +108,10 @@ int listInsertLast  (TList *L, void *data) {
  */
 int listFirst (TList *L) {
 
-  if (L != NULL) {
-    L->Act = L->First;
-  }
-  else return LIST_ERR;
-  return LIST_EOK;
+   if (L != NULL) {
+      L->Act = L->First;
+   } else return LIST_ERR;
+   return LIST_EOK;
 
 }
 
@@ -131,11 +123,10 @@ int listFirst (TList *L) {
  */
 int listLast (TList *L) {
 
-  if (L != NULL) {
-    L->Act = L->Last;
-  }
-  else return LIST_ERR;
-  return LIST_EOK;
+   if (L != NULL) {
+      L->Act = L->Last;
+   } else return LIST_ERR;
+   return LIST_EOK;
 
 }
 
@@ -148,10 +139,9 @@ int listLast (TList *L) {
  */
 void *listCopyFirst (TList *L) {
 
-  if (L != NULL && L->First != NULL) {
-    return L->First->data;  // v poøádku, vrací uk na data
-  }
-  else return NULL;         // chyba, neplatný ukazatel
+   if (L != NULL && L->First != NULL) {
+      return L->First->data;  // v poøádku, vrací uk na data
+   } else return NULL;       // chyba, neplatný ukazatel
 
 }
 
@@ -164,10 +154,9 @@ void *listCopyFirst (TList *L) {
  */
 void *listCopyLast (TList *L) {
 
-  if (L != NULL && L->Last != NULL) {
-    return L->Last->data;   // v poøádku, vrací uk na data
-  }
-  else return NULL;         // chyba, neplatný ukazatel
+   if (L != NULL && L->Last != NULL) {
+      return L->Last->data;   // v poøádku, vrací uk na data
+   } else return NULL;       // chyba, neplatný ukazatel
 
 }
 
@@ -180,25 +169,25 @@ void *listCopyLast (TList *L) {
  */
 int listDeleteFirst (TList *L) {
 
-  if (L != NULL) {
-    if (L->First != NULL) {     // seznam není prázdný
+   if (L != NULL) {
+      if (L->First != NULL) {     // seznam není prázdný
 
-      if (L->First == L->Act){  // první prvek je aktivní
-        L->Act = NULL;          // zru¹ aktivitu
+         if (L->First == L->Act) { // první prvek je aktivní
+            L->Act = NULL;          // zru¹ aktivitu
+         }
+
+         if (L->First == L->Last) { // první prvek je poslední
+            L->Last = NULL;         // poslední zru¹íme
+         }
+
+         TLItem *pom = L->First;  // zru¹ prvek
+         L->First = L->First->next;
+         free (pom);
       }
+   }
 
-      if (L->First == L->Last){ // první prvek je poslední
-        L->Last = NULL;         // poslední zru¹íme
-      }
-
-      TLItem *pom = L->First;  // zru¹ prvek
-      L->First = L->First->next;
-      free (pom);
-    }
-  }
-
-  else return LIST_ERR;         // neplatný uk na seznam
-  return LIST_EOK;
+   else return LIST_ERR;         // neplatný uk na seznam
+   return LIST_EOK;
 }
 
 /*
@@ -210,23 +199,21 @@ int listDeleteFirst (TList *L) {
  */
 int listPostInsert (TList *L, void *data) {
 
-  if (L != NULL) {
-    if (L->Act != NULL) {        // nìjaký prvek je aktivní
+   if (L != NULL) {
+      if (L->Act != NULL) {        // nìjaký prvek je aktivní
 
-      TLItem *pom = NULL;       // alokace
-      if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
+         TLItem *pom = NULL;       // alokace
+         if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
 
-        pom->data = data;        // inicializace
-        pom->next = L->Act->next;
-        L->Act->next = pom;
-                                 // nastavení posledního prvku
-        if (L->Act == L->Last) L->Last = pom;
+            pom->data = data;        // inicializace
+            pom->next = L->Act->next;
+            L->Act->next = pom;
+            // nastavení posledního prvku
+            if (L->Act == L->Last) L->Last = pom;
+         } else return LIST_EALLOC; // nedostatek pamìti
       }
-      else return LIST_EALLOC;   // nedostatek pamìti
-    }
-  }
-  else return LIST_ERR;          // neplatný uk na seznam
-  return LIST_EOK;
+   } else return LIST_ERR;        // neplatný uk na seznam
+   return LIST_EOK;
 
 }
 
@@ -239,14 +226,13 @@ int listPostInsert (TList *L, void *data) {
  */
 int listSucc (TList *L) {
 
-  if (L != NULL) {
+   if (L != NULL) {
 
-    if (L->Act != NULL) {
-      L->Act = L->Act->next;
-    }
-  }
-  else return LIST_ERR;
-  return LIST_EOK;
+      if (L->Act != NULL) {
+         L->Act = L->Act->next;
+      }
+   } else return LIST_ERR;
+   return LIST_EOK;
 }
 
 /*
@@ -257,10 +243,9 @@ int listSucc (TList *L) {
  */
 void *listCopy (TList *L) {
 
-  if (L != NULL && L->Act != NULL) {
-    return L->Act->data;  // ok, vrací se uk na data
-  }
-  else return NULL;       // chyba, vrací se NULL
+   if (L != NULL && L->Act != NULL) {
+      return L->Act->data;  // ok, vrací se uk na data
+   } else return NULL;     // chyba, vrací se NULL
 }
 
 /*
@@ -272,14 +257,13 @@ void *listCopy (TList *L) {
  */
 int listActualize (TList *L, void *data ) {
 
-  if (L != NULL || data == NULL) {
+   if (L != NULL || data == NULL) {
 
-    if (L->Act != NULL) {
-      L->Act->data = data; // pøepí¹e uk na data
-    }
-  }
-  else return LIST_ERR;    // neplatný ukazatel
-  return LIST_EOK;
+      if (L->Act != NULL) {
+         L->Act->data = data; // pøepí¹e uk na data
+      }
+   } else return LIST_ERR;  // neplatný ukazatel
+   return LIST_EOK;
 }
 
 /*
@@ -289,7 +273,7 @@ int listActualize (TList *L, void *data ) {
  * @return  true/false
  */
 int listActive (TList *L) {
-  return (L->Act != NULL);
+   return (L->Act != NULL);
 }
 
 /*
@@ -299,10 +283,10 @@ int listActive (TList *L) {
  * @return  ukazatel na prvek seznamu
  */
 TLItem *listGetActive (TList *L) {
-  if (L != NULL) {
-    return L->Act;
-  }
-  return NULL;
+   if (L != NULL) {
+      return L->Act;
+   }
+   return NULL;
 }
 
 /*
@@ -313,11 +297,10 @@ TLItem *listGetActive (TList *L) {
  * @return  kód chyby
  */
 int listSetActive (TList *L, TLItem *uk) {
-  if (L != NULL ) {
-    L->Act = uk;
-  }
-  else return LIST_ERR;
-  return LIST_EOK;
+   if (L != NULL ) {
+      L->Act = uk;
+   } else return LIST_ERR;
+   return LIST_EOK;
 }
 
 

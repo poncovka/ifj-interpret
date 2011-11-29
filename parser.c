@@ -5,40 +5,40 @@
  * @date
  */
 
- /*
-  * PRAVIDLA
-      1.       <program> -> function <def_func>
-      2.      <def_func> -> main ( ) <stat> end ; <EOF>
-      3.      <def_func> -> idFunc ( <params> ) <stat> end <program>
-      4.        <params> -> eps
-      5.        <params> -> id <params_n>
-      6.      <params_n> -> eps
-      7.      <params_n> -> , id <params_n>
-      8.          <stat> -> <def_var> <stat_list>
-      9.       <def_var> -> eps
-      10.      <def_var> -> local id <INIT> ; <def_var>
-      11.         <init> -> eps
-      12.         <init> -> = <lit>
-      13.          <lit> -> literal
-      14.    <stat_list> -> eps
-      15.    <stat_list> -> <commad> ; <stat_list>
-      16.      <command> -> if expression then <stat_list> else <stat_list> end
-      17.      <command> -> while expression do <stat_list> end
-      18.      <command> -> return expression
-      19.      <command> -> write ( expression <expression_n> )
-      20. <expression_n> -> eps
-      21. <expression_n> -> , expression <expression_n>
-      22.      <command> -> id = <assign>
-      23.       <assign> -> expression
-      24.       <assign> -> read ( <lit> )
-      25.       <assign> -> idFunc ( <params> )
-      26.   <var_params> -> eps
-      27.   <var_params> -> <var> <var_n>
-      28.          <var> -> <lit>
-      29.          <var> -> id
-      30.        <var_n> -> eps
-      31.        <var_n> -> , <var> <var_n>
- */
+/*
+ * PRAVIDLA
+     1.       <program> -> function <def_func>
+     2.      <def_func> -> main ( ) <stat> end ; <EOF>
+     3.      <def_func> -> idFunc ( <params> ) <stat> end <program>
+     4.        <params> -> eps
+     5.        <params> -> id <params_n>
+     6.      <params_n> -> eps
+     7.      <params_n> -> , id <params_n>
+     8.          <stat> -> <def_var> <stat_list>
+     9.       <def_var> -> eps
+     10.      <def_var> -> local id <INIT> ; <def_var>
+     11.         <init> -> eps
+     12.         <init> -> = <lit>
+     13.          <lit> -> literal
+     14.    <stat_list> -> eps
+     15.    <stat_list> -> <commad> ; <stat_list>
+     16.      <command> -> if expression then <stat_list> else <stat_list> end
+     17.      <command> -> while expression do <stat_list> end
+     18.      <command> -> return expression
+     19.      <command> -> write ( expression <expression_n> )
+     20. <expression_n> -> eps
+     21. <expression_n> -> , expression <expression_n>
+     22.      <command> -> id = <assign>
+     23.       <assign> -> expression
+     24.       <assign> -> read ( <lit> )
+     25.       <assign> -> idFunc ( <params> )
+     26.   <var_params> -> eps
+     27.   <var_params> -> <var> <var_n>
+     28.          <var> -> <lit>
+     29.          <var> -> id
+     30.        <var_n> -> eps
+     31.        <var_n> -> , <var> <var_n>
+*/
 
 #include "parser.h"
 
@@ -60,7 +60,7 @@ int prsVarParams();
 int prsVar();
 int prsVarN();
 
-int parser(TTable *t){
+int parser(TTable *t) {
    table = t;
    strInit(&attr);
 
@@ -69,7 +69,7 @@ int parser(TTable *t){
    return err;
 }
 
-int prsProgram(){
+int prsProgram() {
    // 1. <program> -> function <def_func>
    NEXT_TOKEN
    if(token != KW_FUNCTION) return SYN_ERR;
@@ -77,96 +77,103 @@ int prsProgram(){
    return prsDefFunc();
 }
 
-int prsDefFunc(){
+int prsDefFunc() {
    int err;
    TInstr *i;
 
    NEXT_TOKEN
-   switch(token){
-      case KW_MAIN:{
-         // 2. <def_func> -> main ( ) <stat> end ; <EOF>
-         if( (err = tableInsertFunction(table, attr) ) != INS_OK){
-            switch(err){
-               case INS_NODE_EXIST: return SEM_ERR;   // tato fce uz v tabulce je (NEMELA BY BYT!!!)
-               case INS_MALLOC:
-               default: return INTR_ERR;
-            }
+   switch(token) {
+   case KW_MAIN: {
+      // 2. <def_func> -> main ( ) <stat> end ; <EOF>
+      if( (err = tableInsertFunction(table, attr) ) != INS_OK) {
+         switch(err) {
+         case INS_NODE_EXIST:
+            return SEM_ERR;   // tato fce uz v tabulce je (NEMELA BY BYT!!!)
+         case INS_MALLOC:
+         default:
+            return INTR_ERR;
          }
+      }
 
-         instr = &(table->lastAddedFunc->instructions);
-         NEXT_TOKEN
-         if(token != L_LEFT_BRACKET) return SYN_ERR;
+      instr = &(table->lastAddedFunc->instructions);
+      NEXT_TOKEN
+      if(token != L_LEFT_BRACKET) return SYN_ERR;
 
-         NEXT_TOKEN
-         if(token != L_RIGHT_BRACKET) return SYN_ERR;
+      NEXT_TOKEN
+      if(token != L_RIGHT_BRACKET) return SYN_ERR;
 
-         // vlozim instrukci na vyprazdeni zasobniku protoze main muze byt volany rekuzivne
-         // a nejaky sikula by mainu mohl dat parametry
-         if( (i = genInstr(I_STACK_E, NULL, NULL, NULL) ) == NULL )
+      // vlozim instrukci na vyprazdeni zasobniku protoze main muze byt volany rekuzivne
+      // a nejaky sikula by mainu mohl dat parametry
+      if( (i = genInstr(I_STACK_E, NULL, NULL, NULL) ) == NULL )
+         return INTR_ERR;
+      if( listInsertLast( instr,  i) != LIST_EOK)
+         return INTR_ERR;
+
+      err = prsStat();
+      if(err != PRS_OK) return err;
+
+      // attr uz nacetl prsStat
+      if(token != KW_END) return SYN_ERR;
+
+      NEXT_TOKEN
+      if(token != L_SEMICOLON) return SYN_ERR;
+
+      NEXT_TOKEN;
+      if(token != END_OF_FILE) return SYN_ERR;
+
+      return PRS_OK;
+   }
+   break;
+   case L_ID: {
+      // 3. <def_func> -> idFunc ( <params> ) <stat> end <program>
+      if( (err = tableInsertFunction(table, attr) ) != INS_OK) {
+         switch(err) {
+         case INS_NODE_EXIST:
+            return SEM_ERR;
+         case INS_MALLOC:
+         default:
             return INTR_ERR;
-         if( listInsertLast( instr,  i) != LIST_EOK)
-            return INTR_ERR;
+         }
+      }
 
-         err = prsStat();
-         if(err != PRS_OK) return err;
+      // povedlo vlozit
+      instr = &(table->lastAddedFunc->instructions);
 
-         // attr uz nacetl prsStat
-         if(token != KW_END) return SYN_ERR;
+      NEXT_TOKEN
+      if(token != L_LEFT_BRACKET) return SYN_ERR;
 
-         NEXT_TOKEN
-         if(token != L_SEMICOLON) return SYN_ERR;
+      err = prsParams();
+      if(err != PRS_OK) return err;
 
-         NEXT_TOKEN;
-         if(token != END_OF_FILE) return SYN_ERR;
+      // vyprazdnim zasobnik kdyby mi nahodou nekdo predal funkci vic parametru nez ocekava
+      if( (i = genInstr(I_STACK_E, NULL, NULL, NULL)) == NULL)
+         return INTR_ERR;
+      if( listInsertLast( instr, i ) != LIST_EOK)
+         return INTR_ERR;
 
-         return PRS_OK;
-      }break;
-      case L_ID: {
-            // 3. <def_func> -> idFunc ( <params> ) <stat> end <program>
-            if( (err = tableInsertFunction(table, attr) ) != INS_OK){
-               switch(err){
-                  case INS_NODE_EXIST: return SEM_ERR;
-                  case INS_MALLOC:
-                  default: return INTR_ERR;
-               }
-            }
+      // dalsi attr uz nacetl prsParams
+      if(token != L_RIGHT_BRACKET) return SYN_ERR;
 
-            // povedlo vlozit
-            instr = &(table->lastAddedFunc->instructions);
+      err = prsStat();
+      if(err != PRS_OK) return err;
 
-            NEXT_TOKEN
-            if(token != L_LEFT_BRACKET) return SYN_ERR;
+      // dalsi attr uz nacetl prsStat
+      if(token != KW_END) return SYN_ERR;
 
-            err = prsParams();
-            if(err != PRS_OK) return err;
-
-            // vyprazdnim zasobnik kdyby mi nahodou nekdo predal funkci vic parametru nez ocekava
-            if( (i = genInstr(I_STACK_E, NULL, NULL, NULL)) == NULL)
-               return INTR_ERR;
-            if( listInsertLast( instr, i ) != LIST_EOK)
-               return INTR_ERR;
-
-            // dalsi attr uz nacetl prsParams
-            if(token != L_RIGHT_BRACKET) return SYN_ERR;
-
-            err = prsStat();
-            if(err != PRS_OK) return err;
-
-            // dalsi attr uz nacetl prsStat
-            if(token != KW_END) return SYN_ERR;
-
-            return prsProgram();
-         }break;
-      case KW_SORT:
-      case KW_FIND:
-      case KW_SUBSTR:
-      case KW_TYPE:
-         return SEM_ERR;break;
+      return prsProgram();
+   }
+   break;
+   case KW_SORT:
+   case KW_FIND:
+   case KW_SUBSTR:
+   case KW_TYPE:
+      return SEM_ERR;
+      break;
    }
    return SYN_ERR;
 }
 
-int prsParams(){
+int prsParams() {
    int err;
    TInstr *i;
    NEXT_TOKEN
@@ -180,11 +187,13 @@ int prsParams(){
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
    // pokusim se id vlozit to tabulky
    err = functionInsertVar(table->lastAddedFunc, attr);
-   if(err != INS_OK){
-      switch(err){
-         case INS_NODE_EXIST: return SEM_ERR;
-         case INS_MALLOC:
-         default: return INTR_ERR;
+   if(err != INS_OK) {
+      switch(err) {
+      case INS_NODE_EXIST:
+         return SEM_ERR;
+      case INS_MALLOC:
+      default:
+         return INTR_ERR;
       }
    }
    // nageneruju instrukci
@@ -205,7 +214,7 @@ int prsParams(){
    return PRS_OK;
 }
 
-int prsParamsN(){
+int prsParamsN() {
    int err;
    TInstr *i;
 
@@ -223,11 +232,13 @@ int prsParamsN(){
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
    // pokusim se id vlozit to tabulky
    err = functionInsertVar(table->lastAddedFunc, attr);
-   if(err != INS_OK){
-      switch(err){
-         case INS_NODE_EXIST: return SEM_ERR;
-         case INS_MALLOC:
-         default: return INTR_ERR;
+   if(err != INS_OK) {
+      switch(err) {
+      case INS_NODE_EXIST:
+         return SEM_ERR;
+      case INS_MALLOC:
+      default:
+         return INTR_ERR;
       }
    }
 
@@ -246,7 +257,7 @@ int prsParamsN(){
    return prsParamsN();
 }
 
-int prsStat(){
+int prsStat() {
    // 8. <stat> -> <def_var> <stat_list>
    int err;
    err = prsDefVar();
@@ -258,13 +269,13 @@ int prsStat(){
    return PRS_OK;
 }
 
-int prsDefVar(){
+int prsDefVar() {
    int err;
 
    NEXT_TOKEN
    // 9. <def_var> -> eps
    if(token == KW_END   || token == L_ID      || token == KW_IF   ||
-      token == KW_WHILE || token == KW_RETURN || token == KW_WRITE )
+         token == KW_WHILE || token == KW_RETURN || token == KW_WRITE )
       return PRS_OK;
 
    // 10. <def_var> -> local id <INIT> ; <def_var>
@@ -278,11 +289,13 @@ int prsDefVar(){
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
    // pokusim se id vlozit to tabulky
    err = functionInsertVar(table->lastAddedFunc, attr);
-   if(err != INS_OK){
-      switch(err){
-         case INS_NODE_EXIST: return SEM_ERR;
-         case INS_MALLOC:
-         default: return INTR_ERR;
+   if(err != INS_OK) {
+      switch(err) {
+      case INS_NODE_EXIST:
+         return SEM_ERR;
+      case INS_MALLOC:
+      default:
+         return INTR_ERR;
       }
    }
 
@@ -294,13 +307,13 @@ int prsDefVar(){
    return prsDefVar();
 }
 
-int prsInit(){
+int prsInit() {
    int err;
    TInstr *i;
 
    NEXT_TOKEN
    // 11. <init> -> eps
-   if(token == L_SEMICOLON){
+   if(token == L_SEMICOLON) {
       // inicializuji promenou na nil
       // ve skutecnosti ji inicializuju pomoci konstanty ktera bude ulozena
       // jako prvni v tabulce konstant a bude NIL
@@ -333,14 +346,14 @@ int prsInit(){
    return PRS_OK;
 }
 
-int prsLit(){
+int prsLit() {
    // 13. <lit> -> literal // nejaky z literalu
    if( token == KW_NIL || token == KW_FALSE || token == KW_TRUE || token == L_NUMBER || token == L_STRING )
-         return PRS_OK;
+      return PRS_OK;
    return SYN_ERR;
 }
 
-int prsStatList(){
+int prsStatList() {
    // TOKEN UZ JE NACTENY
    int err;
    // 14. <stat_list> -> eps
@@ -360,202 +373,207 @@ int prsStatList(){
    return prsStatList();
 }
 
-int prsCommand(){
+int prsCommand() {
    // TOKEN UZ JE NACTENY
    TVar *tmpV;
    int err = INTR_ERR;
-   switch(token){
+   switch(token) {
       // 22. <command> -> id = <assign>
-      case L_ID:{
-         // je id v tabulce symbolu pro tuhle funkci?
-         TVar *tmp;
-         if( (tmp = functionSearchVar(table->lastAddedFunc, attr) ) == NULL ) return SEM_ERR;
-         NEXT_TOKEN
-         if(token != L_ASSIGN) return SYN_ERR;
+   case L_ID: {
+      // je id v tabulce symbolu pro tuhle funkci?
+      TVar *tmp;
+      if( (tmp = functionSearchVar(table->lastAddedFunc, attr) ) == NULL ) return SEM_ERR;
+      NEXT_TOKEN
+      if(token != L_ASSIGN) return SYN_ERR;
 
-         int err = prsAssign(tmp);
-         if(err != PRS_OK) return err;
+      int err = prsAssign(tmp);
+      if(err != PRS_OK) return err;
 
-         return PRS_OK;
-      }break;
-      // 16. <command> -> if expression then <stat_list> else <stat_list> end
-      case KW_IF:{
-         NEXT_TOKEN
-         // naparsuju vyraz
-         if( (err = parseExpression(table, &tmpV)) != EOK) return err;
-         // ocekavam then
-         if(token != KW_THEN) return SYN_ERR;
-         // pomocna navesti
-         TInstr *labElse  = genInstr(I_LAB, NULL, NULL, NULL);
-         TInstr *labEndIf = genInstr(I_LAB, NULL, NULL, NULL);
-         // potrebne instrukce, navesti doplnim pozdeji
-         TInstr *jmpz = genInstr(I_JMP_Z, NULL, tmpV, NULL);
-         TInstr *jmp  = genInstr(I_JMP, NULL , NULL, NULL);
+      return PRS_OK;
+   }
+   break;
+   // 16. <command> -> if expression then <stat_list> else <stat_list> end
+   case KW_IF: {
+      NEXT_TOKEN
+      // naparsuju vyraz
+      if( (err = parseExpression(table, &tmpV)) != EOK) return err;
+      // ocekavam then
+      if(token != KW_THEN) return SYN_ERR;
+      // pomocna navesti
+      TInstr *labElse  = genInstr(I_LAB, NULL, NULL, NULL);
+      TInstr *labEndIf = genInstr(I_LAB, NULL, NULL, NULL);
+      // potrebne instrukce, navesti doplnim pozdeji
+      TInstr *jmpz = genInstr(I_JMP_Z, NULL, tmpV, NULL);
+      TInstr *jmp  = genInstr(I_JMP, NULL , NULL, NULL);
 
-         TLItem *itmElse = NULL;
-         TLItem *itmEnd  = NULL;
+      TLItem *itmElse = NULL;
+      TLItem *itmEnd  = NULL;
 
-         if(labElse == NULL || labEndIf == NULL || jmpz == NULL || jmp == NULL )
-            return INTR_ERR;
+      if(labElse == NULL || labEndIf == NULL || jmpz == NULL || jmp == NULL )
+         return INTR_ERR;
 
-         // JMP_Z tmp labElse
-         if( listInsertLast(instr, jmpz) != LIST_EOK)
-            return INTR_ERR;
+      // JMP_Z tmp labElse
+      if( listInsertLast(instr, jmpz) != LIST_EOK)
+         return INTR_ERR;
 
-         //nactu dalsi token
-         token = getNextToken(&attr);
-         if(token < 0) {
-            free(labElse);
-            free(labEndIf);
-            free(jmp);
-            return token;
-         }
+      //nactu dalsi token
+      token = getNextToken(&attr);
+      if(token < 0) {
+         free(labElse);
+         free(labEndIf);
+         free(jmp);
+         return token;
+      }
 
-         if( ( err = prsStatList() ) != PRS_OK || token !=  KW_ELSE) {
-            free(labElse);
-            free(labEndIf);
-            free(jmp);
-            return token != KW_ELSE ? SYN_ERR : err;
-         }
+      if( ( err = prsStatList() ) != PRS_OK || token !=  KW_ELSE) {
+         free(labElse);
+         free(labEndIf);
+         free(jmp);
+         return token != KW_ELSE ? SYN_ERR : err;
+      }
 
-         // JMP labEndIf
-         if( listInsertLast(instr, jmp) != LIST_EOK)
-            return INTR_ERR;
+      // JMP labEndIf
+      if( listInsertLast(instr, jmp) != LIST_EOK)
+         return INTR_ERR;
 
-         // LAB labElse
-         if( listInsertLast(instr, labElse) != LIST_EOK)
-            return INTR_ERR;
-         itmElse = instr->Last;
+      // LAB labElse
+      if( listInsertLast(instr, labElse) != LIST_EOK)
+         return INTR_ERR;
+      itmElse = instr->Last;
 
-         //nactu dalsi token
-         token = getNextToken(&attr);
-         if(token < 0) {
-            free(labEndIf);
-            return token;
-         }
+      //nactu dalsi token
+      token = getNextToken(&attr);
+      if(token < 0) {
+         free(labEndIf);
+         return token;
+      }
 
-         if( ( err = prsStatList() ) != PRS_OK || token != KW_END) {
-            free(labEndIf);
-            return token != KW_END ? SYN_ERR : err;
-         }
+      if( ( err = prsStatList() ) != PRS_OK || token != KW_END) {
+         free(labEndIf);
+         return token != KW_END ? SYN_ERR : err;
+      }
 
-         // LAB labEndIf
-         if( listInsertLast(instr, labEndIf) != LIST_EOK)
-            return INTR_ERR;
-         itmEnd = instr->Last;
+      // LAB labEndIf
+      if( listInsertLast(instr, labEndIf) != LIST_EOK)
+         return INTR_ERR;
+      itmEnd = instr->Last;
 
-         jmp->dest  = itmEnd;
-         jmpz->dest = itmElse;
+      jmp->dest  = itmEnd;
+      jmpz->dest = itmElse;
 
-         NEXT_TOKEN
-         return PRS_OK;
-      }break;
-      // 17. <command> -> while expression do <stat_list> end
-      case KW_WHILE:{
-         TInstr *labWhile = genInstr(I_LAB, NULL, NULL, NULL);
-         TInstr *labEnd   = genInstr(I_LAB, NULL, NULL, NULL);
+      NEXT_TOKEN
+      return PRS_OK;
+   }
+   break;
+   // 17. <command> -> while expression do <stat_list> end
+   case KW_WHILE: {
+      TInstr *labWhile = genInstr(I_LAB, NULL, NULL, NULL);
+      TInstr *labEnd   = genInstr(I_LAB, NULL, NULL, NULL);
 
-         TLItem *jmpToWhile = NULL;
-         TLItem *jmpToEnd   = NULL;
+      TLItem *jmpToWhile = NULL;
+      TLItem *jmpToEnd   = NULL;
 
-         if(labWhile == NULL || labEnd == NULL)
-            return INTR_ERR;
-         // navesti zacatku cyklu
-         if(listInsertLast(instr, labWhile) != LIST_EOK)
-            return INTR_ERR;
+      if(labWhile == NULL || labEnd == NULL)
+         return INTR_ERR;
+      // navesti zacatku cyklu
+      if(listInsertLast(instr, labWhile) != LIST_EOK)
+         return INTR_ERR;
 
-         // ulozim si adresu vygenerovaneho navesti
-         jmpToWhile = instr->Last;
+      // ulozim si adresu vygenerovaneho navesti
+      jmpToWhile = instr->Last;
 
-         // nactu dalsi token
-         token = getNextToken(&attr);
-         if(token < 0) {
-            free(labEnd);
-            return token;
-         }
-         // zpracuju vzraz
-         if( (err = parseExpression(table, &tmpV)) != EOK || token != KW_DO) {
-            free(labEnd);
-            return token != KW_DO ? SYN_ERR : err;
-         }
+      // nactu dalsi token
+      token = getNextToken(&attr);
+      if(token < 0) {
+         free(labEnd);
+         return token;
+      }
+      // zpracuju vzraz
+      if( (err = parseExpression(table, &tmpV)) != EOK || token != KW_DO) {
+         free(labEnd);
+         return token != KW_DO ? SYN_ERR : err;
+      }
 
-         // porovani pripadny skok na konec cyklu
-         // misto kam se bude skakat se doplni pozdeji
-         TInstr *jmpz = genInstr(I_JMP_Z, NULL, tmpV, NULL);
+      // porovani pripadny skok na konec cyklu
+      // misto kam se bude skakat se doplni pozdeji
+      TInstr *jmpz = genInstr(I_JMP_Z, NULL, tmpV, NULL);
 
-         if(jmpz == NULL) return INTR_ERR;
-         if(listInsertLast(instr, jmpz) != LIST_EOK) return INTR_ERR;
+      if(jmpz == NULL) return INTR_ERR;
+      if(listInsertLast(instr, jmpz) != LIST_EOK) return INTR_ERR;
 
-         //nactu dalsi token
-         token = getNextToken(&attr);
-         if(token < 0) {
-            free(labEnd);
-            return token;
-         }
-         // naparsuju vnitrek cyklu
-         int err = prsStatList();
-         if(err != PRS_OK || token != KW_END) {
-            free(labEnd);
-            return token != KW_END ? SYN_ERR : err;
-         }
+      //nactu dalsi token
+      token = getNextToken(&attr);
+      if(token < 0) {
+         free(labEnd);
+         return token;
+      }
+      // naparsuju vnitrek cyklu
+      int err = prsStatList();
+      if(err != PRS_OK || token != KW_END) {
+         free(labEnd);
+         return token != KW_END ? SYN_ERR : err;
+      }
 
-         TInstr *jmp = genInstr(I_JMP, jmpToWhile, NULL, NULL);
-         if(jmp == NULL) return INTR_ERR;
-         if(listInsertLast(instr, jmp) != LIST_EOK)
-            return INTR_ERR;
+      TInstr *jmp = genInstr(I_JMP, jmpToWhile, NULL, NULL);
+      if(jmp == NULL) return INTR_ERR;
+      if(listInsertLast(instr, jmp) != LIST_EOK)
+         return INTR_ERR;
 
-         // navesti konce cyklu
-         if(listInsertLast(instr, labEnd) != LIST_EOK)
-            return INTR_ERR;
-         jmpToEnd = instr->Last;
+      // navesti konce cyklu
+      if(listInsertLast(instr, labEnd) != LIST_EOK)
+         return INTR_ERR;
+      jmpToEnd = instr->Last;
 
-         jmpz->dest = jmpToEnd;
+      jmpz->dest = jmpToEnd;
 
-         NEXT_TOKEN
-         return PRS_OK;
-      }break;
-      // 18. <command> -> return expression
-      case KW_RETURN:{
-         // preskocim vyraz a vratim ze bylo vse OK
-         NEXT_TOKEN
-         if((err = parseExpression(table, &tmpV)) != EOK)
+      NEXT_TOKEN
+      return PRS_OK;
+   }
+   break;
+   // 18. <command> -> return expression
+   case KW_RETURN: {
+      // preskocim vyraz a vratim ze bylo vse OK
+      NEXT_TOKEN
+      if((err = parseExpression(table, &tmpV)) != EOK)
          return err;
 
-         TInstr *push = genInstr(I_PUSH, tmpV, NULL, NULL);
-         TInstr *ret = genInstr(I_RETURN, NULL, NULL, NULL);
-         if(push == NULL || ret == NULL)   return INTR_ERR;
+      TInstr *push = genInstr(I_PUSH, tmpV, NULL, NULL);
+      TInstr *ret = genInstr(I_RETURN, NULL, NULL, NULL);
+      if(push == NULL || ret == NULL)   return INTR_ERR;
 
-         if(listInsertLast(instr, push) != EOK) return INTR_ERR;
-         if(listInsertLast(instr, ret) != EOK) return INTR_ERR;
+      if(listInsertLast(instr, push) != EOK) return INTR_ERR;
+      if(listInsertLast(instr, ret) != EOK) return INTR_ERR;
 
-         return PRS_OK;
-      }break;
-      // 19. <command> -> write ( expression <expression_n> )
-      case KW_WRITE:{
-         NEXT_TOKEN
-         if(token != L_LEFT_BRACKET) return SYN_ERR;
+      return PRS_OK;
+   }
+   break;
+   // 19. <command> -> write ( expression <expression_n> )
+   case KW_WRITE: {
+      NEXT_TOKEN
+      if(token != L_LEFT_BRACKET) return SYN_ERR;
 
-         NEXT_TOKEN
-         // vypocitam vyraz
-         if((err = parseExpression(table, &tmpV)) != EOK) return err;
-         // nageneruju instrukci
-         TInstr *wrt = genInstr(I_WRITE, tmpV, NULL, NULL);
-         if(wrt == NULL) return INTR_ERR;
-         if(listInsertLast(instr, wrt) != LIST_EOK) return INTR_ERR;
+      NEXT_TOKEN
+      // vypocitam vyraz
+      if((err = parseExpression(table, &tmpV)) != EOK) return err;
+      // nageneruju instrukci
+      TInstr *wrt = genInstr(I_WRITE, tmpV, NULL, NULL);
+      if(wrt == NULL) return INTR_ERR;
+      if(listInsertLast(instr, wrt) != LIST_EOK) return INTR_ERR;
 
-         err = prsExpN();
-         if(err != PRS_OK ) return err;
+      err = prsExpN();
+      if(err != PRS_OK ) return err;
 
-         if(token != L_RIGHT_BRACKET) return SYN_ERR;
+      if(token != L_RIGHT_BRACKET) return SYN_ERR;
 
-         NEXT_TOKEN
-         return PRS_OK;
-      }break;
+      NEXT_TOKEN
+      return PRS_OK;
+   }
+   break;
    }
    return SYN_ERR;
 }
 
-int prsExpN(){
+int prsExpN() {
    int err = INTR_ERR;
    TVar *tmpV;
    // 20. <expression_n> -> eps
@@ -573,10 +591,10 @@ int prsExpN(){
    return prsExpN();
 }
 
-int prsAssign(TVar *var){
+int prsAssign(TVar *var) {
 
    NEXT_TOKEN
-   if(token == KW_READ){
+   if(token == KW_READ) {
       // 24. <assign> -> read ( <lit> )
       NEXT_TOKEN
       if(token != L_LEFT_BRACKET) return SYN_ERR;
@@ -607,7 +625,7 @@ int prsAssign(TVar *var){
    else
       Ftmp = tableSearchFunction(table, attr);
 
-   if(Ftmp == NULL && (token != KW_TYPE && token != KW_SUBSTR && token != KW_FIND && token != KW_SORT) ){
+   if(Ftmp == NULL && (token != KW_TYPE && token != KW_SUBSTR && token != KW_FIND && token != KW_SORT) ) {
       // 23. <assign> -> expression
       TVar *tmpV;
       if( (err = parseExpression(table, &tmpV)) != EOK) return err;
@@ -630,35 +648,40 @@ int prsAssign(TVar *var){
    if(token != L_RIGHT_BRACKET) return SYN_ERR;
 
    TInstr *tmpInstr = NULL;
-   switch(tokenTmp){
-      case KW_MAIN:
-      case L_ID:{
-            tmpInstr = genInstr(I_CALL, Ftmp, NULL, NULL);
-            if(tmpInstr == NULL) return INTR_ERR;
+   switch(tokenTmp) {
+   case KW_MAIN:
+   case L_ID: {
+      tmpInstr = genInstr(I_CALL, Ftmp, NULL, NULL);
+      if(tmpInstr == NULL) return INTR_ERR;
 
-            if( listInsertLast( instr,  tmpInstr) != LIST_EOK)
-               return INTR_ERR;
+      if( listInsertLast( instr,  tmpInstr) != LIST_EOK)
+         return INTR_ERR;
 
-            tmpInstr = genInstr(I_POP, var, NULL, NULL);
-            if(tmpInstr == NULL) return INTR_ERR;
+      tmpInstr = genInstr(I_POP, var, NULL, NULL);
+      if(tmpInstr == NULL) return INTR_ERR;
 
-            if( listInsertLast( instr,  tmpInstr) != LIST_EOK)
-               return INTR_ERR;
-            NEXT_TOKEN
-            return PRS_OK;
-         }break;
-      case KW_TYPE:{
-            tmpInstr = genInstr(I_TYPE, var, NULL, NULL);
-         }break;
-      case KW_SUBSTR:{
-            tmpInstr = genInstr(I_SUBSTR, var, NULL, NULL);
-         }break;
-      case KW_FIND:{
-            tmpInstr = genInstr(I_FIND, var, NULL, NULL);
-         }break;
-      case KW_SORT:{
-            tmpInstr = genInstr(I_SORT, var, NULL, NULL);
-         }break;
+      if( listInsertLast( instr,  tmpInstr) != LIST_EOK)
+         return INTR_ERR;
+      NEXT_TOKEN
+      return PRS_OK;
+   }
+   break;
+   case KW_TYPE: {
+      tmpInstr = genInstr(I_TYPE, var, NULL, NULL);
+   }
+   break;
+   case KW_SUBSTR: {
+      tmpInstr = genInstr(I_SUBSTR, var, NULL, NULL);
+   }
+   break;
+   case KW_FIND: {
+      tmpInstr = genInstr(I_FIND, var, NULL, NULL);
+   }
+   break;
+   case KW_SORT: {
+      tmpInstr = genInstr(I_SORT, var, NULL, NULL);
+   }
+   break;
    }
 
    if(tmpInstr == NULL) return INTR_ERR;
@@ -670,7 +693,7 @@ int prsAssign(TVar *var){
    return PRS_OK;
 }
 
-int prsVarParams(){
+int prsVarParams() {
    NEXT_TOKEN
    // 26. <var_params> -> eps
    if(token == L_RIGHT_BRACKET) return PRS_OK;
@@ -692,11 +715,11 @@ int prsVarParams(){
    return SYN_ERR;
 }
 
-int prsVar(){
+int prsVar() {
    // 28. <var> -> <lit>
    TInstr *tmpInstr;
    int err = prsLit();
-   if(err == PRS_OK){
+   if(err == PRS_OK) {
       // konstantka
       // vztvorim konstantu
       if(functionInsertConstatnt(table->lastAddedFunc, attr, token ) != INS_OK )
@@ -710,7 +733,7 @@ int prsVar(){
          return INTR_ERR;
 
    }
-   if(err == SYN_ERR){
+   if(err == SYN_ERR) {
       // 29. <var> -> id
       if(token != L_ID) return SYN_ERR;
       TVar *tmp = functionSearchVar(table->lastAddedFunc, attr);
@@ -726,7 +749,7 @@ int prsVar(){
    return err;
 }
 
-int prsVarN(){
+int prsVarN() {
    NEXT_TOKEN
    // 30. <var_n> -> eps
    if(token == L_RIGHT_BRACKET) return PRS_OK;
