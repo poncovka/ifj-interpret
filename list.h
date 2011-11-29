@@ -17,14 +17,14 @@
 #define LIST_EALLOC -5
 
 typedef struct tLItem {      // struktura pro polo¾ku seznamu
-  struct tLItem *next;       // ukazatel na dal¹í polo¾ku
-  void *data;                // ukazatel na data
+   struct tLItem *next;       // ukazatel na dal¹í polo¾ku
+   void *data;                // ukazatel na data
 } TLItem;
 
 typedef struct {             // struktura pro seznam:
-  TLItem *Act;               // uk na aktivní prvek
-  TLItem *First;             // uk na první prvek
-  TLItem *Last;              // uk na poslední prvek
+   TLItem *Act;               // uk na aktivní prvek
+   TLItem *First;             // uk na první prvek
+   TLItem *Last;              // uk na poslední prvek
 } TList;
 
 
@@ -45,7 +45,7 @@ int listPostDelete   (TList *L);  // neimplementováno
 
 int listPostInsert   (TList *L, void *data);
 int listSucc         (TList *L);
-void *listCopy       (TList *L);	
+void *listCopy       (TList *L);
 int listActualize    (TList *L, void *data );
 int listActive       (TList *L);
 

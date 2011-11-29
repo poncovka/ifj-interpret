@@ -15,53 +15,53 @@
 #include "str.h"
 #include "list.h"
 
-typedef struct{
+typedef struct {
    TBTree variables;       // tabulka promenych
    TList  constants;       // seznam konstant + pomocnych promenyh
    TList  tmpVar;          // pomocne promene
    TList  instructions;    // seznam instrukci
    char   *name;           // jmeno fce(identifikator)void tableInit(TTable*);
    int    cnt;             // pocet spusteni funkce
-}TFunction;
+} TFunction;
 
-typedef struct{
+typedef struct {
    TBTree functions;
    TFunction *lastAddedFunc;
-}TTable;
+} TTable;
 
-typedef enum{
+typedef enum {
    NIL,
    BOOL,
    NUMBER,
    STRING,
-}EVarDataType;
+} EVarDataType;
 
-typedef enum{
+typedef enum {
    VT_VAR,
    VT_CONST,
    VT_TMP_VAR,
-}EVarType;
+} EVarType;
 
-typedef union{
+typedef union {
    int     b;
    double  n;
    string  s;
-}UVarValue;
+} UVarValue;
 
-typedef struct{
+typedef struct {
    EVarDataType type;
    UVarValue    value;
-}TVarData;
+} TVarData;
 
-typedef struct{
+typedef struct {
    char      *name;
    EVarType   varType;  // CONST nebo VAR
    TVarData  *varData;  // pole! bude se alokovat po 8  var[f->cnt]->type =
    int        alloc;    // kolik je alokovano
-}TVar;
+} TVar;
 
 // Instrukce
-typedef enum{ // dest src1 sec3
+typedef enum { // dest src1 sec3
    I_LAB,      // --- --- ---
    I_RETURN,   // --- --- ---
 
@@ -70,9 +70,9 @@ typedef enum{ // dest src1 sec3
    I_STACK_E,
 
    I_MOV,      // dst --- ---       nastavi odpovidajici TVar -> TVarData[fce->cnt] -> type = NIL
-               // dst src ---       odpovidajici dest TVar nastavi podle odpovidajiciho src TVar,
+   // dst src ---       odpovidajici dest TVar nastavi podle odpovidajiciho src TVar,
    I_SET,      // dst --- ---       nastavi promenou na nil jako prvni vola varRealloc!!!
-               // dst src ---       nastavi na podle src
+   // dst src ---       nastavi na podle src
 
    I_ADD,      // dst src src       vsechno TVar
    I_SUB,      // dst src src
@@ -100,14 +100,14 @@ typedef enum{ // dest src1 sec3
    I_SUBSTR,   // --- --- ---
    I_FIND,     // --- --- ---
    I_SORT,     // --- --- ---
-}EInstrType;
+} EInstrType;
 
-typedef struct{
+typedef struct {
    EInstrType type;
    void *dest;
    void *src1;   // ((TVar *)L->act->data)->var[f->cnt]->type --- VAR CONST TMP_VAR
    void *src2;
-}TInstr;
+} TInstr;
 
 /*
  * smaze data a inicializuje je na NIL

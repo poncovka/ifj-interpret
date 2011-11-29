@@ -18,12 +18,12 @@
 #define STACK_EALLOC -5
 
 typedef struct tSItem {   // struktura pro polo¾ku v zásobníku
-  struct tSItem *next;     // ukazatel na dal¹í polo¾ku
-  void *data;             // ukazatel na data
+   struct tSItem *next;     // ukazatel na dal¹í polo¾ku
+   void *data;             // ukazatel na data
 } TSItem;
 
 typedef struct {          // struktura pro zásobník
-  TSItem *top;          // ukazatel na vrchol zásobníku
+   TSItem *top;          // ukazatel na vrchol zásobníku
 } TStack;
 
 

@@ -37,7 +37,7 @@ TNode search(TNode, char*);
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
 
-void BTreeInit(TBTree *T, EBTreeDataType type){
+void BTreeInit(TBTree *T, EBTreeDataType type) {
    if(T == NULL)
       return;
    T->root = NULL;
@@ -47,15 +47,15 @@ void BTreeInit(TBTree *T, EBTreeDataType type){
 }
 //----------------------------------------------------------------------
 
-void BTreeDelete(TBTree *T){
+void BTreeDelete(TBTree *T) {
    if(T == NULL)
       return;
    deleteNode(T->root);
    BTreeInit(T, T->type);
 }
 
-void deleteNode(TNode n){
-   if(n != NULL){
+void deleteNode(TNode n) {
+   if(n != NULL) {
       deleteNode(n->left);
       deleteNode(n->right);
       free(n);
@@ -64,16 +64,16 @@ void deleteNode(TNode n){
 
 //----------------------------------------------------------------------
 
-TNode BTreeSearch(TBTree *T, char *key){
+TNode BTreeSearch(TBTree *T, char *key) {
    if(T == NULL || key == NULL)
       return NULL;
    return search(T->root, key);
 }
 
-TNode search(TNode T, char *key){
+TNode search(TNode T, char *key) {
    TNode   tmp   = T;
 
-   while( tmp != NULL){
+   while( tmp != NULL) {
       int cmpResult = strcmp(key, tmp->key);
 
       if( cmpResult < 0)
@@ -92,7 +92,7 @@ TNode search(TNode T, char *key){
 // abych po vlozeni prvku mohl nastavi T->lastAdded
 TNode position = NULL;
 
-int BTreeInsert(TBTree *T, char *key, void *data){
+int BTreeInsert(TBTree *T, char *key, void *data) {
    if(T == NULL)
       return INS_TREE_NULL;
    if(key == NULL)
@@ -108,10 +108,10 @@ int BTreeInsert(TBTree *T, char *key, void *data){
    return INS_OK;
 }
 
-int insert(TNode *T, char *key, void *data){
+int insert(TNode *T, char *key, void *data) {
    TNode   *tmp  = T;
 
-   while( *tmp != NULL){
+   while( *tmp != NULL) {
       (*tmp)->height++;
       int cmpResult = strcmp(key, (*tmp)->key);
 

@@ -13,12 +13,11 @@
  * @return  kód chyby
  */
 int stackInit (TStack *s) {
-  if (s != NULL) {
-    s->top = NULL;
-  }
-  else return STACK_ERR; // chybný ukazatel
+   if (s != NULL) {
+      s->top = NULL;
+   } else return STACK_ERR; // chybný ukazatel
 
-  return STACK_EOK;
+   return STACK_EOK;
 }
 
 /*
@@ -29,7 +28,7 @@ int stackInit (TStack *s) {
  */
 int stackEmpty (TStack *s) {
 
-  return (s->top == NULL);
+   return (s->top == NULL);
 }
 
 /*
@@ -40,10 +39,9 @@ int stackEmpty (TStack *s) {
  */
 void *stackTop (TStack *s) {
 
-  if (s != NULL && !stackEmpty(s)) {
-     return s->top->data;
-  }
-  else return NULL;
+   if (s != NULL && !stackEmpty(s)) {
+      return s->top->data;
+   } else return NULL;
 }
 
 /*
@@ -54,17 +52,15 @@ void *stackTop (TStack *s) {
  */
 int stackPop (TStack *s) {
 
-  if (s != NULL) {
-    if (!stackEmpty(s)) {
-      TSItem *pom = s->top;
-      s->top = s->top->next;
-      free(pom);
-    }
-    else return STACK_EEMPTY; // pøístup do prázdného zásobníku
-  }
-  else return STACK_ERR; // neplatný ukazatel
+   if (s != NULL) {
+      if (!stackEmpty(s)) {
+         TSItem *pom = s->top;
+         s->top = s->top->next;
+         free(pom);
+      } else return STACK_EEMPTY; // pøístup do prázdného zásobníku
+   } else return STACK_ERR; // neplatný ukazatel
 
-  return STACK_EOK;
+   return STACK_EOK;
 }
 
 /*
@@ -76,20 +72,18 @@ int stackPop (TStack *s) {
  */
 int stackPush (TStack *s, void *data) {
 
-  if (s != NULL) {
-    TSItem *elem;
+   if (s != NULL) {
+      TSItem *elem;
 
-    if ( (elem = (TSItem *)malloc(sizeof(TSItem))) != NULL ) {
+      if ( (elem = (TSItem *)malloc(sizeof(TSItem))) != NULL ) {
 
-      elem->data = data;
-      elem->next = s->top;
-      s->top = elem;
-    }
-    else return STACK_EALLOC; // nedostatek pamìti
-  }
-  else return STACK_ERR; // neplatný ukazatel
+         elem->data = data;
+         elem->next = s->top;
+         s->top = elem;
+      } else return STACK_EALLOC; // nedostatek pamìti
+   } else return STACK_ERR; // neplatný ukazatel
 
-  return STACK_EOK;
+   return STACK_EOK;
 }
 
 /*
@@ -101,11 +95,10 @@ int stackPush (TStack *s, void *data) {
  */
 void *stackTopPop (TStack *s) {
 
-  void *pom = stackTop(s);
-  if ((pom == NULL) || (stackPop(s) != STACK_EOK)) {
-    return NULL;
-  }
-  else return pom;
+   void *pom = stackTop(s);
+   if ((pom == NULL) || (stackPop(s) != STACK_EOK)) {
+      return NULL;
+   } else return pom;
 }
 
 /*
@@ -116,14 +109,13 @@ void *stackTopPop (TStack *s) {
  */
 int stackDelete (TStack *s) {
 
-  if (s != NULL) {
-    while (!stackEmpty(s)) {
-      stackPop(s);
-    }
-  }
-  else return STACK_ERR; // chybný ukazatel
+   if (s != NULL) {
+      while (!stackEmpty(s)) {
+         stackPop(s);
+      }
+   } else return STACK_ERR; // chybný ukazatel
 
-  return STACK_EOK;
+   return STACK_EOK;
 }
 
 /* konec stack.c */

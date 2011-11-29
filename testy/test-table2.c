@@ -14,22 +14,21 @@
 
 void tiskniStack (TStack *s) {
 
-  printf("Stav zásobníku:\n");
+   printf("Stav zásobníku:\n");
 
-  TSItem *pom = s->top;
+   TSItem *pom = s->top;
 
-  while (pom != NULL) {
-    printf("\t%s\n",((TVar*)(pom->data))->name);
-    pom = pom->next;
-  }
-  printf("________________\n\n");
+   while (pom != NULL) {
+      printf("\t%s\n",((TVar*)(pom->data))->name);
+      pom = pom->next;
+   }
+   printf("________________\n\n");
 }
 
 #define prazdnyStack(stack) printf("Je zásobník prázdný? %s\n",(stackEmpty(&stack))? "ANO" : "NE");
 
 
-int main()
-{
+int main() {
    TTable table;
    tableInit(&table);
 
@@ -38,27 +37,27 @@ int main()
    printf("\n----------------------------\n");
 
    tableInsertFunction(&table, strCreateString("func1"));
-      functionInsertVar(table.lastAddedFunc, strCreateString("var1func1"));
-      functionInsertVar(table.lastAddedFunc, strCreateString("var2func1"));
-      functionInsertVar(table.lastAddedFunc, strCreateString("var3func1"));
+   functionInsertVar(table.lastAddedFunc, strCreateString("var1func1"));
+   functionInsertVar(table.lastAddedFunc, strCreateString("var2func1"));
+   functionInsertVar(table.lastAddedFunc, strCreateString("var3func1"));
 
    printf("\nJedna funkce: \n");
    tablePrintOrder(table);
    printf("\n----------------------------\n");
 
    tableInsertFunction(&table, strCreateString("func2"));
-      functionInsertVar(table.lastAddedFunc, strCreateString("var1func2"));
-      functionInsertVar(table.lastAddedFunc, strCreateString("var2func2"));
-      functionInsertVar(table.lastAddedFunc, strCreateString("var3func2"));
+   functionInsertVar(table.lastAddedFunc, strCreateString("var1func2"));
+   functionInsertVar(table.lastAddedFunc, strCreateString("var2func2"));
+   functionInsertVar(table.lastAddedFunc, strCreateString("var3func2"));
 
    printf("\nDve funkce: \n");
    tablePrintOrder(table);
    printf("\n----------------------------\n");
 
    tableInsertFunction(&table, strCreateString("func3"));
-      functionInsertVar(table.lastAddedFunc, strCreateString("var1func3"));
-      functionInsertVar(table.lastAddedFunc, strCreateString("var2func3"));
-      functionInsertVar(table.lastAddedFunc, strCreateString("var3func3"));
+   functionInsertVar(table.lastAddedFunc, strCreateString("var1func3"));
+   functionInsertVar(table.lastAddedFunc, strCreateString("var2func3"));
+   functionInsertVar(table.lastAddedFunc, strCreateString("var3func3"));
 
    printf("\nVsechny: \n");
    tablePrintOrder(table);
@@ -71,83 +70,81 @@ int main()
 
       printf("\nObsahuje tabulka funkci %s? \t", "func1");
       fceSearch = tableSearchFunction(&table, strCreateString("func1"));
-      if(fceSearch != NULL){
+      if(fceSearch != NULL) {
          printf("ANO\n");
          printf("   Obsahuje funkce promenou %s?\t", "var1func1");
          if(functionSearchVar(fceSearch, strCreateString("var1func1")) != NULL)
             printf("ANO");
          else
             printf("NE");
-      }
-      else
+      } else
          printf("NE\n");
 
       printf("\nObsahuje tabulka funkci %s? \t", "funcX");
       fceSearch = tableSearchFunction(&table, strCreateString("funcX"));
-      if(fceSearch != NULL){
+      if(fceSearch != NULL) {
          printf("ANO\n");
          printf("   Obsahuje funkce promenou %s?\t", "var1func1");
          if(functionSearchVar(fceSearch, strCreateString("var1func1")) != NULL)
             printf("ANO");
          else
             printf("NE");
-      }
-      else
+      } else
          printf("NE\n");
 
       printf("\n----------------------------\n");
    }
 
-  // test zásobníku:
+   // test zásobníku:
 
-  TStack s;
-  stackInit(&s);
-  
-  prazdnyStack(s);
+   TStack s;
+   stackInit(&s);
 
-  TFunction *fce = tableSearchFunction(&table, strCreateString("func2"));
-  TVar *id = functionSearchVar(fce, strCreateString("var1func2"));
-  stackPush(&s, (void*)id);
+   prazdnyStack(s);
 
-  prazdnyStack(s);
-  tiskniStack(&s);
+   TFunction *fce = tableSearchFunction(&table, strCreateString("func2"));
+   TVar *id = functionSearchVar(fce, strCreateString("var1func2"));
+   stackPush(&s, (void*)id);
 
-  id = functionSearchVar(fce, strCreateString("var2func2"));
-  stackPush(&s, (void*)id);
-  tiskniStack(&s);
-  id = functionSearchVar(fce, strCreateString("var3func2"));
-  stackPush(&s, (void*)id);
-  tiskniStack(&s);
-  id = functionSearchVar(fce, strCreateString("var1func2"));
-  stackPush(&s, (void*)id);
-  tiskniStack(&s);
+   prazdnyStack(s);
+   tiskniStack(&s);
+
+   id = functionSearchVar(fce, strCreateString("var2func2"));
+   stackPush(&s, (void*)id);
+   tiskniStack(&s);
+   id = functionSearchVar(fce, strCreateString("var3func2"));
+   stackPush(&s, (void*)id);
+   tiskniStack(&s);
+   id = functionSearchVar(fce, strCreateString("var1func2"));
+   stackPush(&s, (void*)id);
+   tiskniStack(&s);
 
 
-  TVar *data = (TVar*)stackTopPop(&s);
-  if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
-  else printf("Ukazatel je nulový! \n");
-  prazdnyStack(s);
+   TVar *data = (TVar*)stackTopPop(&s);
+   if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
+   else printf("Ukazatel je nulový! \n");
+   prazdnyStack(s);
 
-  data = (TVar*)stackTopPop(&s);
-  if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
-  else printf("Ukazatel je nulový! \n");
-  prazdnyStack(s);
+   data = (TVar*)stackTopPop(&s);
+   if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
+   else printf("Ukazatel je nulový! \n");
+   prazdnyStack(s);
 
-  data = (TVar*)stackTopPop(&s);
-  if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
-  else printf("Ukazatel je nulový! \n");
-  prazdnyStack(s);
+   data = (TVar*)stackTopPop(&s);
+   if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
+   else printf("Ukazatel je nulový! \n");
+   prazdnyStack(s);
 
-  tiskniStack(&s);
-  stackDelete   (&s);
-  prazdnyStack(s);
-  tiskniStack(&s);
-  
-  data = (TVar*)stackTopPop(&s);
-  if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
-  else printf("Ukazatel je nulový! \n");
+   tiskniStack(&s);
+   stackDelete   (&s);
+   prazdnyStack(s);
+   tiskniStack(&s);
 
-  // konec testu stack
+   data = (TVar*)stackTopPop(&s);
+   if (data != NULL)  printf("Vybráno ze zásobníku: %s\n",data->name);
+   else printf("Ukazatel je nulový! \n");
+
+   // konec testu stack
 
    printf("\nSmazu: \n");
    tableClear(&table);
