@@ -41,9 +41,16 @@ int varRealloc(TVar *v, int cnt) {
    cnt *=-1;
    cnt = cnt / VAR_ALLOC_SIZE + 1;
 
+   int allocOld = v->alloc;
    v->alloc += cnt*VAR_ALLOC_SIZE;
+
    if( ( v->varData = realloc(v->varData, sizeof(TVarData)*v->alloc) ) == NULL)
       return INS_MALLOC;
+
+   for (int i = allocOld; i < v->alloc; i++) {
+     v->varData[i].type = NIL;
+   }
+
    return INS_OK;
 }
 //----------------------------------------------------------------------
@@ -102,7 +109,10 @@ int functionInsertVar(TFunction *F, string s) {
       free(v);
       return INS_MALLOC;
    }
-   vd->type = NIL;
+
+   for (int i = 0; i < VAR_ALLOC_SIZE; i++) {
+     vd[i].type = NIL;
+   }
 
    char *newName = strCopyChar(&s);
    if(newName == NULL) {
