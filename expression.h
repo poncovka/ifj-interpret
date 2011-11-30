@@ -57,6 +57,7 @@ int parseExpression (TTable *t, TVar **ptrResult);
 
 int shift           (TStack *S, int token, TVar *pom);
 int getTopTerminal  (TStack *S);
+int getTopToken     (TStack *S);
 
 int findRule        (TStack *S, TInstr *instr);
 int checkRule       (TInstr *instr);
@@ -75,7 +76,6 @@ void stackDataDelete (TStack *S);
 // pomocné výpisy:
 
 void tiskniStack (TStack *s);
-void tiskniList (TList *L);
 void tiskniPrecTab();
 
 #endif // EXPRESSION_H_INCLUDED

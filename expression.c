@@ -79,37 +79,43 @@ TStack Stack;
  * @return  chybový kód
  */
 int parseExpression(TTable *table, TVar **ptrResult) {
+
+   // inicializace :
    int err = EOK;
 
    TList *LTmpVars = &table->lastAddedFunc->tmpVar;
-
-   // inicializace
-   stackInit(&Stack);
    listFirst(LTmpVars);
 
-   shift(&Stack, ENDEXPR, NULL);      // vlo¾eno dno zásobníku
+   stackInit(&Stack);
+   err = shift(&Stack, ENDEXPR, NULL);      // vlo¾eno dno zásobníku
 
-   int a ,b;
-   char c;
    TInstr instr = {NOINSTR, NULL, NULL, NULL};
+   int a, b;
+   char c;
+
+   // syntaktická analýza výrazu: 
 
    do {
+      a = token;                        // aktuální token
+      b = getTopTerminal(&Stack);       // najdeme nejvrchnìj¹í terminál
 
-      a = token;                       // aktuální token
-      b = getTopTerminal(&Stack);      // najdeme nejvrchnìj¹í terminál
-
-      if (isConst(a)) {                // pokud je to konstanta
+      if (isConst(a) || isId(a)) {      // pokud je to konstanta nebo identifikátor
          c = precedentTable[b][L_ID];   // kontrolujeme syntaxi podle identifikátoru
-      } else {
+
+         // pokud je na vrcholu zásobníku výraz, do¹lo k chybì
+         if (getTopToken(&Stack) == EXPRESSION) c = 0;
+      }
+      else {
          c = precedentTable[b][a];      // podíváme se do tabulky
       }
 
-      if (c == 0) {                    // chyba
+      if (c == 0) {                     // chyba
          a = ENDEXPR;                   // token pova¾ujeme za konec výrazu
          c = precedentTable[b][a];      // znovu se podíváme do tabulky
       }
 
       switch(c) {
+
       case '=':
       case '<':
          err = shift(&Stack, a, NULL);                // push(a)
@@ -150,7 +156,6 @@ int parseExpression(TTable *table, TVar **ptrResult) {
 
    // kontrolni vypis:
    tisk(
-      tiskniList(&table->lastAddedFunc->instructions);
       printf("vysledek = %d\n", (int) *ptrResult);
    )
 
@@ -224,6 +229,16 @@ int getTopTerminal(TStack *S) {
 
    if (pom == NULL) return -1;
    else return ((TStackData*)pom->data)->token;
+}
+
+/*
+ * Operace nad zásobníkem: GET TOP TOKEN
+ * Vrátí hodnotu tokenu na vrcholu zásobníku.
+ * @param   ukazatel na zásobník
+ * @return  token
+ */
+int getTopToken (TStack *S) {
+  return ((TStackData*)stackTop(S))->token;
 }
 
 /*
@@ -519,84 +534,6 @@ void tiskniStack (TStack *s) {
       pom = pom->next;
    }
    printf("_______bottom_________\n\n");
-}
-
-const char *iTable[]= {
-   [I_ADD]="+",      // dst src src
-   [I_SUB]="-",      // dst src src
-   [I_MUL]="*",      // dst src src
-   [I_DIV]="/",      // dst src src
-   [I_POW]="^",      // dst src src
-   [I_CON]="..",     // dst src src
-
-   [I_CMP_L]="<",    // dst src src
-   [I_CMP_LE]="<=",  // dst src src
-   [I_CMP_G]=">",    // dst src src
-   [I_CMP_GE]=">=",  // dst src src
-   [I_CMP_E]="==",   // dst src src
-   [I_CMP_NE]="~=",  // dst src src
-};
-
-/*
- * Vytiskne seznam instrukcí.
- */
-void tiskniList (TList *L) {
-
-   printf("\nStav seznamu:\n");
-
-   TLItem *pom = L->First;
-   TInstr *i = NULL;
-
-   while (pom != NULL) {
-      i = (TInstr*)(pom->data);
-
-      if (((TVar*)i->dest)->name == NULL) printf("%d = ", (int)i->dest);
-      else printf("%s = ",((TVar*)i->dest)->name);
-
-      TVar *var = ((TVar*)i->src1);
-      if (var->varType == VT_CONST) {
-         switch(var->varData->type) {
-         case NIL:
-            printf("  nil  ");
-            break;
-         case BOOL:
-            printf("  %s  ", (var->varData->value.b ? "TRUE":"FALSE"));
-            break;
-         case STRING:
-            printf("  %s  ", var->varData->value.s.str);
-            break;
-         case NUMBER:
-            printf("  %g  ",var->varData->value.n);
-            break;
-         }
-      } else if (var->name == NULL) printf(" %d ", (int)var);
-      else printf(" %s ",var->name);
-
-      printf(" %s ",iTable[i->type]);
-
-      var = ((TVar*)i->src2);
-      if (var->varType == VT_CONST) {
-         switch(var->varData->type) {
-         case NIL:
-            printf("  nil  ");
-            break;
-         case BOOL:
-            printf("  %s  ", (var->varData->value.b ? "TRUE":"FALSE"));
-            break;
-         case STRING:
-            printf("  %s  ", var->varData->value.s.str);
-            break;
-         case NUMBER:
-            printf("  %g  ",var->varData->value.n);
-            break;
-         }
-      } else if (var->name == NULL) printf(" %d ", (int)var);
-      else printf(" %s ",var->name);
-
-      printf("\n");
-      pom = pom->next;
-   }
-   printf("________________\n\n");
 }
 
 /* konec expression.c */
