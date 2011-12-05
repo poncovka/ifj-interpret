@@ -18,8 +18,13 @@ end
 function main()
  local input = 1;
  local ret;
+ write("Zadej cislo > 0: ");
  -- while input > 0 do
-  input = 30; -- read( "*n" );
+  input = read( "*n" );
+  if(input < 0 ) then
+    return 0;
+  else end;
+  write("Pocitam...\n");
   ret = fibonacci( input );
   write( "Fibonacciho cislo pre vstup ",input," je ",ret,".\n" );
  -- end;

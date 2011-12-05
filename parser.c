@@ -282,9 +282,10 @@ int prsDefVar() {
    if(token != KW_LOCAL) return SYN_ERR;
 
    NEXT_TOKEN
-   if(token == KW_TYPE || token == KW_SUBSTR || token == KW_FIND || token == KW_SORT || token == KW_MAIN)
+   if(token == KW_TYPE || token == KW_SUBSTR || token == KW_FIND || token == KW_SORT)
       return SEM_ERR;
-   if(token != L_ID) return SYN_ERR;
+                       // promena v uzivatelem def fci se muze jmenovat main
+   if(token != L_ID && token != KW_MAIN) return SYN_ERR;
    // prohledam jestli se nejaka promena nejmenuje stejne jako nejaka funkce
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
    // pokusim se id vlozit to tabulky
@@ -620,10 +621,8 @@ int prsAssign(TVar *var) {
    int tokenTmp = token; // ulozim si attr abych potom vedel jakou instrukci generovat
    int err;
    TFunction *Ftmp;
-   if(token == KW_MAIN)
-      Ftmp = table->lastAddedFunc;
-   else
-      Ftmp = tableSearchFunction(table, attr);
+
+   Ftmp = tableSearchFunction(table, attr);
 
    if(Ftmp == NULL && (token != KW_TYPE && token != KW_SUBSTR && token != KW_FIND && token != KW_SORT) ) {
       // 23. <assign> -> expression

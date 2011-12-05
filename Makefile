@@ -7,4 +7,4 @@ ALL: $(MODULS)
 	$(CC) $(FLAGS) -o $(BIN) $(MODULS) -lm
 
 clean: 
-	$(RM) *.o $(BIN) debug.log
+	$(RM) *.o $(BIN) # debug.log
