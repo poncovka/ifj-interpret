@@ -1,6 +1,19 @@
+function prirad(x)
+  return x;
+end
+
 function nic()
+  local main = "Zkus to: ";
+  local x;
+  x = prirad(main);
+  write(x);
 end
 
 function main() --Hlavni telo programu
-
+  local x;
+  x = nic();
+  x = read("*n");
+  if(x ~= 100)then
+    x = main();
+  else end;
 end;

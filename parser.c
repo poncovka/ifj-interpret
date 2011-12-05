@@ -380,6 +380,7 @@ int prsCommand() {
    int err = INTR_ERR;
    switch(token) {
       // 22. <command> -> id = <assign>
+   case KW_MAIN:
    case L_ID: {
       // je id v tabulce symbolu pro tuhle funkci?
       TVar *tmp;
@@ -734,7 +735,7 @@ int prsVar() {
    }
    if(err == SYN_ERR) {
       // 29. <var> -> id
-      if(token != L_ID) return SYN_ERR;
+      if(token != L_ID && token != KW_MAIN) return SYN_ERR;
       TVar *tmp = functionSearchVar(table->lastAddedFunc, attr);
       if(tmp == NULL)   return SEM_ERR;
 
