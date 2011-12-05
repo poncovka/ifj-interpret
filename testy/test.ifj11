@@ -3,8 +3,12 @@ function prirad(x)
 end
 
 function nic()
-  local main = "Zkus to: ";
+  local main = "Zkus to ";
   local x;
+  local y;
+  y = main .. ", prosim: ";
+  --main = "Tohle nejede - syntakticka chyba";
+  --main = y;
   x = prirad(main);
   write(x);
 end
