@@ -12,8 +12,9 @@
 int countOfRows = 1;
 
 /*tabulka s klicovymi a rezervovanymi slovy*/
-const char *reservedWords[] = {"and", "break", "elseif", "for", "in", "not", "or", "repeat", "until"};
+const char *reservedWords[] = {"break", "elseif", "for", "in", "repeat", "until", "or", "not", "and"};
 const char *keyWords[] = {
+   //[KW_OR] = "or",              [KW_AND] = "and",       [KW_NOT] = "not",
    [KW_END] = "end",						[KW_LOCAL] = "local",   [KW_WRITE] = "write",
    [KW_RETURN] = "return",			[KW_IF] = "if", 				[KW_THEN] ="then",
    [KW_FUNCTION] = "function",	[KW_READ] = "read",			[KW_DO] = "do",

@@ -25,10 +25,11 @@ enum ELexem {
 
    KW_MAIN,  KW_FUNCTION, KW_LOCAL, KW_RETURN, // funkce
    KW_IF,    KW_THEN,     KW_ELSE,             // podminka
-   KW_WHILE, KW_DO,	     KW_END, 			        // cyklus
+   KW_WHILE, KW_DO,	      KW_END, 			       // cyklus
    KW_READ,  KW_WRITE,                         // prikazy
-   KW_TYPE,  KW_SUBSTR,	 KW_FIND,  KW_SORT,   // vestavene funkce
+   KW_TYPE,  KW_SUBSTR,	  KW_FIND,  KW_SORT,   // vestavene funkce
    KW_TRUE,  KW_FALSE,    KW_NIL,              // konstanty
+   //KW_AND,   KW_OR,       KW_NOT,              // logika
    //18
 
    L_NUMBER,						// cislo
