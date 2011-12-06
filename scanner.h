@@ -31,30 +31,33 @@ enum ELexem {
    KW_TRUE,  KW_FALSE,    KW_NIL,              // konstanty
    //18
 
-   L_NUMBER,							// cislo
-   L_STRING,							// retezec
-   L_ID,									// identifikator
+   L_NUMBER,						// cislo
+   L_STRING,						// retezec
+   L_ID,								// identifikator
 
-   L_LEFT_BRACKET,				// (
+   L_LEFT_BRACKET,			// (
    L_RIGHT_BRACKET,			// )
 
-   L_ADDITION,						// +
+   L_ADDITION,					// +
    L_SUBTRACTION,				// -
-   L_MULTIPLICATION,			// *
-   L_DIVISION,						// /
+   L_MULTIPLICATION,		// *
+   L_DIVISION,					// /
    L_POWER,							// ^
    L_CONCATENATION,			// ..
 
    L_SMALLER,						// <
    L_SMALLER_EQUAL,			// <=
-   L_BIGGER,							// >
-   L_BIGGER_EQUAL,				// >=
+   L_BIGGER,						// >
+   L_BIGGER_EQUAL,			// >=
    L_EQUAL,							// ==
    L_UNEQUAL,						// ~=
 
-   L_ASSIGN,							// =
+   L_ASSIGN,						// =
    L_SEMICOLON,					// ;
    L_COMMA,							// ,
+
+   //L_MODULO             //%
+   //L_LENGTH             //#
 
    RESERVED_WORD,				// rezervovane slovo
    END_OF_FILE,					// EOF

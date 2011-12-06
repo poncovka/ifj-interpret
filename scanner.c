@@ -18,7 +18,7 @@ const char *keyWords[] = {
    [KW_RETURN] = "return",			[KW_IF] = "if", 				[KW_THEN] ="then",
    [KW_FUNCTION] = "function",	[KW_READ] = "read",			[KW_DO] = "do",
    [KW_ELSE] = "else",    			[KW_WHILE] = "while",		[KW_NIL] = "nil",
-   [KW_FALSE] = "false", 			[KW_TRUE] = "true", 		[KW_TYPE] = "type",
+   [KW_FALSE] = "false", 			  [KW_TRUE] = "true", 		[KW_TYPE] = "type",
    [KW_SUBSTR] = "substr",			[KW_FIND] = "find",			[KW_SORT] = "sort",
    [KW_MAIN] = "main"
 };
@@ -81,6 +81,8 @@ int getNextToken(string *attr) {
          else if (c == '/') return	L_DIVISION;
          else if (c == '+') return L_ADDITION;
          else if (c == ',') return L_COMMA;
+				 //else if (c == '%') return L_MODULO;
+				 //else if (c == '#') return L_LENGTH;
          else if (c == '.') state = S_CONCATENATION; 	// ..
          else if (c == '<') state = S_SMALLER;					// < || <=
          else if (c == '>') state = S_BIGGER;					// > || >=
@@ -97,13 +99,13 @@ int getNextToken(string *attr) {
          } else return LEX_ERROR; //jiny znak
          break;
 
-         /*S_CONCATENATION*/
+      /*S_CONCATENATION*/
       case S_CONCATENATION:
          if (c == '.') return L_CONCATENATION;
          else return LEX_ERROR;
          break;
 
-         /*S_SMALLER*/
+      /*S_SMALLER*/
       case S_SMALLER:
          if (c == '=') return L_SMALLER_EQUAL;
          else {
@@ -112,7 +114,7 @@ int getNextToken(string *attr) {
          }
          break;
 
-         /*S_BIGGER*/
+      /*S_BIGGER*/
       case S_BIGGER:
          if (c == '=') return L_BIGGER_EQUAL;
          else {
@@ -121,13 +123,13 @@ int getNextToken(string *attr) {
          }
          break;
 
-         /*S_UNEQUAL*/
+      /*S_UNEQUAL*/
       case S_UNEQUAL:
          if (c == '=') return L_UNEQUAL;
          else return LEX_ERROR;
          break;
 
-         /*S_EQUAL*/
+      /*S_EQUAL*/
       case S_EQUAL:
          if (c == '=') return L_EQUAL;
          else {
@@ -136,7 +138,7 @@ int getNextToken(string *attr) {
          }
          break;
 
-         /*S_SUBTRACTION*/
+      /*S_SUBTRACTION*/
       case S_SUBTRACTION:
          if (c == '-') state = S_COMMENT;
          else {
@@ -145,8 +147,8 @@ int getNextToken(string *attr) {
          }
          break;
 
-         /*stavy pro retezce*/
-         /*S_STRING*/
+     /*stavy pro retezce*/
+      /*S_STRING*/
       case S_STRING:
          if (c == '\n') countOfRows++;
          if (c == EOF) return LEX_ERROR;
@@ -157,7 +159,7 @@ int getNextToken(string *attr) {
          }
          break;
 
-         /*S_ESCAPE*/
+      /*S_ESCAPE*/
       case S_ESCAPE:
          if (c == 'n') {
             if (strAddChar(attr,'\n')) return ERR_MALLOC;
@@ -177,7 +179,7 @@ int getNextToken(string *attr) {
          } else return LEX_ERROR;
          break;
 
-         /*S_ESCAPE_NUMERAL*/
+      /*S_ESCAPE_NUMERAL*/
       case S_ESCAPE_NUMERAL:
          if (isdigit(c)) {
             ascii += (c - '0') * TEN;
@@ -185,7 +187,7 @@ int getNextToken(string *attr) {
          } else return LEX_ERROR;
          break;
 
-         /*S_ESCAPE_DDD*/
+      /*S_ESCAPE_DDD*/
       case S_ESCAPE_DDD:
          if (isdigit(c)) {
             ascii += c - '0';
@@ -196,8 +198,8 @@ int getNextToken(string *attr) {
          } else return LEX_ERROR;
          break;
 
-         /*stavy pro cisla*/
-         /*S_NUMBER*/
+     /*stavy pro cisla*/
+      /*S_NUMBER*/
       case S_NUMBER:
          if (isdigit(c)) {
             if (strAddChar(attr,c)) return ERR_MALLOC;
@@ -213,7 +215,7 @@ int getNextToken(string *attr) {
          }
          break;
 
-         /*S_DECIMAL_POINT*/
+      /*S_DECIMAL_POINT*/
       case S_DECIMAL_POINT:
          if (isdigit(c)) {
             if (strAddChar(attr,c)) return ERR_MALLOC;
@@ -221,7 +223,7 @@ int getNextToken(string *attr) {
          } else return LEX_ERROR;
          break;
 
-         /*S_DECIMAL_NUMBER*/
+      /*S_DECIMAL_NUMBER*/
       case S_DECIMAL_NUMBER:
          if (isdigit(c)) {
             if (strAddChar(attr,c)) return ERR_MALLOC;
@@ -234,7 +236,7 @@ int getNextToken(string *attr) {
          }
          break;
 
-         /*S_EXPONENT*/
+      /*S_EXPONENT*/
       case S_EXPONENT:
          if (isdigit(c) || (c == '+') || (c == '-')) {
             if (strAddChar(attr,c)) return ERR_MALLOC;
@@ -242,7 +244,7 @@ int getNextToken(string *attr) {
          } else return LEX_ERROR;
          break;
 
-         /*S_EXPONENT_END*/
+      /*S_EXPONENT_END*/
       case S_EXPONENT_END:
          if (isdigit(c)) {
             if (strAddChar(attr,c)) return ERR_MALLOC;
@@ -252,8 +254,8 @@ int getNextToken(string *attr) {
          }
          break;
 
-         /*stavy pro identifikatory*/
-         /*S_ID*/
+     /*stavy pro identifikatory*/
+      /*S_ID*/
       case S_ID:
          if (isdigit(c) || isalpha(c) || (c == '_')) {
             if (strAddChar(attr,c)) return ERR_MALLOC;
@@ -263,8 +265,8 @@ int getNextToken(string *attr) {
          }
          break;
 
-         /*stavy pro komentare*/
-         /*S_COMMENT*/
+     /*stavy pro komentare*/
+      /*S_COMMENT*/
       case S_COMMENT:
          if (c == EOF) return END_OF_FILE;
          else if (c == '[') state = S_COMMENT_BLOCK;
@@ -274,7 +276,7 @@ int getNextToken(string *attr) {
          } else state = S_COMMENT_ROW;
          break;
 
-         /*S_COMMENT_BLOCK*/
+      /*S_COMMENT_BLOCK*/
       case S_COMMENT_BLOCK:
          if (c == EOF) return END_OF_FILE;
          else if (c == '[') state = S_COMMENT_BEGIN;
@@ -284,14 +286,14 @@ int getNextToken(string *attr) {
          } else state = S_COMMENT_ROW;
          break;
 
-         /*S_COMMENT_BEGIN*/
+      /*S_COMMENT_BEGIN*/
       case S_COMMENT_BEGIN:
          if (c == '\n') countOfRows++;
          if (c == EOF) return LEX_ERROR;
          if (c == ']') state = S_COMMENT_END;
          break;
 
-         /*S_COMMENT_END*/
+      /*S_COMMENT_END*/
       case S_COMMENT_END:
          if (c == '\n') countOfRows++;
          if (c == EOF) return LEX_ERROR;
@@ -299,7 +301,7 @@ int getNextToken(string *attr) {
          else state = S_COMMENT_BEGIN;
          break;
 
-         /*S_COMMENT_ROW*/
+      /*S_COMMENT_ROW*/
       case S_COMMENT_ROW:
          if (c == EOF) return END_OF_FILE;
          if (c == '\n') {
