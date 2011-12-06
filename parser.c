@@ -429,7 +429,7 @@ int prsCommand() {
          free(labElse);
          free(labEndIf);
          free(jmp);
-         return token != KW_ELSE ? SYN_ERR : err;
+         return err == PRS_OK ? SYN_ERR : err;
       }
 
       // JMP labEndIf
@@ -450,7 +450,7 @@ int prsCommand() {
 
       if( ( err = prsStatList() ) != PRS_OK || token != KW_END) {
          free(labEndIf);
-         return token != KW_END ? SYN_ERR : err;
+         return err == PRS_OK ? SYN_ERR : err;
       }
 
       // LAB labEndIf
@@ -491,7 +491,7 @@ int prsCommand() {
       // zpracuju vzraz
       if( (err = parseExpression(table, &tmpV)) != EOK || token != KW_DO) {
          free(labEnd);
-         return token != KW_DO ? SYN_ERR : err;
+         return err == PRS_OK ? SYN_ERR : err;
       }
 
       // porovani pripadny skok na konec cyklu
@@ -511,7 +511,7 @@ int prsCommand() {
       int err = prsStatList();
       if(err != PRS_OK || token != KW_END) {
          free(labEnd);
-         return token != KW_END ? SYN_ERR : err;
+         return err == PRS_OK ? SYN_ERR : err;
       }
 
       TInstr *jmp = genInstr(I_JMP, jmpToWhile, NULL, NULL);
