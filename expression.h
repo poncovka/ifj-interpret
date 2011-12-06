@@ -29,7 +29,7 @@
 
 // pomocná makra pro tokeny:
 
-#define isId(t)       (t == L_ID)
+#define isId(t)       (t == L_ID || t == KW_MAIN)
 #define isBracket(t)  (t == L_LEFT_BRACKET || t == L_RIGHT_BRACKET)
 #define isConst(t)    (t >= KW_TRUE        && t <= L_STRING)
 #define isOperator(t) (t >= L_ADDITION     && t <= L_UNEQUAL)

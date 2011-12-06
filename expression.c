@@ -186,7 +186,7 @@ int shift (TStack *S, int token, TVar *pom) {
    // inicialiazce dat:
 
    // identifikátor
-   if (token == L_ID) {
+   if (isId(token)) {
       pom = functionSearchVar(table->lastAddedFunc, attr);
       if (pom == NULL)
          err = SEM_ERR; // nedefinovaná promìnná
