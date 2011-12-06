@@ -1,0 +1,245 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   DOKUMENTACE K PROJEKTU IFJ - 2011
+%   TÝM 55
+
+\documentclass[a4paper, 11pt, titlepage, final]{article}[3. prosinec 2011]
+
+\newcommand{\uv}[1]{\quotedblbase #1\textquotedblleft}
+\newcommand{\mensi}{$<$}
+\newcommand{\vetsi}{$>$}
+
+\usepackage[left=1.5cm,text={18cm, 25cm},top=2.5cm]{geometry}
+\usepackage[czech]{babel}
+\usepackage[latin2]{inputenc}
+\usepackage[IL2]{fontenc}
+
+\usepackage[dvipdf]{graphicx}
+
+\title{Dokumentace projektu z IFJ a IAL}
+\author{Vendula Poncová}
+\date{\today}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% titulni strana - DON'T TOUCH! MAGIC!
+
+\begin{titlepage}
+\begin{center}
+
+\def\imagetop#1{\vtop{\null\hbox{#1}}}
+
+\begin{tabular}{cl}
+    \imagetop{\parbox{5cm}{\centering\includegraphics[height=5cm]{img/logo.eps}}} &
+    \imagetop{\parbox{11cm}{\textsc{\LARGE Fakulta informaèních technologií \medskip\\
+                                           Vysoké uèení technické v Brnì}}} \\
+\end{tabular}
+
+\vspace{\stretch{0.382}}
+
+{{\Huge Dokumentace projektu} \medskip \\
+{\LARGE pro pøedmìty IFJ a IAL}}
+
+\vspace{\stretch{0.618}}
+
+\end{center}
+
+{\Large
+\begin{tabular}{llll}
+  Identifikace: & \multicolumn{3}{l}{{\Large Tým 55, varianta a/4/I}} \smallskip \\ 
+  \hline
+  \\[-0.5em]
+  Vedoucí:  & Vendula Poncová & \texttt{xponco00} & 25\% \\
+  Øe¹itelé: & Marek Salát     & \texttt{xsalat00} & 25\% \\
+            & Tomá¹ Trkal     & \texttt{xtrkal00} & 25\% \\
+            & Patrik Hronský  & \texttt{xhrons00} & 25\% \medskip \\
+  Roz¹íøení: & ¾ádná \\
+\end{tabular}
+}
+
+{\Large \hfill \today}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% výpis obsahu
+\pagestyle{empty}
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% text dokumentace
+
+\pagestyle{plain}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+%------------------------------------------------------------------------
+\section{Úvod}
+ 
+Nìjaké úvodní kecy.
+
+%------------------------------------------------------------------------
+\section{Návrh øe¹ení}
+
+Obecné zamy¹lení se nad problémy interpretu.
+
+%------------------------------------------------------------------------
+\section{Datové struktury}
+
+Popis pou¾ívaných datových struktur.
+Ilustrace na obrázcích.
+
+%------------------------------------------------
+\subsection{Abstraktní datové typy}
+
+Seznam, zásobník, binární strom - knihovna binary\_tree.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.7]{img/data-ADT.eps}
+  \caption{Zásobník, seznam, binární vyhledávací strom.}
+  \label{obrADT}
+\end{figure}
+
+
+%------------------------------------------------
+\subsection{Tabulka symbolù}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.65]{img/data-obecne.eps}
+  \caption{Model tabulky symbolù.}
+  \label{obrTabSymbolu}
+\end{figure}
+
+
+\paragraph{Tabulka symbolù}
+Popis tabulky symbolù - knihovna table.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.65]{img/data-obecne2.eps}
+  \caption{Datové struktury pro tabulku symbolù, funkce, instrukce.}
+  \label{obrTabSymbolu2}
+\end{figure}
+
+
+\paragraph{Promìnné}
+Popis pøístupu k datùm.
+Zmínit datový typ string a knihovnu nad ním postavenou.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.65]{img/data-var.eps}
+  \caption{Datové struktury pro promìnné a jejich data.}
+  \label{obrPromenne}
+\end{figure}
+
+
+%------------------------------------------------
+\subsection{Instrukce}
+
+Jen popis datové struktury, bez výètu instrukcí.
+
+%------------------------------------------------------------------------
+\section{Popis øe¹ení}
+Popis implementace.
+
+%------------------------------------------------
+\subsection{Lexikální analyzátor}
+Tom! \\ Pøevá¾nì se odká¾e na koneèný automat v pøíloze.
+
+\subsection{Syntaktický analyzátor}
+Marek! \\ LL gramatika v pøíloze.
+
+\subsection{Syntaktický analyzátor výrazù}
+Vendy!
+
+\subsection{Interpret}
+V¹ichni! \\ Souèástí výèet typù instrukcí s popisem co dìlají.
+
+%------------------------------------------------
+\subsection{Algoritmy}
+Pro potøeby IAL.
+
+\subsubsection{Knuth-Moris-Prattùv algoritmus}
+Vendy!
+\subsubsection{Merge sort}
+Patrik!
+\subsubsection{Binární vyhledávací strom}
+Marek!
+
+Jen bych napsala, kde a proè se zvolila rekurze a kde ne, zanadávala na to, ¾e AVL strom jsme implementovali a zas smazali. Proè je AVL strom lep¹í.
+
+%------------------------------------------------------------------------
+\section{Vývoj a práce v týmu}
+To si napí¹u sama :-P
+
+\subsection{Zpùsob práce v týmu}
+\subsection{Rozdìlení práce}
+
+%------------------------------------------------------------------------
+\section{Závìrem}
+
+bla bla bla...
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% pøílohy
+
+\appendix
+%------------------------------------------------------------------------
+\section{Koneèný automat} \label{konecnyAutomat}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=17cm]{img/LA-verze2.eps}
+  \caption{Graf koneèného automatu pro lexikální analýzu.}
+   % TODO: dopsat o jaký druh KA se jedná, kdy pøechází do stavu false!
+  \label{obrKonecnyAutomat}
+\end{figure}
+\newpage
+
+%------------------------------------------------------------------------
+\section{LL-gramatika} \label{LLgram}
+
+\begin{table}[!h]
+  \tabcolsep=6pt
+  \centering
+  {\small
+  \begin{tabular}{rrcl} \hline
+    \rule{0pt}{1.3em}
+    \input{img/LL_pravidla.tex} \medskip \\
+    \hline
+  \end{tabular}
+  }
+  \caption{Pravidla LL gramatiky.}
+\end{table}
+
+\newpage
+
+\begin{table}[!ht]
+  \tabcolsep=2pt
+  \centering
+  {\small
+  \begin{tabular}{|l|c|c|p{1em}|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|} \hline
+    \input{img/LL_tabulka.tex}
+  \end{tabular}
+  }
+  \caption{Tabulka LL gramatiky.}
+\end{table}
+
+%------------------------------------------------------------------------
+\section{Metriky kódu} \label{metriky}
+
+% TODO: doplnit!!!
+
+\paragraph{Poèet souborù:} ??? soubor
+\paragraph{Poèet øádkù zdrojového textu:} ??? øádkù
+\paragraph{Velikost statických dat:} ???B
+\paragraph{Velikost spustitelného souboru:} ???B (systém Linux, 32 bitová
+architektura, pøi pøekla\-du bez ladicích informací)
+
+%------------------------------------------------------------------------
+\end{document}
+
+% konec souboru dokumentace.tex
