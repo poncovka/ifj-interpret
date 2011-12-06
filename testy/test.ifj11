@@ -5,6 +5,7 @@ end
 function nic()
   local main = "Zkus to: ";
   local x;
+  main = "Zkus to: "  ;
   x = prirad(main);
   write(x);
 end

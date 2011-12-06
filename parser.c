@@ -274,8 +274,8 @@ int prsDefVar() {
 
    NEXT_TOKEN
    // 9. <def_var> -> eps
-   if(token == KW_END   || token == L_ID      || token == KW_IF   ||
-         token == KW_WHILE || token == KW_RETURN || token == KW_WRITE )
+   if(token == KW_END   || token == L_ID      || token == KW_IF    ||
+      token == KW_WHILE || token == KW_RETURN || token == KW_WRITE || token == KW_MAIN)
       return PRS_OK;
 
    // 10. <def_var> -> local id <INIT> ; <def_var>
@@ -361,8 +361,8 @@ int prsStatList() {
    if(token == KW_END || token == KW_ELSE) return PRS_OK;
 
    // 15. <stat_list> -> <commad> ; <stat_list>
-   if(token != L_ID    && token != KW_IF   && token != KW_WHILE   && token != KW_RETURN  && token != KW_WRITE )
-      return SYN_ERR;
+   // if( token != L_ID && token != KW_MAIN   && token != KW_IF   && token != KW_WHILE   && token != KW_RETURN  && token != KW_WRITE )
+   //   return SYN_ERR;
 
    err = prsCommand();
    if(err != PRS_OK) return err;
@@ -381,18 +381,16 @@ int prsCommand() {
    switch(token) {
       // 22. <command> -> id = <assign>
    case KW_MAIN:
-   case L_ID: {
+   case L_ID:
       // je id v tabulce symbolu pro tuhle funkci?
-      TVar *tmp;
-      if( (tmp = functionSearchVar(table->lastAddedFunc, attr) ) == NULL ) return SEM_ERR;
+      if( (tmpV = functionSearchVar(table->lastAddedFunc, attr) ) == NULL ) return SEM_ERR;
       NEXT_TOKEN
       if(token != L_ASSIGN) return SYN_ERR;
 
-      int err = prsAssign(tmp);
+      err = prsAssign(tmpV);
       if(err != PRS_OK) return err;
 
       return PRS_OK;
-   }
    break;
    // 16. <command> -> if expression then <stat_list> else <stat_list> end
    case KW_IF: {
