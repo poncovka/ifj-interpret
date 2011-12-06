@@ -22,7 +22,7 @@ for y in `ls -l | grep '^d' | awk '{print $NF}'`; do #vyber priecinky
   for i in `ls | grep -v output`; do #vyber subory ktore nezacinaju "output"
     expected=`echo "$i" | awk -F _ '{print $1}'` #ocakavany navratovy kod
     echo ""
-    ../$program $i >output 2>/dev/null #output - realny vystup programu
+    ../../$program $i >output 2>/dev/null #output - realny vystup programu
     err=$?
     if [ "$err" -eq "$expected" ]; then #ret_val match
       diff -q output output_$i >/dev/null 
@@ -106,6 +106,8 @@ for y in `ls -l | grep '^d' | awk '{print $NF}'`; do #vyber priecinky
         fi
       fi
     fi
+  rm output
+  rm debug.log
   done
   )
 done
