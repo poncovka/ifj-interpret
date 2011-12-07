@@ -25,15 +25,16 @@ const char *dataTypeStrings[]= {
  */
 int type(TVarData *dest, TVarData *param) {
 
-   freeVarData(dest);
-
-   dest->type = STRING;
+   TVarData pom;
+   pom.type = STRING;
 
    string s = strCreateConstString ((char*) dataTypeStrings[param->type]);
-   dest->value.s = strCreateString(&s);
+   pom.value.s = strCreateString(&s);
+   if (strIsNull(&pom.value.s)) return ERR;
 
-   if (strIsNull(&dest->value.s)) return ERR;
-   else return EOK;
+   freeVarData(dest);
+   *dest = pom;
+   return EOK;
 }
 
 /*
@@ -48,7 +49,8 @@ int type(TVarData *dest, TVarData *param) {
  */
 int substr(TVarData *dest, TVarData *src, TVarData *dataFrom, TVarData *dataTo) {
 
-   freeVarData(dest);
+   TVarData pom;
+   pom.type = NIL;
 
    // kotrola parametrù:
    if (src->type == STRING && dataFrom->type == NUMBER && dataTo->type == NUMBER) {
@@ -74,19 +76,22 @@ int substr(TVarData *dest, TVarData *src, TVarData *dataFrom, TVarData *dataTo) 
       else destLen = 0;
 
       // alokace nového øetìzce :
-      if(strInitLen(&dest->value.s, destLen) == EOK) {
-         dest->type = STRING;
+      if(strInitLen(&pom.value.s, destLen) == EOK) {
+         pom.type = STRING;
 
          // kopírování :
          if (destLen > 0) {
-            strncpy(dest->value.s.str, &s[from-1], destLen);
+            strncpy(pom.value.s.str, &s[from-1], destLen);
          }
 
-         dest->value.s.str[destLen] = '\0';
-         dest->value.s.length = destLen;
+         pom.value.s.str[destLen] = '\0';
+         pom.value.s.length = destLen;
 
       } else return ERR;
    }
+
+   freeVarData(dest);
+   *dest = pom;
    return EOK;
 }
 
@@ -99,7 +104,8 @@ int substr(TVarData *dest, TVarData *src, TVarData *dataFrom, TVarData *dataTo) 
  */
 int find(TVarData *dest, TVarData *sData, TVarData *sPatternData) {
 
-   freeVarData(dest);
+   TVarData pom;
+   pom.type = NIL;
 
    // kontrola parametrù
    if (sData->type == STRING && sPatternData->type == STRING) {
@@ -107,14 +113,16 @@ int find(TVarData *dest, TVarData *sData, TVarData *sPatternData) {
       // vyhledávání podøetìzce
       int position = kmp (sData->value.s.str, sPatternData->value.s.str);
       if (position < 0) {
-         dest->type = BOOL;
-         dest->value.b = FALSE;
+         pom.type = BOOL;
+         pom.value.b = FALSE;
       } else {
-         dest->type = NUMBER;
-         dest->value.n = position;
+         pom.type = NUMBER;
+         pom.value.n = position;
       }
    }
 
+   freeVarData(dest);
+   *dest = pom;
    return EOK;
 }
 
@@ -126,20 +134,23 @@ int find(TVarData *dest, TVarData *sData, TVarData *sPatternData) {
  */
 int sort(TVarData *dest, TVarData *sData) {
 
-   freeVarData(dest);
+   TVarData pom;
+   pom.type = NIL;
 
    // kontrola parametrù:
    if (sData->type == STRING) {
 
-      dest->type = STRING;
-      dest->value.s = strCreateString(&sData->value.s);
-      if (!strIsNull(&dest->value.s)) {
+      pom.type = STRING;
+      pom.value.s = strCreateString(&sData->value.s);
+      if (!strIsNull(&pom.value.s)) {
 
          // setøízení:
-         mergeSort(dest->value.s.str);
+         mergeSort(pom.value.s.str);
       } else return ERR;
    }
 
+   freeVarData(dest);
+   *dest = pom;
    return EOK;
 }
 

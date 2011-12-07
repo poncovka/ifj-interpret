@@ -127,7 +127,7 @@ int cmpData(TVarData *data1, TVarData *data2, EInstrType instr) {
 //-------------------------TVarData *copyData(TVarData *dest, TVarData *src);---------------------->
 //=================================================================================================>
 
-int copyData(TVarData *dest, TVarData *src) {
+int copyData(TVarData *dest, TVarData *src, int copyString) {
    /*pokud prepisovana hodnota je retezec, uvolni*/
    freeVarData(dest);
 
@@ -147,9 +147,15 @@ int copyData(TVarData *dest, TVarData *src) {
       dest->value.n = src->value.n;
       break;
    case STRING:
-      dest->value.s = strCreateString(&src->value.s);
-      if (strIsNull(&dest->value.s))
-         return EXIT_FAILURE;
+      if (copyString == TRUE) {
+         dest->value.s = strCreateString(&src->value.s);
+         if (strIsNull(&dest->value.s))
+            return EXIT_FAILURE;
+      }
+      else {
+         dest->value.s = src->value.s;
+         dest->value.s.str = src->value.s.str;
+      }
       break;
    case NIL:
       break;
@@ -169,7 +175,7 @@ int copyData(TVarData *dest, TVarData *src) {
 int saveData(TVarData *data, void *dest, TFunction *fce) {
    int index = (((TVar *)dest)->varType == VT_VAR) ? fce->cnt : 0;
    TVarData *tempVar = &((TVar *)dest)->varData[index];
-   return copyData(tempVar, data);
+   return copyData(tempVar, data, TRUE);
 }
 
 //=================================================================================================>
@@ -242,7 +248,6 @@ int executor(TFunction *fce) {
             return ERR_INTERNAL;
 
          if (data1 != NULL) {
-            freeVarData(data1);
             free(data1);
          }
       }
@@ -257,7 +262,7 @@ int executor(TFunction *fce) {
             return ERR_INTERNAL;
          copyTmp->type = NIL;
 
-         if (copyData(copyTmp, data1) != EXIT_SUCCESS)
+         if (copyData(copyTmp, data1, FALSE) != EXIT_SUCCESS)
             return ERR_INTERNAL;
 
          if (stackPush(&stack,copyTmp) != STACK_EOK)
@@ -620,7 +625,6 @@ int executor(TFunction *fce) {
 
          // musim uvolnit parametr protze byl zkopirovany na zasobnik
          if (param != &nilData) {
-            freeVarData(param);
             free(param);
          }
       }
@@ -647,15 +651,12 @@ int executor(TFunction *fce) {
 
          // uvolnim pamet
          if (param != &nilData) {
-            freeVarData(param);
             free(param);
          }
          if (param2 != &nilData) {
-            freeVarData(param2);
             free(param2);
          }
          if (param3 != &nilData) {
-            freeVarData(param3);
             free(param3);
          }
       }
@@ -680,11 +681,9 @@ int executor(TFunction *fce) {
 
          // uvolni pamet
          if (param != &nilData) {
-            freeVarData(param);
             free(param);
          }
          if (param2 != &nilData) {
-            freeVarData(param2);
             free(param2);
          }
       }
@@ -707,7 +706,6 @@ int executor(TFunction *fce) {
 
          // uvolnim pamet
          if (param != &nilData) {
-            freeVarData(param);
             free(param);
          }
       }
@@ -741,7 +739,6 @@ int stackDeleteDataDelete(TStack *s) {
    if (s != NULL) {
       while (!stackEmpty(s) ) {
          TVarData *tmp = (TVarData *)stackTop(s);
-         freeVarData(tmp);
          free(tmp);
          stackPop(s);
       }
