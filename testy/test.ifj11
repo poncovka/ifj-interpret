@@ -1,33 +1,24 @@
-function prirad(x)
-  return x;
+function f1(x)
+  x = x+1;
+  write("F1 = x + 1 = ", x, "\n");
 end
 
-function nic()
-  local main = "Zkus to ";
-  local x;
-  local y;
-  y = main .. ", prosim: ";
-  main = "!(Tohle nejede - syntakticka chyba)";
-  main = y;
+function f2(x)
+  x = x+2;
+  write("F2 = x + 2 = ", x, "\n");
+  x = f1(x);
+end
 
-  x = prirad(main);
-  write(x);
+function f3(x)
+  x = x+3;
+  write("F3 = x + 3 = ", x, "\n");
+  x = f2(x);
 end
 
 function main() --Hlavni telo programu
   local x;
-  
-  x = nic();
+  write("Napise nejake cislo: ");
   x = read("*n");
-  if(x ~= 83)then
-    x = main();
-  else end;
-  
-  while false do
-    if(x) then
-      -- semErr = x;
-    else 
-      -- semErr = x;
-    end;
-  end;
+  write("\nx = ", x, "\n");
+  x = f3(x);
 end;

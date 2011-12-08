@@ -44,8 +44,10 @@ int varRealloc(TVar *v, int cnt) {
    int allocOld = v->alloc;
    v->alloc += cnt*VAR_ALLOC_SIZE;
 
-   if( ( v->varData = realloc(v->varData, sizeof(TVarData)*v->alloc) ) == NULL)
+   TVarData *tmp;
+   if( ( tmp = realloc(v->varData, sizeof(TVarData)*v->alloc) ) == NULL)
       return INS_MALLOC;
+   v->varData = tmp;
 
    for (int i = allocOld; i < v->alloc; i++) {
      v->varData[i].type = NIL;

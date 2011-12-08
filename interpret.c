@@ -62,7 +62,7 @@ void printTVarData(TVarData *data) {
 /* @description pokud neni zasobnik prazdny vrati data, jinak vrati NULL
  * @param zasobnik
  */
-TVarData *stackPopVarData(TStack *stack) {
+inline TVarData *stackPopVarData(TStack *stack) {
    // zasobnik neni prazdny, vrat ukazatel na data
    if (!stackEmpty(stack)) {
       return ((TVarData *) stackTopPop(stack));
@@ -80,7 +80,7 @@ TVarData *stackPopVarData(TStack *stack) {
  * @param porovnavaci instrukce
  * @return TRUE/FALSE/ERR_INTERPRET
  */
-int cmpData(TVarData *data1, TVarData *data2, EInstrType instr) {
+inline int cmpData(TVarData *data1, TVarData *data2, EInstrType instr) {
    if ((data1->type == STRING) && (data2->type == STRING)) {
       switch (instr) {
       case I_CMP_L:
@@ -127,7 +127,7 @@ int cmpData(TVarData *data1, TVarData *data2, EInstrType instr) {
 //-------------------------TVarData *copyData(TVarData *dest, TVarData *src);---------------------->
 //=================================================================================================>
 
-int copyData(TVarData *dest, TVarData *src, int copyString) {
+inline int copyData(TVarData *dest, TVarData *src, int copyString) {
    /*pokud prepisovana hodnota je retezec, uvolni*/
    freeVarData(dest);
 
@@ -172,7 +172,7 @@ int copyData(TVarData *dest, TVarData *src, int copyString) {
  * @param aktualni funkce
  * @return chybovy kod
  */
-int saveData(TVarData *data, void *dest, TFunction *fce) {
+inline int saveData(TVarData *data, void *dest, TFunction *fce) {
    int index = (((TVar *)dest)->varType == VT_VAR) ? fce->cnt : 0;
    TVarData *tempVar = &((TVar *)dest)->varData[index];
    return copyData(tempVar, data, TRUE);
@@ -187,7 +187,7 @@ int saveData(TVarData *data, void *dest, TFunction *fce) {
  * @param aktualni funkce
  * @return ukazatel na data
  */
-TVarData *giveMeData(void *data, TFunction *fce) {
+inline TVarData *giveMeData(void *data, TFunction *fce) {
    return &(((TVar *)data)->varData[(((TVar *)data)->varType == VT_VAR) ? fce->cnt : 0]);
 }
 
@@ -287,8 +287,12 @@ int executor(TFunction *fce) {
 
          /*===========================================I_SET==========================================*/
       case I_SET: {
-         if (varRealloc(instr->dest,fce->cnt) != INS_OK)
-            return ERR_INTERNAL;
+         // realokace pokud nedostatek mista
+         if( ( ((TVar*)instr->dest)->alloc - fce->cnt) < 1) {
+           if (varRealloc(instr->dest,fce->cnt) != INS_OK)
+              return ERR_INTERNAL;
+         }
+
          TVarData *tmp = giveMeData(instr->dest, fce);
          freeVarData(tmp);
          if (instr->src1 != NULL) {
