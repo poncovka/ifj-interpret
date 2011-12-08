@@ -109,11 +109,22 @@ typedef struct {
    void *src2;
 } TInstr;
 
+//---------------------------------------------------------------------- inline funkce
+
 /*
  * smaze data a inicializuje je na NIL
  * @param   uk na data promenne
  */
-void freeVarData(TVarData *data);
+inline void freeVarData(TVarData *data) {
+   if(data != NULL) {
+      if (data->type == STRING) {
+         strFree(&data->value.s);
+      }
+      data->type = NIL;
+   }
+}
+
+//----------------------------------------------------------------------
 
 /*
  * generuje instrukci

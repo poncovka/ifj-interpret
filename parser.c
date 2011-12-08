@@ -275,8 +275,7 @@ int prsDefVar() {
    NEXT_TOKEN
    // 9. <def_var> -> eps
    if(token == KW_END   || token == L_ID      || token == KW_IF    ||
-      token == KW_WHILE || token == KW_RETURN || token == KW_WRITE ||
-      token == KW_MAIN /*|| token == KW_REPEAT*/ )
+      token == KW_WHILE || token == KW_RETURN || token == KW_WRITE || token == KW_MAIN)
       return PRS_OK;
 
    // 10. <def_var> -> local id <INIT> ; <def_var>
@@ -290,15 +289,14 @@ int prsDefVar() {
    // prohledam jestli se nejaka promena nejmenuje stejne jako nejaka funkce
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
    // pokusim se id vlozit to tabulky
-   /*
-    * vlozeni promene kvuli LOCALEXP pride presunout!
-    */
    err = functionInsertVar(table->lastAddedFunc, attr);
    if(err != INS_OK) {
       switch(err) {
-         case INS_NODE_EXIST: return SEM_ERR;
-         case INS_MALLOC:
-         default: return INTR_ERR;
+      case INS_NODE_EXIST:
+         return SEM_ERR;
+      case INS_MALLOC:
+      default:
+         return INTR_ERR;
       }
    }
 
@@ -330,10 +328,6 @@ int prsInit() {
    if(token != L_ASSIGN)  return SYN_ERR;
 
    NEXT_TOKEN
-   /*
-      bude tu expression
-      err = prsLit(); tenhle radek pride smazat a nahradit volanim expression
-   */
    err = prsLit();
    if(err != PRS_OK) return err;
 

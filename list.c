@@ -101,65 +101,31 @@ int listInsertLast  (TList *L, void *data) {
 }
 
 /*
- * Aktivitu seznamu nastaví na první polo¾ku.
- * Ukazatel na NULL vyvolá chybu.
+ * Vlo¾í novou polo¾ku s ukazatelem na data za aktivní.
+ * Neplatný ukazatel na seznam a nedostatek pamìti vyvolá chybu.
  * @param   ukazatel na seznam
+ * @param   ukazatel na data
  * @return  kód chyby
  */
-int listFirst (TList *L) {
+int listPostInsert (TList *L, void *data) {
 
    if (L != NULL) {
-      L->Act = L->First;
-   } else return LIST_ERR;
+      if (L->Act != NULL) {        // nìjaký prvek je aktivní
+
+         TLItem *pom = NULL;       // alokace
+         if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
+
+            pom->data = data;        // inicializace
+            pom->next = L->Act->next;
+            L->Act->next = pom;
+            // nastavení posledního prvku
+            if (L->Act == L->Last) L->Last = pom;
+         } else return LIST_EALLOC; // nedostatek pamìti
+      }
+   } else return LIST_ERR;        // neplatný uk na seznam
    return LIST_EOK;
 
 }
-
-/*
- * Aktivitu seznamu nastaví na poslední polo¾ku.
- * Ukazatel na NULL vyvolá chybu.
- * @param   ukazatel na seznam
- * @return  kód chyby
- */
-int listLast (TList *L) {
-
-   if (L != NULL) {
-      L->Act = L->Last;
-   } else return LIST_ERR;
-   return LIST_EOK;
-
-}
-
-/*
- * Vrátí ukazatel na data v první polo¾ce.
- * Pokud je ukazatel na seznam neplatný,
- * nebo je seznam prázdný, vrátí se NULL.
- * @param   ukazatel na seznam
- * @return  ukazatel na data nebo NULL
- */
-void *listCopyFirst (TList *L) {
-
-   if (L != NULL && L->First != NULL) {
-      return L->First->data;  // v poøádku, vrací uk na data
-   } else return NULL;       // chyba, neplatný ukazatel
-
-}
-
-/*
- * Vrátí ukazatel na data v poslední polo¾ce.
- * Pokud je ukazatel na seznam neplatný,
- * nebo je seznam prázdný, vrátí se NULL.
- * @param   ukazatel na seznam
- * @return  ukazatel na data nebo NULL
- */
-void *listCopyLast (TList *L) {
-
-   if (L != NULL && L->Last != NULL) {
-      return L->Last->data;   // v poøádku, vrací uk na data
-   } else return NULL;       // chyba, neplatný ukazatel
-
-}
-
 
 /*
  * Zru¹í první polo¾ku seznamu, pokud byla aktivní, aktivita se zru¹í.
@@ -191,64 +157,6 @@ int listDeleteFirst (TList *L) {
 }
 
 /*
- * Vlo¾í novou polo¾ku s ukazatelem na data za aktivní.
- * Neplatný ukazatel na seznam a nedostatek pamìti vyvolá chybu.
- * @param   ukazatel na seznam
- * @param   ukazatel na data
- * @return  kód chyby
- */
-int listPostInsert (TList *L, void *data) {
-
-   if (L != NULL) {
-      if (L->Act != NULL) {        // nìjaký prvek je aktivní
-
-         TLItem *pom = NULL;       // alokace
-         if ( (pom = (TLItem*)malloc(sizeof(TLItem))) != NULL ) {
-
-            pom->data = data;        // inicializace
-            pom->next = L->Act->next;
-            L->Act->next = pom;
-            // nastavení posledního prvku
-            if (L->Act == L->Last) L->Last = pom;
-         } else return LIST_EALLOC; // nedostatek pamìti
-      }
-   } else return LIST_ERR;        // neplatný uk na seznam
-   return LIST_EOK;
-
-}
-
-/*
- * Posune aktivitu na následující polo¾ku seznamu.
- * Neplatný ukazatel na seznam vyvolá chybu.
- * @param   ukazatel na seznam
- * @param   ukazatel na data
- * @return  kód chyby
- */
-int listSucc (TList *L) {
-
-   if (L != NULL) {
-
-      if (L->Act != NULL) {
-         L->Act = L->Act->next;
-      }
-   } else return LIST_ERR;
-   return LIST_EOK;
-}
-
-/*
- * Vrátí ukazatel na data z aktivní polo¾ky.
- * Neplatný ukazatel na seznam a neaktivní seznam vrátí NULL.
- * @param   ukazatel na seznam
- * @return  ukazatel na data nebo NULL
- */
-void *listCopy (TList *L) {
-
-   if (L != NULL && L->Act != NULL) {
-      return L->Act->data;  // ok, vrací se uk na data
-   } else return NULL;     // chyba, vrací se NULL
-}
-
-/*
  * Pøepí¹e ukazatel na data aktivní polo¾ky seznamu.
  * Neplatný ukazatel na seznam vyvolá chybu.
  * @param   ukazatel na seznam
@@ -265,43 +173,5 @@ int listActualize (TList *L, void *data ) {
    } else return LIST_ERR;  // neplatný ukazatel
    return LIST_EOK;
 }
-
-/*
- * Vrátí true, pokud se seznam aktivní, jinak false.
- * Nehlídá platnost ukazatele!
- * @param   ukazatel na seznam
- * @return  true/false
- */
-int listActive (TList *L) {
-   return (L->Act != NULL);
-}
-
-/*
- * Vrátí ukazatel na aktivní prvek.
- * Neplatnost ukazatele na seznam vrací NULL.
- * @param   ukazatel na seznam
- * @return  ukazatel na prvek seznamu
- */
-TLItem *listGetActive (TList *L) {
-   if (L != NULL) {
-      return L->Act;
-   }
-   return NULL;
-}
-
-/*
- * Nastaví daný prvek na aktivní.
- * Neplatnost ukazatele na seznam vrací chybu.
- * @param   ukazatel na seznam
- * @param   ukazatel na prvek seznamu
- * @return  kód chyby
- */
-int listSetActive (TList *L, TLItem *uk) {
-   if (L != NULL ) {
-      L->Act = uk;
-   } else return LIST_ERR;
-   return LIST_EOK;
-}
-
 
 /* konec list.c */

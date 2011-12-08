@@ -353,24 +353,6 @@ int checkRule (TInstr *instr) {
 }
 
 /*
- * Provede sémantickou kontrolu pro promìnnou a typ instrukce.
- * Kontrola se provádí pouze pro matematické a relaèní instr.
- * Ke kontrole slou¾í tabulka semTable.
- * @param   ukazatel na instrukci
- * @param   ukazatel na data promìnné
- * @return  chybový kód
- */
-int checkSemErr (TInstr *instr, TVarData *data) {
-
-   if (isMathOperation(instr->type)) {
-      if (semTable[instr->type][data->type] != 1) {
-         return SEM_ERR;
-      }
-   }
-   return EOK;
-}
-
-/*
  * Vlo¾í kopii instrukce do seznamu instrukcí.
  * Vygeneruje pomocnou promìnou a pou¾ije ji
  * jako destination instrukce.

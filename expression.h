@@ -20,6 +20,7 @@
 // pomocné konstanty:
 
 #define EOK        0                  // chybový kód pro úspìch
+#define SEM_ERR   -3                  // chybový kód pro sémantickou chybu
 #define ENDEXPR    END_OF_FILE + 1    // ukonèovaè øetìzce a dno zásobníku
 #define MAXTAB     ENDEXPR + 1        // rozmìr precedenèní tabulky
 #define EXPRESSION -1                 // není token
@@ -61,7 +62,8 @@ int getTopToken     (TStack *S);
 
 int findRule        (TStack *S, TInstr *instr);
 int checkRule       (TInstr *instr);
-int checkSemErr     (TInstr *instr, TVarData *data);
+
+inline int checkSemErr     (TInstr *instr, TVarData *data);
 
 int insertInstruction(TInstr *instr, TTable *table);
 int returnResult    (TStack *S, TVar **ptrResult);
@@ -77,5 +79,27 @@ void stackDataDelete (TStack *S);
 
 void tiskniStack (TStack *s);
 void tiskniPrecTab();
+
+///////////////////////////////////////////////////////////////////////////
+/* inline funkce */
+
+/*
+ * Provede sémantickou kontrolu pro promìnnou a typ instrukce.
+ * Kontrola se provádí pouze pro matematické a relaèní instr.
+ * Ke kontrole slou¾í tabulka semTable.
+ * @param   ukazatel na instrukci
+ * @param   ukazatel na data promìnné
+ * @return  chybový kód
+ */
+inline int checkSemErr (TInstr *instr, TVarData *data) {
+
+   if (isMathOperation(instr->type)) {
+      if (semTable[instr->type][data->type] != 1) {
+         return SEM_ERR;
+      }
+   }
+   return EOK;
+}
+
 
 #endif // EXPRESSION_H_INCLUDED

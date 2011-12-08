@@ -18,10 +18,6 @@
 #define EOK  0
 #define ERR -5
 
-// funkce pro uvolnìní dat:
-
-void freeVarData(TVarData *data);
-
 // vestavene funkce:
 
 int type  (TVarData *dest, TVarData *param);
