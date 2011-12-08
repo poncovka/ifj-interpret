@@ -153,9 +153,8 @@ int copyData(TVarData *dest, TVarData *src, int copyString) {
             return EXIT_FAILURE;
       }
       else {
-         dest->value.s.length    = src->value.s.length;
-         dest->value.s.allocSize = src->value.s.allocSize;
-         dest->value.s.str       = src->value.s.str;
+         dest->value.s = src->value.s;
+         dest->value.s.str = src->value.s.str;
       }
       break;
    case NIL:
