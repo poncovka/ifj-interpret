@@ -217,11 +217,10 @@ int executor(TFunction *fce) {
       return ERR_INTERNAL;
 
    /*cyklus provede vykonani vsech instrukci ze seznamu*/
-   while (listActive(&fce->instructions)) {
+   while (fce->instructions.Act != NULL) {
 
       /*precte aktualni instrukci ze seznamu*/
-      if ((instr = (TInstr*) listCopy(&fce->instructions)) == NULL)
-         return ERR_INTERNAL;
+      instr = (TInstr*) ( fce->instructions.Act->data);
 
       /*kontrola semantiky matematickych a porovnavacich operaci*/
 
@@ -722,8 +721,7 @@ int executor(TFunction *fce) {
       } //konec switch
 
       /*posune aktivitu na dalsi instrukci*/
-      if ((listSucc(&fce->instructions)) == LIST_ERR)
-         return ERR_INTERNAL;
+      fce->instructions.Act = fce->instructions.Act->next;
    } //konec while
 
    fce->cnt--;
