@@ -1,6 +1,5 @@
 function main() --Hlavni telo programu
   repeat
      write("Jenom jednou\n");
-    $
   until false;  
 end;
