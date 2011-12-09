@@ -1,6 +1,6 @@
 function fun()
 local main;
-end;
+end
 
 function main()
 

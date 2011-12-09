@@ -3,7 +3,7 @@ if (main*10)<20 then
   write("ok");
 else
 end;
-end;
+end
 
 function main()
 local a;

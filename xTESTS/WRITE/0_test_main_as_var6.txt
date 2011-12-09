@@ -6,7 +6,7 @@ while main<5 do
 return 0;
 end;
 write("ok");
-end;
+end
 
 function main()
 local a;

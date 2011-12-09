@@ -5,7 +5,7 @@ main=10;
 b=main*2;
 main=b*10;
 return main;
-end;
+end
 
 function main()
 local a;
