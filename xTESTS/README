@@ -1,10 +1,11 @@
 testuje a overuje valgrindem, pripadne vypise co se valgrindu nelibi
+projizdi vsechny sady testu
 
 Pouziti:
   
-  bud ve slozce kde je program ;)
+  zustan ve slozce kde je program ;)
   
-  a ten pro otestovani uplne vsechno:
+  pro otestovani uplne vsechno:
   
     sh xTESTS/TEST.sh            -- uvidis vsechno
     sh xTESTS/TEST.sh >/dev/null -- uvidis jenom chyby
