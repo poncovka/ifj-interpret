@@ -37,8 +37,8 @@
 
 // pomocná makra pro typy instrukcí:
 
-#define isMathOperation(i) (i >= I_ADD   && i <= I_CMP_NE)
-#define isLGEOperation(i)  (i >= I_CMP_L && i <= I_CMP_GE)
+#define isMathOperation(i) (i >= I_ADD   && i <= I_CMP_NE) // instrukce matematicke i logicke
+#define isLGEOperation(i)  (i >= I_CMP_L && i <= I_CMP_GE) // logicke instrukce: L,LE,G,GE
 
 // tabulka pro kontrolu semantiky:
 
