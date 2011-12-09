@@ -373,6 +373,7 @@ int prsStatList() {
    if(token != L_SEMICOLON) return SYN_ERR;
 
    NEXT_TOKEN // <stat_list> ceka uz nacteny attr
+
    return prsStatList();
 }
 
@@ -541,7 +542,7 @@ int prsCommand() {
       TLItem *lab = instr->Last;
 
       NEXT_TOKEN
-      if( (err = prsStatList() != PRS_OK) || token != KW_UNTIL) return err == PRS_OK ? SYN_ERR : err;
+      if( (err = prsStatList()) != PRS_OK || token != KW_UNTIL) return err == PRS_OK ? SYN_ERR : err;
 
       NEXT_TOKEN
       if( (err = parseExpression(table, &tmpV)) != EOK || token != L_SEMICOLON) return err == PRS_OK ? SYN_ERR : err;

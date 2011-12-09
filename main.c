@@ -13,7 +13,7 @@
 #include "parser.h"
 #include "interpret.h"
 
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG
 #define debuguj(prikazy) prikazy
 #else
