@@ -565,7 +565,12 @@ int executor(TFunction *fce) {
                dest->value.s = strReadLine(stdin);
                if (strIsNull(&dest->value.s))
                   return ERR_INTERNAL;
+
                dest->type = STRING;
+
+               if (dest->value.s.length == 0)
+                  freeVarData(dest);
+
             }
 
             /*dokud neni EOF*/
