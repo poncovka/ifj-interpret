@@ -3,7 +3,7 @@ exitCode=$1;
 dir=$2
 
 
-ls -1 $dir | grep --invert-match ".sh$" | {  
+ls -1 $dir | grep --invert-match "^README$" | {  
   while read file; do
     pgr=`./project "$dir/$file"  2>&1`
     err=$?
