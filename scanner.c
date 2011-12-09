@@ -12,16 +12,16 @@
 int countOfRows = 1;
 
 /*tabulka s klicovymi a rezervovanymi slovy*/
-const char *reservedWords[] = {"break", "elseif", "for", "in", "repeat", "until", "or", "not", "and"};
+const char *reservedWords[] = {"break", "elseif", "for", "in", "or", "not", "and"};
 const char *keyWords[] = {
    //[KW_OR] = "or",              [KW_AND] = "and",       [KW_NOT] = "not",
-   [KW_END] = "end",						[KW_LOCAL] = "local",   [KW_WRITE] = "write",
+   [KW_END] = "end",					[KW_LOCAL] = "local",      [KW_WRITE] = "write",
    [KW_RETURN] = "return",			[KW_IF] = "if", 				[KW_THEN] ="then",
    [KW_FUNCTION] = "function",	[KW_READ] = "read",			[KW_DO] = "do",
    [KW_ELSE] = "else",    			[KW_WHILE] = "while",		[KW_NIL] = "nil",
-   [KW_FALSE] = "false", 			  [KW_TRUE] = "true", 		[KW_TYPE] = "type",
+   [KW_FALSE] = "false", 			[KW_TRUE] = "true", 		   [KW_TYPE] = "type",
    [KW_SUBSTR] = "substr",			[KW_FIND] = "find",			[KW_SORT] = "sort",
-   [KW_MAIN] = "main"
+   [KW_MAIN] = "main",           [KW_REPEAT] = "repeat",    [KW_UNTIL] = "until",
 };
 
 /*promenna pro ulozeni vstupniho souboru*/

@@ -1,24 +1,6 @@
-function f1(x)
-  x = x+1;
-  write("F1 = x + 1 = ", x, "\n");
-end
-
-function f2(x)
-  x = x+2;
-  write("F2 = x + 2 = ", x, "\n");
-  x = f1(x);
-end
-
-function f3(x)
-  x = x+3;
-  write("F3 = x + 3 = ", x, "\n");
-  x = f2(x);
-end
-
 function main() --Hlavni telo programu
-  local x;
-  write("Napise nejake cislo: ");
-  x = read("*n");
-  write("\nx = ", x, "\n");
-  x = f3(x);
+  local x = 0;
+  repeat
+    write("Jenom jednou\n");
+  until false;  
 end;

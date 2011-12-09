@@ -24,6 +24,7 @@
      15.    <stat_list> -> <commad> ; <stat_list>
      16.      <command> -> if expression then <stat_list> else <stat_list> end
      17.      <command> -> while expression do <stat_list> end
+     32.      <command> -> repeat <stat_list> until exp
      18.      <command> -> return expression
      19.      <command> -> write ( expression <expression_n> )
      20. <expression_n> -> eps
@@ -51,7 +52,7 @@ int prsParams();
 int prsParamsN();
 int prsDefVar();
 int prsStatList();
-int prsInit();
+int prsInit(string*);
 int prsLit();
 int prsCommand();
 int prsExpN();
@@ -274,8 +275,9 @@ int prsDefVar() {
 
    NEXT_TOKEN
    // 9. <def_var> -> eps
-   if(token == KW_END   || token == L_ID      || token == KW_IF    ||
-      token == KW_WHILE || token == KW_RETURN || token == KW_WRITE || token == KW_MAIN)
+   if(token == KW_END   || token == L_ID      || token == KW_IF    || // main muze byt i promena ;)
+      token == KW_WHILE || token == KW_RETURN || token == KW_WRITE ||
+      token == KW_MAIN  || token == KW_REPEAT)
       return PRS_OK;
 
    // 10. <def_var> -> local id <INIT> ; <def_var>
@@ -288,19 +290,10 @@ int prsDefVar() {
    if(token != L_ID && token != KW_MAIN) return SYN_ERR;
    // prohledam jestli se nejaka promena nejmenuje stejne jako nejaka funkce
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
-   // pokusim se id vlozit to tabulky
-   err = functionInsertVar(table->lastAddedFunc, attr);
-   if(err != INS_OK) {
-      switch(err) {
-      case INS_NODE_EXIST:
-         return SEM_ERR;
-      case INS_MALLOC:
-      default:
-         return INTR_ERR;
-      }
-   }
 
-   err = prsInit();
+   string tmp = strCreateString(&attr);
+   err = prsInit(&tmp);
+   strFree(&tmp);
    if(err != PRS_OK) return err;
 
    if(token != L_SEMICOLON) return SYN_ERR;
@@ -308,42 +301,51 @@ int prsDefVar() {
    return prsDefVar();
 }
 
-int prsInit() {
+int prsInit(string *tmp) {
    int err;
    TInstr *i;
 
    NEXT_TOKEN
    // 11. <init> -> eps
    if(token == L_SEMICOLON) {
+      // vlozim promenou doi tabulky
+      err = functionInsertVar(table->lastAddedFunc, *tmp);
+      if(err != INS_OK) {
+         switch(err) {
+            case INS_NODE_EXIST:return SEM_ERR;
+            case INS_MALLOC:
+            default: return INTR_ERR;
+         }
+      }
       // inicializuji promenou na nil
-      // ve skutecnosti ji inicializuju pomoci konstanty ktera bude ulozena
-      // jako prvni v tabulce konstant a bude NIL
-      if( (i = genInstr(I_SET, getLastAddedVar(table->lastAddedFunc), NULL, NULL) )  == NULL)
-         return INTR_ERR;
-      if( listInsertLast( instr, i ) != LIST_EOK)
-         return INTR_ERR;
+      if( (i = genInstr(I_SET, getLastAddedVar(table->lastAddedFunc), NULL, NULL) )  == NULL) return INTR_ERR;
+      if( listInsertLast( instr, i ) != LIST_EOK) return INTR_ERR;
       return PRS_OK;
    }
-   // 12. <init> -> = <lit>
+   // 12. <init> -> = expression
    if(token != L_ASSIGN)  return SYN_ERR;
 
    NEXT_TOKEN
-   err = prsLit();
-   if(err != PRS_OK) return err;
+   // naparsuju vyraz
+   TVar *tmpV;
+   if( (err = parseExpression(table, &tmpV)) != EOK) return err;
 
-   // vytvorim konstantu
-   if(functionInsertConstatnt(table->lastAddedFunc, attr, token) != INS_OK)
+   // pokud parsovani vyrazu probehlo v poradku tak az teprve ted vlozim promenou
+   // do tabulky. nesmim zapomenout ze parsovani mi nacestlo dalso token!!! nejspis ;
+   err = functionInsertVar(table->lastAddedFunc, *tmp);
+   if(err != INS_OK) {
+      switch(err) {
+         case INS_NODE_EXIST:return SEM_ERR;
+         case INS_MALLOC:
+         default: return INTR_ERR;
+      }
+   }
+   // nageneruji instrukci inicializace promene
+   if((i = genInstr(I_SET, getLastAddedVar(table->lastAddedFunc), tmpV, NULL))  == NULL)
       return INTR_ERR;
 
-   // vlozim instrukci
-   TVar *src = table->lastAddedFunc->constants.Last->data;
-   if((i = genInstr(I_SET, getLastAddedVar(table->lastAddedFunc), src, NULL))  == NULL)
-      return INTR_ERR;
-   if( listInsertLast( instr, i ) != LIST_EOK)
-      return INTR_ERR;
+   if(listInsertLast(instr, i) != EOK) return INTR_ERR;
 
-   // musim nacist dalsi attr protoze prsDefVar pocita ze je nacteny
-   NEXT_TOKEN
    return PRS_OK;
 }
 
@@ -358,7 +360,7 @@ int prsStatList() {
    // TOKEN UZ JE NACTENY
    int err;
    // 14. <stat_list> -> eps
-   if(token == KW_END || token == KW_ELSE) return PRS_OK;
+   if(token == KW_END || token == KW_ELSE || token == KW_UNTIL) return PRS_OK;
 
    // 15. <stat_list> -> <commad> ; <stat_list>
    // if( token != L_ID && token != KW_MAIN   && token != KW_IF   && token != KW_WHILE   && token != KW_RETURN  && token != KW_WRITE )
@@ -530,6 +532,27 @@ int prsCommand() {
       return PRS_OK;
    }
    break;
+   // 32. <command> -> repeat <stat_list> until exp
+   case KW_REPEAT:{
+      TInstr *tmp = genInstr(I_LAB, NULL, NULL, NULL);
+      if(tmp == NULL) return INTR_ERR;
+
+      if(listInsertLast(instr, tmp) != LIST_EOK) return INTR_ERR;
+      TLItem *lab = instr->Last;
+
+      NEXT_TOKEN
+      if( (err = prsStatList() != PRS_OK) || token != KW_UNTIL) return err == PRS_OK ? SYN_ERR : err;
+
+      NEXT_TOKEN
+      if( (err = parseExpression(table, &tmpV)) != EOK || token != L_SEMICOLON) return err == PRS_OK ? SYN_ERR : err;
+
+      tmp = genInstr(I_JMP_NZ, lab, tmpV, NULL);
+      if(tmp == NULL) return INTR_ERR;
+
+      if(listInsertLast(instr, tmp) != LIST_EOK) return INTR_ERR;
+
+      return PRS_OK;
+   }break;
    // 18. <command> -> return expression
    case KW_RETURN: {
       // preskocim vyraz a vratim ze bylo vse OK

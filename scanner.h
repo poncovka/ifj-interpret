@@ -11,7 +11,7 @@
 #define ERR_MALLOC -5
 
 #define NONE 0
-#define RESERVED_MAX 8
+#define RESERVED_MAX 6
 #define ASCII_MIN 32
 #define ASCII_MAX 255
 #define HUNDRED 100
@@ -25,11 +25,12 @@ enum ELexem {
 
    KW_MAIN,  KW_FUNCTION, KW_LOCAL, KW_RETURN, // funkce
    KW_IF,    KW_THEN,     KW_ELSE,             // podminka
-   KW_WHILE, KW_DO,	      KW_END, 			       // cyklus
+   KW_WHILE, KW_DO,	      KW_END, 			     // cyklus
    KW_READ,  KW_WRITE,                         // prikazy
    KW_TYPE,  KW_SUBSTR,	  KW_FIND,  KW_SORT,   // vestavene funkce
-   KW_TRUE,  KW_FALSE,    KW_NIL,              // konstanty
-   //KW_AND,   KW_OR,       KW_NOT,              // logika
+   KW_TRUE,  KW_FALSE,    KW_REPEAT,KW_UNTIL,
+   KW_NIL,                                     // konstanty
+   //KW_AND,   KW_OR,       KW_NOT,            // logika
    //18
 
    L_NUMBER,						// cislo
