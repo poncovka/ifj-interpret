@@ -1,5 +1,6 @@
 /*
  * @description   Práce se dynamickým zásobníkem
+ *                pozn. funkce nekontroluji platnost ukazatele na zasobnik
  * @author        Vendula Poncová - xponco00
  * @projekt       IFJ11
  * @date
@@ -29,11 +30,8 @@ typedef struct {          // struktura pro zásobník
 
 // Funkce pro práci se zásobníkem:
 
-int stackInit     (TStack *s);
-int stackDelete   (TStack *s);
-
-
-inline int stackEmpty    (TStack *s);
+void stackInit     (TStack *s);
+void stackDelete   (TStack *s);
 
 inline void *stackTop    (TStack *s);
 inline int stackPop      (TStack *s);
@@ -50,22 +48,20 @@ inline void *stackTopPop (TStack *s);
  * @param   ukazatel na zásobník
  * @return  true/false
  */
-inline int stackEmpty (TStack *s) {
-
-   return (s->top == NULL);
-}
+#define stackEmpty(S) ((S)->top == NULL)
 
 /*
  * Vrátí ukazatel na data z polo¾ky na vrcholu zásobníku.
- * Pokud dojde k chybì, vrátí se NULL.
+ * Pokud je zasobnik prazdny, vrátí se NULL.
  * @param   ukazatel na zásobník
  * @return  ukazatel na data nebo NULL
  */
 inline void *stackTop (TStack *s) {
 
-   if (s != NULL && !stackEmpty(s)) {
+   if (!stackEmpty(s)) {
       return s->top->data;
    } else return NULL;
+
 }
 
 /*
@@ -76,13 +72,11 @@ inline void *stackTop (TStack *s) {
  */
 inline int stackPop (TStack *s) {
 
-   if (s != NULL) {
-      if (!stackEmpty(s)) {
-         TSItem *pom = s->top;
-         s->top = s->top->next;
-         free(pom);
-      } else return STACK_EEMPTY; // pøístup do prázdného zásobníku
-   } else return STACK_ERR; // neplatný ukazatel
+   if (!stackEmpty(s)) {
+      TSItem *pom = s->top;
+      s->top = s->top->next;
+      free(pom);
+   } else return STACK_EEMPTY; // pøístup do prázdného zásobníku
 
    return STACK_EOK;
 }
@@ -96,16 +90,14 @@ inline int stackPop (TStack *s) {
  */
 inline int stackPush (TStack *s, void *data) {
 
-   if (s != NULL) {
-      TSItem *elem;
+   TSItem *elem;
 
-      if ( (elem = (TSItem *)malloc(sizeof(TSItem))) != NULL ) {
+   if ( (elem = (TSItem *)malloc(sizeof(TSItem))) != NULL ) {
+      elem->data = data;
+      elem->next = s->top;
+      s->top = elem;
 
-         elem->data = data;
-         elem->next = s->top;
-         s->top = elem;
-      } else return STACK_EALLOC; // nedostatek pamìti
-   } else return STACK_ERR; // neplatný ukazatel
+   } else return STACK_EALLOC; // nedostatek pamìti
 
    return STACK_EOK;
 }

@@ -22,6 +22,9 @@
 #define STR_ERROR   1
 #define STR_SUCCESS 0
 
+// Makro vrací true, pokud øetìzec ve string ukazuje na NULL
+#define strIsNull(s) ((s)->str == NULL)
+
 // struktura pro datový typ STRING:
 
 typedef struct {
@@ -37,7 +40,6 @@ inline int  strInitLen    (string *s, int len);
 
 inline void strFree       (string *s);
 inline void strClear      (string *s);
-inline int  strIsNull     (string *s);
 inline int  strCmpString  (string *s1, string *s2);
 
 inline int  strAddChar    (string *s1, char c);
@@ -107,14 +109,6 @@ inline void strFree(string *s) {
 inline void strClear(string *s) {
    s->str[0] = '\0';
    s->length = 0;
-}
-
-/*
- * Funkce vrací true, pokud øetìzec ukazuje na NULL
- * @param   true/false
- */
-inline int strIsNull (string *s) {
-   return s->str == NULL;
 }
 
 /*
