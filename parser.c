@@ -182,7 +182,7 @@ int prsParams() {
    if(token == L_RIGHT_BRACKET) return PRS_OK;
 
    // 5. <params> -> id <params_n>
-   if(token != L_ID) return SYN_ERR;
+   if(token != L_ID && token != KW_MAIN) return SYN_ERR;
 
    // jestli se id jmenuje stejne jako nejaka funkce SEM_ERR
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
@@ -227,7 +227,7 @@ int prsParamsN() {
    if(token != L_COMMA) return SYN_ERR;
 
    NEXT_TOKEN
-   if(token != L_ID) return SYN_ERR;
+   if(token != L_ID && token != KW_MAIN) return SYN_ERR;
 
    // jestli se id jmenuje stejne jako nejaka funkce SEM_ERR
    if(tableSearchFunction(table, attr) != NULL) return SEM_ERR;
