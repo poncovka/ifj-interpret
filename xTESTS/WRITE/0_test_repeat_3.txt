@@ -19,7 +19,7 @@ repeat
         until a>30;
       until a>35;
     until a>40;
-  until a>45
+  until a>45;
 until a>50;
 write(a);
 end;

@@ -1,6 +1,6 @@
 function fun2(main)
 write(main);
-end;
+end
 
 function fun()
 local main;
