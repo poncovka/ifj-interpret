@@ -10,7 +10,7 @@ end
 function fun(a)
 repeat
   a=fun2(a);
-  local b;
+  -- local b; -- tady je syn err proto to neslo!!!!!
 until a>ˇ100;
 end
 
