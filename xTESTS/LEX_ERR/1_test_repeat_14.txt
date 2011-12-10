@@ -11,7 +11,7 @@ function fun(a)
 repeat
   a=fun2(a);
   local b;
-until a><100;
+until a>ˇ100;
 end
 
 function main()

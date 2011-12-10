@@ -10,7 +10,7 @@ if 1 then
                 if 9 then
                   if 10 then
                     write("10");
-                  ellse
+                  -- ellse                           -- tadz je chyba ale semanticka
                     write("bad");
                   end;
                 else

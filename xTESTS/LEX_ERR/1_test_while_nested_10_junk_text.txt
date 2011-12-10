@@ -9,7 +9,7 @@ while 1 do
               while 8 do
                 while 9 do
                   while 10 do
-                    -=.
+                    @#$% lex erro
                     return 0;
                   end;
                 end;

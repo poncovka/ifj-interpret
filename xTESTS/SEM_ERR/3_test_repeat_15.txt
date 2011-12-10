@@ -10,7 +10,7 @@ end
 function fun(a)
 repeat
   a=fun2(a);
-  local b;
+  c = 5;
 until c>100;
 end
 

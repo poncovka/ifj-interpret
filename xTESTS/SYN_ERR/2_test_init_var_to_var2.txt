@@ -1,4 +1,4 @@
 function main()
 local a=5;
-local b=a;
+local b=;
 end;
