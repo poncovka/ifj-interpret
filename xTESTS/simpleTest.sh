@@ -10,10 +10,13 @@ ls -1 $dir | grep --invert-match "^README$" | {
     val=`valgrind --leak-check=full --leak-resolution=high -q ./project "$dir/$file"  2>&1`
   
     if [ "$err" != "$exitCode" -o "$pgr" != "$val" ]; then
+      printf "TEST FAIL - "  >&2;
       if [ "$pgr" != "$val" ] ; then
-        valgrind --leak-check=full --leak-resolution=high -q ./project "$dir/$file"  
+        printf "%s\n" $file >&2
+        valgrind --leak-check=full --leak-resolution=high -q ./project "$dir/$file"
+      else
+        printf "[$err] %s\n" $file >&2 
       fi
-      echo "TEST FAIL - $file"  >&2;
     else  
       echo "TEST OK - $file";
     fi
