@@ -6,7 +6,7 @@ if a<5 then
 else
   write("ok");
 end;
-end;
+end
 
 function fun(a)
 local b;
