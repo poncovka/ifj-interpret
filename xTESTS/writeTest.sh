@@ -18,15 +18,15 @@ writeTest(){
         printf "TEST FAIL - "  >&2;
         if [ ! -e "$dir/ref_out_$file" ] ; then
           echo "$file - Neexistuje soubor pro porovnani!" >&2
-          return
-        fi
-        
-        if [ "$pgr" != "$val" ] ; then
-          printf "%s\n" $file >&2
-          valgrind --leak-check=full --leak-resolution=high -q ./project "$dir/$file"
         else
-          printf "[$err] %s\n" $file >&2
-          ./project "$dir/$file" | diff - "$dir/ref_out_$file" 
+        
+          if [ "$pgr" != "$val" ] ; then
+            printf "%s\n" $file >&2
+            valgrind --leak-check=full --leak-resolution=high -q ./project "$dir/$file"
+          else
+            printf "[$err] %s\n" $file >&2
+            ./project "$dir/$file" | diff - "$dir/ref_out_$file" 
+          fi
         fi
       else  
         echo "TEST OK - $file";

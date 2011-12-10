@@ -547,7 +547,7 @@ int prsCommand() {
       NEXT_TOKEN
       if( (err = parseExpression(table, &tmpV)) != EOK || token != L_SEMICOLON) return err == PRS_OK ? SYN_ERR : err;
 
-      tmp = genInstr(I_JMP_NZ, lab, tmpV, NULL);
+      tmp = genInstr(I_JMP_Z, lab, tmpV, NULL);
       if(tmp == NULL) return INTR_ERR;
 
       if(listInsertLast(instr, tmp) != LIST_EOK) return INTR_ERR;
