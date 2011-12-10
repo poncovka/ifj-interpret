@@ -577,6 +577,7 @@ int prsCommand() {
       if(token != L_LEFT_BRACKET) return SYN_ERR;
 
       NEXT_TOKEN
+      if(token == KW_TRUE || token == KW_FALSE || token == KW_NIL) return SEM_ERR;
       // vypocitam vyraz
       if((err = parseExpression(table, &tmpV)) != EOK) return err;
       // nageneruju instrukci

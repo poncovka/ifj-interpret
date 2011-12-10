@@ -244,7 +244,7 @@ int executor(TFunction *fce) {
             newData.value.b = (strCmpString(&data1->value.s,&data2->value.s) <= 0) ? TRUE : FALSE;
          }
          else return ERR_INTERPRET;
-     
+
          if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
             return ERR_INTERNAL;
          break;
@@ -262,7 +262,7 @@ int executor(TFunction *fce) {
          else if (data1->type == STRING) {
             newData.value.b = (strCmpString(&data1->value.s,&data2->value.s) > 0) ? TRUE : FALSE;
          }
-         else return ERR_INTERPRET;         
+         else return ERR_INTERPRET;
 
          if (saveData(&newData,instr->dest,fce) == EXIT_FAILURE)
             return ERR_INTERNAL;
@@ -370,7 +370,7 @@ int executor(TFunction *fce) {
             printf("%g",data1->value.n);
             break;
          default:
-            return ERR_SEM;
+            return ERR_INTERPRET;
             break;
          }
          break;
@@ -424,7 +424,7 @@ int executor(TFunction *fce) {
          result = executor((TFunction *)instr->dest);
          if (result != INTERPRET_OK)
             return result;
-         
+
          listSetActive(&fce->instructions, tmpInstr);
          break;
 
