@@ -270,7 +270,9 @@ void clearNode(TNode n, EBTreeDataType type) {
       // predpis jak smazat data poku jsou typu TVar *
       case VAR: {
          TVar *temp = ((TVar *)n->data);
-         freeVarData(temp->varData);
+         for(int i = 0; i < temp->alloc; i++) {
+            freeVarData(&temp->varData[i]);
+         }
          free(temp->varData);
          free(n->data);
       }
