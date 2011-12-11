@@ -381,43 +381,56 @@ int executor(TFunction *fce) {
          freeVarData(dest);
 
          if (data1->type == STRING) {
+
             /* nacti cislo */
             if (strncmp(data1->value.s.str,"*n",2) == 0) {
-               result = strReadNumber(stdin,&dest->value.n);
-							 if (result == ERR_MALLOC) 
-								 return ERR_INTERNAL;
-							 else if (result == LEX_ERROR)
-                 dest->type = NIL;
-						   else dest->type = NUMBER;
+
+               dest->type = NUMBER;
+               result = strReadNumber(stdin, &dest->value.n);
+
+               if (result == STR_ERROR)
+                  dest->type = NIL;
+               else if (result == STR_EALLOC)
+                  return ERR_INTERNAL;
             }
+
             /* nacti retezec do konce radky */
             else if (strncmp(data1->value.s.str,"*l",2) == 0) {
-               dest->value.s = strReadLine(stdin);
-               if (strIsNull(&dest->value.s))
-                  return ERR_INTERNAL;
 
                dest->type = STRING;
+               result = strReadLine(stdin, &dest->value.s);
 
-               if (dest->value.s.length == 0)
-                  freeVarData(dest);
+               if (result == STR_EOF)
+                  dest->type = NIL;
+               else if (result == STR_EALLOC)
+                  return ERR_INTERNAL;
+
             }
             /* nacitej retezec dokud neni EOF */
             else if (strncmp(data1->value.s.str,"*a",2) == 0) {
-               dest->value.s = strReadAll(stdin);
-               if (strIsNull(&dest->value.s))
-                  return ERR_INTERNAL;
+
                dest->type = STRING;
+               result = strReadAll(stdin, &dest->value.s);
+
+               if (result == STR_EALLOC)
+                  return ERR_INTERNAL;
             }
+
             else return ERR_SEM;
          }
 
          /* nacti dany pocet znaku */
          else if (data1->type == NUMBER) {
-            dest->value.s = strReadNChar(stdin,data1->value.n);
-            if (strIsNull(&dest->value.s))
-               return ERR_INTERNAL;
+            
             dest->type = STRING;
+            result = strReadNChar(stdin, &dest->value.s, data1->value.n);
+
+               if (result == STR_EOF)
+                  dest->type = NIL;
+               else if (result == STR_EALLOC)
+                  return ERR_INTERNAL;
          }
+
          else return ERR_SEM;
 
          break;

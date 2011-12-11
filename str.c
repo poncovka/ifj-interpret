@@ -10,7 +10,6 @@
 
 #include "str.h"
 #include "scanner.h"
-#define STR_READ -10
 
 /*
  * Funkce vytvoøí prázdný string
@@ -97,58 +96,74 @@ string strCreateConstString (char *str) {
 }
 
 /*
- * Funkce naète n znakù a vrátí je ve
- * vytvoøeném øetìzci.
+ * Funkce naète do stringu n znakù.
  * @author  Vendula Poncová
  * @param   vstupní soubor
+ * @param   string
  * @param   poèet naètených znakù
- * @return  nový string
+ * @return  chybový kód
  */
-string strReadNChar(FILE *f, int n) {
+int strReadNChar(FILE *f, string *s, int n) {
+
+   if (n < 0)
+     return STR_ERROR;
 
    // inicializujeme a alokujeme string
-   string s = {NULL, 0, 0};
+   if (strInitLen(s, n) != STR_SUCCESS)
+      return STR_EALLOC;
 
    // naèteme a zkopírujeme znaky:
-   if (n >= 0 && strInitLen(&s, n) == STR_SUCCESS) {
-      int i, c;
-      for (i = 0; (i < n) && ((c = fgetc(f)) != EOF); i++) {
-         s.str[i] = (char)c;
-      }
-      s.str[i] = '\0';
-      s.length = i;
+   int i, c = '\0';
+
+   for (i = 0; (i < n) && ((c = fgetc(f)) != EOF); i++) {
+      s->str[i] = (char)c;
+   }
+   s->str[i] = '\0';
+   s->length = i;
+
+   // naèten pouze EOF
+   if (c == EOF && s->length == 0) {
+      strFree(s);
+      return STR_EOF;
    }
 
-   return s;
+   return STR_SUCCESS;
 }
 
 /*
  * Funkce naèítá znaky do konce øádku
- *  a vrátí je ve vytvoøeném øetìzci.
+ * a ukládá je do stringu.
  * @author  Vendula Poncová
  * @param   vstupní soubor
- * @return  nový string
+ * @param   string
+ * @return  chybový kód
  */
-string strReadLine(FILE *f) {
+int strReadLine(FILE *f, string *s) {
+
    int err = STR_SUCCESS;
 
    // inicializujeme a alokujeme string
-   string s = {NULL, 0, 0};
-   err = strInit(&s);
+   if (strInit(s) != STR_SUCCESS)
+      return STR_EALLOC;
 
    // naèteme a zkopírujeme znaky:
-   if (err == STR_SUCCESS) {
-      int c;
-      while(((c = fgetc(f)) != EOF) && (c !='\n')) {
-         err = strAddChar(&s, c);
-      }
-      // pokud do¹lo k chybì, uvolníme data
-      if (err == STR_ERROR) {
-         strFree(&s);
-      }
+   int c;
+   while ( ((c = fgetc(f)) != EOF) && (c !='\n') && err == STR_SUCCESS ) {
+      err = strAddChar(s, c);
    }
 
-   return s;
+   // pokud do¹lo k chybì, uvolníme data
+   if (err == STR_ERROR) {
+      strFree(s);
+      return STR_EALLOC;
+   }
+   // bylo naèteno jen EOF
+   else if (c == EOF && s->length == 0) {
+      strFree(s);
+      err = STR_EOF;
+   }
+
+   return err;
 }
 
 /*
@@ -156,171 +171,181 @@ string strReadLine(FILE *f) {
  *  a vrátí je ve vytvoøeném øetìzci.
  * @author  Vendula Poncová
  * @param   vstupní soubor
- * @return  nový string
+ * @param   string
+ * @return  chybový kód
  */
-string strReadAll(FILE *f) {
+int strReadAll(FILE *f, string *s) {
    int err = STR_SUCCESS;
 
    // inicializujeme a alokujeme string
-   string s = {NULL, 0, 0};
-   err = strInit(&s);
+   if (strInit(s) != STR_SUCCESS)
+      return STR_EALLOC;
+
 
    // naèteme a zkopírujeme znaky:
-   if (err == STR_SUCCESS) {
-      int c;
-      while(((c = fgetc(f)) != EOF)) {
-         err = strAddChar(&s, c);
-      }
-      // pokud do¹lo k chybì, uvolníme data
-      if (err == STR_ERROR) {
-         strFree(&s);
-      }
+   int c;
+   while(((c = fgetc(f)) != EOF)) {
+      err = strAddChar(s, c);
    }
-
-   return s;
+   // pokud do¹lo k chybì, uvolníme data
+   if (err == STR_ERROR) {
+      strFree(s);
+      return STR_EALLOC;
+   }
+   
+   return err;
 }
 
 /*
  * Funkce nacte ze vstupu cislo a vrati ho
  * @author Tomas Trkal
- * @param vstupni soubor
- * @return cislo
+ * @param  vstupni soubor
+ * @param  kam se ulozi vysledne cislo
+ * @return chybovy kod
  */
 int strReadNumber (FILE *f, double *dest) {
 	int err = STR_SUCCESS;
+
+  // inicializace retezce
 	string s;
 	err = strInit(&s);
 
-	if (err == STR_SUCCESS) {
-		int state = S_DEFAULT;
-	  int c;
+	if (err != STR_SUCCESS)
+     return STR_EALLOC;
 
-		/*nekonecny cyklus*/
-		while (err == STR_SUCCESS) {
-			c = getc(f);
+	int state = S_DEFAULT;
+  int isNumber = FALSE;
+  int c;
 
-			/*ridici swich*/
-      switch (state) {
+  // nacitani cisla
+	while (err == STR_SUCCESS && isNumber == FALSE) {
+		c = getc(f);
+
+		/*ridici swich*/
+    switch (state) {
         
-				/*S_DEFAULT*/
-				case S_DEFAULT:
-          if (isdigit(c)) {
-					  if (strAddChar(&s,c))
-							err = ERR_MALLOC;
-					  state = S_NUMBER;
-					}
-					else {
-					  ungetc(c,f);
-						err = LEX_ERROR;
-					}
-				break;
+			/*S_DEFAULT*/
+			case S_DEFAULT:
+         if (isspace(c))
+            continue;
 
-				/*S_NUMBER*/
-				case S_NUMBER:
-				  if (isdigit(c)) {
-				    if (strAddChar(&s,c)) 
-							err = ERR_MALLOC;
-				  } 
-					else if (c == '.') {
-				    if (strAddChar(&s,c)) 
-							err = ERR_MALLOC;
-				    state = S_DECIMAL_POINT;
-				  } 					
-					else if ((c == 'e') || (c == 'E')) {
-				    if (strAddChar(&s,c)) 
-							err = ERR_MALLOC;
-				    state = S_EXPONENT;
-				  } 
-					else {
+         if (isdigit(c)) {
+  			    if (strAddChar(&s,c))
+						   err = STR_EALLOC;
+				       state = S_NUMBER;
+				 }
+				 else {
 				    ungetc(c,f);
-				    err = STR_READ;
-				  }
-				break;
+					  err = STR_ERROR;
+				 }
+			break;
 
-				/*S_DECIMAL_POINT*/
-				case S_DECIMAL_POINT:
-				  if (isdigit(c)) {
-					  if (strAddChar(&s,c)) 
-							err = ERR_MALLOC;
-					  state = S_DECIMAL_NUMBER;
-					} 
-  			  else {
-						ungetc(c,f);
-						err = LEX_ERROR;
-					}
-				break;
+			/*S_NUMBER*/
+			case S_NUMBER:
+			   if (isdigit(c)) {
+			      if (strAddChar(&s,c)) 
+						   err = STR_EALLOC;
+			   } 
+				 else if (c == '.') {
+			      if (strAddChar(&s,c)) 
+						   err = STR_EALLOC;
+			      state = S_DECIMAL_POINT;
+			   } 					
+				 else if ((c == 'e') || (c == 'E')) {
+			      if (strAddChar(&s,c)) 
+						   err = STR_EALLOC;
+			      state = S_EXPONENT;
+  		   } 
+				 else {
+			     ungetc(c,f);
+			     isNumber = TRUE;
+			   }
+			break;
 
-				/*S_DECIMAL_NUMBER*/
-				case S_DECIMAL_NUMBER:
-          if (isdigit(c)) {
+			/*S_DECIMAL_POINT*/
+			case S_DECIMAL_POINT:
+			   if (isdigit(c)) {
+				    if (strAddChar(&s,c)) 
+						   err = STR_EALLOC;
+				    state = S_DECIMAL_NUMBER;
+			 	 } 
+ 			   else {
+					  ungetc(c,f);
+					  err = STR_ERROR;
+				 }
+			break;
+
+			/*S_DECIMAL_NUMBER*/
+			case S_DECIMAL_NUMBER:
+         if (isdigit(c)) {
             if (strAddChar(&s,c)) 
-							err = ERR_MALLOC;
-	        }
-          else if ((c == 'e') || (c == 'E')) {
-		        if (strAddChar(&s,c)) 
-							err = ERR_MALLOC;
-		        state = S_EXPONENT;
-          } 
-	        else {
+						   err = STR_EALLOC;
+         }
+         else if ((c == 'e') || (c == 'E')) {
+	          if (strAddChar(&s,c)) 
+						   err = STR_EALLOC;
+	          state = S_EXPONENT;
+         } 
+         else {
             ungetc(c,f);
-            err = STR_READ;
-	        }
-				break;
+            isNumber = TRUE;
+	       }
+       break;
 
-				/*S_EXPONENT*/
-				case S_EXPONENT:
+       /*S_EXPONENT*/
+       case S_EXPONENT:
           if (isdigit(c)) {
-					  if (strAddChar(&s,c))
-							err = ERR_MALLOC;
-						state = S_EXPONENT_END;
-					}	
-					else if ((c == '+') || (c == '-')) {
+				    if (strAddChar(&s,c))
+						   err = STR_EALLOC;
+					  state = S_EXPONENT_END;
+				 }	
+				 else if ((c == '+') || (c == '-')) {
             if (strAddChar(&s,c)) 
-							err = ERR_MALLOC;
+						   err = STR_EALLOC;
             state = S_EXPONENT_BEGIN;
-	        } 
-					else {
-						ungetc(c,f);
-					 	err = LEX_ERROR;
-					}
-				break;
-
-        /*S_EXPONENT_BEGIN*/
-				case S_EXPONENT_BEGIN:
-					if (isdigit(c)) {
-						if (strAddChar(&s,c))
-							err = ERR_MALLOC;
-						state = S_EXPONENT_END;
-					}
-					else {
+         } 
+				 else {
 					  ungetc(c,f);
-						err = LEX_ERROR;
-					}
-				break;
+				 	  err = STR_ERROR;
+				 }
+			break;
 
-				/*S_EXPONENT_END*/
-				case S_EXPONENT_END:
-				  if (isdigit(c)) {
-					  if (strAddChar(&s,c)) 
-							err = ERR_MALLOC;
-					} 
-				  else {
-					  ungetc(c,f);
-					  err = STR_READ;
-					}
-				break;			
+       /*S_EXPONENT_BEGIN*/
+			case S_EXPONENT_BEGIN:
+			   if (isdigit(c)) {
+				    if (strAddChar(&s,c))
+						   err = STR_EALLOC;
+					  state = S_EXPONENT_END;
+				 }
+				 else {
+				    ungetc(c,f);
+					  err = STR_ERROR;
+				 }
+			break;
 
-			}	/*konec switche*/
-		} /*konec while*/
+			/*S_EXPONENT_END*/
+			case S_EXPONENT_END:
+			   if (isdigit(c)) {
+				    if (strAddChar(&s,c)) 
+						   err = STR_EALLOC;
+				 } 
+			   else {
+				    ungetc(c,f);
+				    isNumber = TRUE;
+				 }
+			break;			
 
-		if (err == STR_READ) {
+      }	/*konec switche*/
+	  } /*konec while*/
+
+   // cislo uspesne nactene
+   // konvertuj
+	 if (isNumber) {
       *dest = atof(s.str);
-		}
-    strFree(&s);
-		return err;
+   }
 
-	} 
-	return ERR_MALLOC;
-} 
+   strFree(&s);
+   return err;
+}
 
 /* konec souboru str.c */

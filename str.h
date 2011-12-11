@@ -19,8 +19,10 @@
 // pokud nacitame retezec znak po znaku, pamet se postupne bude alkokovat na
 // nasobky tohoto cisla
 
-#define STR_ERROR   1
-#define STR_SUCCESS 0
+#define STR_EOF      1
+#define STR_SUCCESS  0
+#define STR_ERROR   -1
+#define STR_EALLOC  -2
 
 // Makro vrací true, pokud øetìzec ve string ukazuje na NULL
 #define strIsNull(s) ((s)->str == NULL)
@@ -53,9 +55,9 @@ string strConcatenation (string *s1, string *s2);
 string strCreateConstString (char *str);
 
 int strReadNumber (FILE *f, double *dest);
-string strReadNChar(FILE *f, int n);
-string strReadLine (FILE *f);
-string strReadAll  (FILE *f);
+int strReadNChar  (FILE *f, string *s, int n);
+int strReadLine   (FILE *f, string *s);
+int strReadAll    (FILE *f, string *s);
 
 ////////////////////////////////////////////////////////////////////////
 /* inline funkce */
