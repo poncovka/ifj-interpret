@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
    FILE *f;
 
    if (argc != 2) {
-      fprintf(stderr,"ERROR: neni zadan vstupni soubor\n");
+      fprintf(stderr,"ERROR: neni spravne zadan vstupni soubor\n");
       return -INTR_ERR;
    }
    if ((f = fopen(argv[1], "r")) == NULL) {

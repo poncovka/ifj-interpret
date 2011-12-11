@@ -270,20 +270,22 @@ void mergeSort(char *str) {
    if(str == NULL)  return;
 
    // inicializace:
-
-   int copied = 0;            // pocet prvku ktere jiz byly skopirovany do ciloveho pole
    int strLen = strlen(str);  // delka retezce
-   int cntRise = 2;           // pocitadlo posloupnosti
+   if (strLen == 0) return;
+
    char arr[2*strLen];        // pomocne pole o dva krat velikosti retezce bez \0
    copyArray(arr,str,strLen); // skopiruju retezec bez \0
-   // do leve casti pomocneho pole
-   int i,j,k,l,step,extra;
+                              // do leve casti pomocneho pole
+
+   int copied = 0;            // pocet prvku ktere jiz byly skopirovany do ciloveho pole
+   int cntRise = 2;           // pocitadlo posloupnosti
    bool endLeft,endRight,endMiddle,sourceLeft;
-   sourceLeft=true;           // pocatecni smer postupu - leve pole je zdroj, prave cil
+   int i,j,k,l,step,extra;
 
    // tøídìní:
+   sourceLeft=true;           // pocatecni smer postupu - leve pole je zdroj, prave cil
 
-   while(cntRise>1) {
+   while(cntRise > 1) {
       // dokud neni posloupnost serazena:
 
       cntRise=0;
@@ -325,7 +327,7 @@ void mergeSort(char *str) {
                   k+=step;         // posun k (index ciloveho pole)
                   if(arr[i]<arr[i-1]) {
                      endLeft=true;  // jestli skoncila neklesajici posloupnost zleva
-		     cntRise++;
+		              cntRise++;
                   }
                }
             }
@@ -343,7 +345,7 @@ void mergeSort(char *str) {
                   if(arr[j]<arr[j+1]) {
                      // jestli skoncila neklesajici posloupnost zprava
                      endRight=true;
-		     cntRise++;
+		              cntRise++;
                   }
                }
             }
@@ -352,12 +354,12 @@ void mergeSort(char *str) {
          if(endLeft) {          // jestli skoncila neklesajici posloupnost zleva
             copyRight(&k,&j,&copied,arr,step);  // skopiruj pravou neklesajici
             endLeft=false;
-	    cntRise++;
+	          cntRise++;
          }
          if(endRight) {         // jestli skoncila neklesajici posloupnost zprava
             copyLeft(&k,&i,&copied,arr,step);  // skopiruj levou neklesajici
             endRight=false;
-	    cntRise++;
+	          cntRise++;
          }
          extra=k;               // prehozeni k a l
          k=l;
@@ -387,21 +389,6 @@ void copyArray(char *dest, char *src, int strLen) {
 void copyToSrc(int strLen, char *arr) {
    for(int x=0; x<strLen; x++)
       arr[x]=arr[x+strLen];
-}
-
-
-/*
- * Kontrola serazeni seznamu
- * vraci true je-li seznam serazen
- * @return  bool
- */
-bool isSorted(int strLen, char *arr) {
-
-   for(int x=0; x<strLen-1; x++) {
-
-      if(arr[x]>arr[x+1]) return false;
-   }
-   return true;
 }
 
 /*
