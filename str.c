@@ -256,14 +256,32 @@ double strReadNumber (FILE *f) {
 
 				/*S_EXPONENT*/
 				case S_EXPONENT:
-          if (isdigit(c) || (c == '+') || (c == '-')) {
+          if (isdigit(c)) {
+					  if (strAddChar(&s,c))
+							err = ERR_MALLOC;
+						state = S_EXPONENT_END;
+					}	
+					else if ((c == '+') || (c == '-')) {
             if (strAddChar(&s,c)) 
 							err = ERR_MALLOC;
-            state = S_EXPONENT_END;
+            state = S_EXPONENT_BEGIN;
 	        } 
 					else {
 						ungetc(c,f);
 					 	err = LEX_ERROR;
+					}
+				break;
+
+        /*S_EXPONENT_BEGIN*/
+				case S_EXPONENT_BEGIN:
+					if (isdigit(c)) {
+						if (strAddChar(&s,c))
+							err = ERR_MALLOC;
+						state = S_EXPONENT_END;
+					}
+					else {
+					  ungetc(c,f);
+						err = LEX_ERROR;
 					}
 				break;
 

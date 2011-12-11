@@ -239,11 +239,24 @@ int getNextToken(string *attr) {
 
       /*S_EXPONENT*/
       case S_EXPONENT:
-         if (isdigit(c) || (c == '+') || (c == '-')) {
+         if (isdigit(c)) {
+				   if (strAddChar(attr,c)) return ERR_MALLOC;
+					 state = S_EXPONENT_END;
+				 }
+				 else if ((c == '+') || (c == '-')) {
             if (strAddChar(attr,c)) return ERR_MALLOC;
-            state = S_EXPONENT_END;
+            state = S_EXPONENT_BEGIN;
          } else return LEX_ERROR;
          break;
+
+			/*S_EXPONENT_BEGIN*/
+			case S_EXPONENT_BEGIN:
+				if (isdigit(c)) {
+				  if (strAddChar(attr,c)) return ERR_MALLOC;
+					state = S_EXPONENT_END;
+				}				 
+				else return LEX_ERROR;
+			break;
 
       /*S_EXPONENT_END*/
       case S_EXPONENT_END:
