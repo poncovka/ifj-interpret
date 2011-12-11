@@ -383,14 +383,12 @@ int executor(TFunction *fce) {
          if (data1->type == STRING) {
             /* nacti cislo */
             if (strncmp(data1->value.s.str,"*n",2) == 0) {
-               dest->value.n = strReadNumber(stdin);
-							 if (dest->value.n == ERR_MALLOC) 
+               result = strReadNumber(stdin,&dest->value.n);
+							 if (result == ERR_MALLOC) 
 								 return ERR_INTERNAL;
-							 else if (dest->value.n == LEX_ERROR)
-                 dest->type = NIL;   
-							 else {                
-                 dest->type = NUMBER;
-							 }
+							 else if (result == LEX_ERROR)
+                 dest->type = NIL;
+						   else dest->type = NUMBER;
             }
             /* nacti retezec do konce radky */
             else if (strncmp(data1->value.s.str,"*l",2) == 0) {

@@ -52,7 +52,7 @@ int  strCopyString      (string *s1, string *s2);
 string strConcatenation (string *s1, string *s2);
 string strCreateConstString (char *str);
 
-double strReadNumber (FILE *f);
+int strReadNumber (FILE *f, double *dest);
 string strReadNChar(FILE *f, int n);
 string strReadLine (FILE *f);
 string strReadAll  (FILE *f);

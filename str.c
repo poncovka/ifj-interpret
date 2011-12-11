@@ -186,8 +186,8 @@ string strReadAll(FILE *f) {
  * @param vstupni soubor
  * @return cislo
  */
-double strReadNumber (FILE *f) {
-	double err = STR_SUCCESS;
+int strReadNumber (FILE *f, double *dest) {
+	int err = STR_SUCCESS;
 	string s;
 	err = strInit(&s);
 
@@ -204,6 +204,19 @@ double strReadNumber (FILE *f) {
         
 				/*S_DEFAULT*/
 				case S_DEFAULT:
+          if (isdigit(c)) {
+					  if (strAddChar(&s,c))
+							err = ERR_MALLOC;
+					  state = S_NUMBER;
+					}
+					else {
+					  ungetc(c,f);
+						err = LEX_ERROR;
+					}
+				break;
+
+				/*S_NUMBER*/
+				case S_NUMBER:
 				  if (isdigit(c)) {
 				    if (strAddChar(&s,c)) 
 							err = ERR_MALLOC;
@@ -301,7 +314,7 @@ double strReadNumber (FILE *f) {
 		} /*konec while*/
 
 		if (err == STR_READ) {
-      err = atof(s.str);
+      *dest = atof(s.str);
 		}
     strFree(&s);
 		return err;
