@@ -3,11 +3,14 @@
  * @author        pøevzato z jednoduchy_interpret/str.c
                   Vendula Poncová - xponco00
  *                Patrik Hronsky - xhrons00
+ *                Tomas Trkal - xtrkal00
  * @projekt       IFJ11
  * @date
  */
 
 #include "str.h"
+#include "scanner.h"
+#define STR_READ -10
 
 /*
  * Funkce vytvoøí prázdný string
@@ -176,5 +179,117 @@ string strReadAll(FILE *f) {
 
    return s;
 }
+
+/*
+ * Funkce nacte ze vstupu cislo a vrati ho
+ * @author Tomas Trkal
+ * @param vstupni soubor
+ * @return cislo
+ */
+double strReadNumber (FILE *f) {
+	double err = STR_SUCCESS;
+	string s;
+	err = strInit(&s);
+
+	if (err == STR_SUCCESS) {
+		int state = S_DEFAULT;
+	  int c;
+
+		/*nekonecny cyklus*/
+		while (err == STR_SUCCESS) {
+			c = getc(f);
+
+			/*ridici swich*/
+      switch (state) {
+        
+				/*S_DEFAULT*/
+				case S_DEFAULT:
+				  if (isdigit(c)) {
+				    if (strAddChar(&s,c)) 
+							err = ERR_MALLOC;
+				  } 
+					else if (c == '.') {
+				    if (strAddChar(&s,c)) 
+							err = ERR_MALLOC;
+				    state = S_DECIMAL_POINT;
+				  } 					
+					else if ((c == 'e') || (c == 'E')) {
+				    if (strAddChar(&s,c)) 
+							err = ERR_MALLOC;
+				    state = S_EXPONENT;
+				  } 
+					else {
+				    ungetc(c,f);
+				    err = STR_READ;
+				  }
+				break;
+
+				/*S_DECIMAL_POINT*/
+				case S_DECIMAL_POINT:
+				  if (isdigit(c)) {
+					  if (strAddChar(&s,c)) 
+							err = ERR_MALLOC;
+					  state = S_DECIMAL_NUMBER;
+					} 
+  			  else {
+						ungetc(c,f);
+						err = LEX_ERROR;
+					}
+				break;
+
+				/*S_DECIMAL_NUMBER*/
+				case S_DECIMAL_NUMBER:
+          if (isdigit(c)) {
+            if (strAddChar(&s,c)) 
+							err = ERR_MALLOC;
+	        }
+          else if ((c == 'e') || (c == 'E')) {
+		        if (strAddChar(&s,c)) 
+							err = ERR_MALLOC;
+		        state = S_EXPONENT;
+          } 
+	        else {
+            ungetc(c,f);
+            err = STR_READ;
+	        }
+				break;
+
+				/*S_EXPONENT*/
+				case S_EXPONENT:
+          if (isdigit(c) || (c == '+') || (c == '-')) {
+            if (strAddChar(&s,c)) 
+							err = ERR_MALLOC;
+            state = S_EXPONENT_END;
+	        } 
+					else {
+						ungetc(c,f);
+					 	err = LEX_ERROR;
+					}
+				break;
+
+				/*S_EXPONENT_END*/
+				case S_EXPONENT_END:
+				  if (isdigit(c)) {
+					  if (strAddChar(&s,c)) 
+							err = ERR_MALLOC;
+					} 
+				  else {
+					  ungetc(c,f);
+					  err = STR_READ;
+					}
+				break;			
+
+			}	/*konec switche*/
+		} /*konec while*/
+
+		if (err == STR_READ) {
+      err = atof(s.str);
+		}
+    strFree(&s);
+		return err;
+
+	} 
+	return ERR_MALLOC;
+} 
 
 /* konec souboru str.c */
