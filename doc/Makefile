@@ -4,7 +4,7 @@
 # Datum:   2011
 # 
  
-NAME=dokumentace
+NAME=doc
 
 all: $(NAME).pdf
 
